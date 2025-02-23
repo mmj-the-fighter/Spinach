@@ -1,33 +1,39 @@
-Spinach Framework
-*****************
-Fixing SDL3 Dependencies
+# Spinach Framework
 
-How to run in Visual Studio:
-***************************
-0) Make an empty project and copy the .c file and add it to project
+## Fixing SDL3 Dependencies
 
-1) Download and unzip the following in a folder of your convenience.
---------------------------------------------------------------------
-These are lib files, dll and and include files
-https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-devel-3.2.0-VC.zip
+### How to Run in Visual Studio
 
-2)Copy SDL3.DLL in your project folder.
+#### 1) Download and Set Up SDL3
+- Download and unzip the following package in a folder of your choice:
+  - [SDL3 Development Files](https://github.com/libsdl-org/SDL/releases/download/release-3.2.0/SDL3-devel-3.2.0-VC.zip)
+- This package contains the necessary `.lib`, `.dll`, and `include` files.
 
-3) Fix dependencies in project.
--------------------------------
-Open your project in visual studio:
+#### 2) Copy SDL3 DLL
+- Copy `SDL3.DLL` into your project folder.
 
-In project properties
-C/C++ -> General:
-additional include directories:
-Type in path of your SDL3 library include folder e.g: D:\Libs\SDL3-devel-3.2.0-VC\SDL3-3.2.0\include
+#### 3) Fix Dependencies in Project
 
-Linker -> General:
-additional library directories:
-Type in path of your SDL3 library lib folder e.g: D:\Libs\SDL3-devel-3.2.0-VC\SDL3-3.2.0\lib\x64
+1. **Open your project in Visual Studio**.
+2. **Modify project properties**:
+   
+   - **C/C++ -> General**
+     - Set **Additional Include Directories** to the SDL3 `include` folder.
+     - Example:
+       ```
+       D:\Libs\SDL3-devel-3.2.0-VC\SDL3-3.2.0\include
+       ```
+   
+   - **Linker -> General**
+     - Set **Additional Library Directories** to the SDL3 `lib` folder.
+     - Example:
+       ```
+       D:\Libs\SDL3-devel-3.2.0-VC\SDL3-3.2.0\lib\x64
+       ```
+   
+   - **Linker -> Input**
+     - Add `SDL3.lib` under **Additional Dependencies**.
 
-Linker -> input: 
-Type in 
-SDL3.lib
+### Reference
+- [SDL Official Website](https://www.libsdl.org/)
 
-Reference: https://www.libsdl.org/
