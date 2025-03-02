@@ -15,12 +15,20 @@ namespace spn
 		~Canvas();
 
 		void FillAnything();
+		void Clear();
 		void DrawImage(Image* image, int x, int y);
-		void DrawText(const std::string& text, int x, int y);
+		void DrawText(const char* text, int x, int y);
+		void DrawString(const std::string& text, int x, int y);
 		inline void SetPrimaryColor(int r, int g, int b) {
 			primaryColorR = r;
 			primaryColorG = g;
 			primaryColorB = b;
+		}
+
+		inline void SetClearColor(int r, int g, int b) {
+			clearColorR = r;
+			clearColorG = g;
+			clearColorB = b;
 		}
 
 		inline unsigned int GetWidth() {
@@ -69,6 +77,10 @@ namespace spn
 			return font;
 		}
 
+		inline float GetAspectRatio(){
+			return aspectRatio;
+		}
+
 	private:
 		RFont * font;
 		unsigned char * pixBuffer;
@@ -78,10 +90,14 @@ namespace spn
 		unsigned int pitch;
 		unsigned int numOfPixels;
 		unsigned int pixelDataLength;
+		float aspectRatio;
 		float lastFrameTime;
 		unsigned char primaryColorR;
 		unsigned char primaryColorG;
 		unsigned char primaryColorB;
+		unsigned char clearColorR;
+		unsigned char clearColorG;
+		unsigned char clearColorB;
 
 		void CopyAllPixels(
 			int srcWidth,

@@ -8,10 +8,12 @@ namespace spn
 {
 	Canvas::Canvas(unsigned int aWidth, unsigned int aHeight)
 		:width(aWidth), height(aHeight), lastFrameTime(0.0f), font(nullptr),
-		primaryColorR(255), primaryColorG(255), primaryColorB(255)
+		primaryColorR(255), primaryColorG(255), primaryColorB(255),
+		clearColorR(0), clearColorG(0), clearColorB(0)
 	{
 		channels = 4;
 		pitch = width * 4;
+		aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 		numOfPixels = aWidth * aHeight;
 		pixelDataLength = numOfPixels * 4;
 		pixBuffer = new unsigned char[pixelDataLength];
@@ -60,6 +62,16 @@ namespace spn
 		}
 	}
 
+	void Canvas::Clear()
+	{
+		for (unsigned int i = 0; i < numOfPixels*4; i += 4) {
+			pixBuffer[i] = clearColorB;
+			pixBuffer[i + 1] = clearColorG;
+			pixBuffer[i + 2] = clearColorR;
+			pixBuffer[i + 3] = 255;
+		}
+	}
+
 	void Canvas::DrawImage(Image* image, int x, int y)
 	{
 		Canvas *imCanvas = image->GetCanvas();
@@ -69,7 +81,7 @@ namespace spn
 			x, y);
 	}
 
-	void Canvas::DrawText(const std::string& text, int x, int y)
+	void Canvas::DrawText(const char* text, int x, int y)
 	{
 		if (font == nullptr) {
 			return;
@@ -87,8 +99,51 @@ namespace spn
 		
 		
 		int xpos = x;
-		for (int i = 0; i < text.size(); ++i) {
-			unsigned char c = text.at(i);
+		int i = 0;
+		unsigned char c;
+		while ((c = text[i]) != '\0') {
+			if (c != ' ') {
+				unsigned char charDiff = c - baseChar;
+				int row = charDiff / maxCols;
+				int col = charDiff - (row*maxCols);
+				int atlasX = col * cellWidth;
+				int atlasY = row * cellHeight;
+				//draw a region of atlas at xpos
+				CopyPixels(atlasX, atlasY, cellWidth, cellHeight,
+					atlasWidth, atlasHeight, srcPixels, xpos, y,
+					0, 0, 0,
+					primaryColorR,
+					primaryColorG,
+					primaryColorB
+					);
+			}
+			xpos += font->GetCharWidth(c);
+			++i;
+		}
+
+
+	}
+
+	void Canvas::DrawString(const std::string& str, int x, int y)
+	{
+		if (font == nullptr) {
+			return;
+		}
+		int atlasWidth = font->GetCanvas()->GetWidth();
+		int atlasHeight = font->GetCanvas()->GetHeight();
+		int cellWidth = font->GetCellWidth();
+		int cellHeight = font->GetCellHeight();
+		int maxCols = atlasWidth / cellWidth;
+		unsigned char baseChar = font->GetBaseChar();
+		unsigned char* srcPixels = font->GetCanvas()->GetPixelBuffer();
+		if (srcPixels == nullptr){
+			return;
+		}
+
+
+		int xpos = x;
+		for (int i = 0; i < str.size(); ++i) {
+			unsigned char c = str.at(i);
 			if (c != ' ') {
 				unsigned char charDiff = c - baseChar;
 				int row = charDiff / maxCols;
