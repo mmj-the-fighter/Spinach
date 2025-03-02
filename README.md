@@ -1,7 +1,8 @@
 # Spinach Framework
 A framework for implementing and  
-studying basic algorithms in computer graphics.
-It uses SDL3 library. But can be retargetted to other windowing frameworks.
+studying basic algorithms in computer graphics.  
+It uses SDL3 library.  
+But can be retargetted to other windowing frameworks.  
   
 Useful for:  
 - Writing lab programs in a first course for computer graphics  
