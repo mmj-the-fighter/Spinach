@@ -13,6 +13,9 @@ Useful for:
 - Writing image processing routines
 - Games
 - and so on.
+
+## Parent project  
+ [Graphics Lab Framework (in C and SDL2)](https://github.com/mmj-the-fighter/GraphicsLabFramework)
  
 
 ## Fixing SDL3 Dependencies
