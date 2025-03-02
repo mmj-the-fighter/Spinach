@@ -2,7 +2,7 @@
 A framework for implementing and  
 studying basic algorithms in computer graphics.  
 It uses SDL3 library.  
-But can be retargetted to other windowing frameworks.  
+But can be retargetted to other windowing frameworks by modifying the source code.  
   
 Useful for:  
 - Writing lab programs in a first course for computer graphics  
@@ -10,7 +10,9 @@ Useful for:
 - Writing raytracers  
 - Writing programs for advanced curves  
 - Writing software rasterizers   
-- Writing image processing routines  
+- Writing image processing routines
+- Games
+- and so on.
  
 
 ## Fixing SDL3 Dependencies
