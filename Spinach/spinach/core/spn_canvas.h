@@ -19,6 +19,17 @@ namespace spn
 		void DrawImage(Image* image, int x, int y);
 		void DrawText(const char* text, int x, int y);
 		void DrawString(const std::string& text, int x, int y);
+		void FlipHorizontally();
+		void FlipVertically();
+
+		inline void SetPixel(int x, int y, int r, int g, int b) {
+			unsigned char* dstLoc = pixBuffer + pitch * y + x * channels;
+			*dstLoc++ = b;
+			*dstLoc++ = g;
+			*dstLoc++ = r;
+			*dstLoc = 255;
+		}
+
 		inline void SetPrimaryColor(int r, int g, int b) {
 			primaryColorR = r;
 			primaryColorG = g;
