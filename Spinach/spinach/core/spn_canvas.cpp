@@ -62,6 +62,61 @@ namespace spn
 		}
 	}
 
+	void Canvas::FlipHorizontally() 
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width/2; ++x)
+			{
+				unsigned char* aLoc = pixBuffer + pitch * y + x * channels;
+				unsigned char* bLoc = pixBuffer + pitch * y + (width-1-x) * channels;
+
+				unsigned char tBlue = *aLoc;
+				unsigned char tGreen = *(aLoc+1);
+				unsigned char tRed = *(aLoc+2);
+				unsigned char tAlpha = *(aLoc+3);
+
+				*aLoc = *bLoc;
+				*(aLoc+1) = *(bLoc+1);
+				*(aLoc+2) = *(bLoc+2);
+				*(aLoc+3) = *(bLoc+3);
+
+				*bLoc = tBlue;
+				*(bLoc + 1) = tGreen;
+				*(bLoc + 2) = tRed;
+				*(bLoc + 3) = tAlpha;
+			}
+		}
+	}
+
+	void Canvas::FlipVertically() 
+	{
+		
+		for (int x = 0; x < width; ++x)
+		{
+			for (int y = 0; y < height/2; ++y)
+			{
+				unsigned char* aLoc = pixBuffer + pitch * y + x * channels;
+				unsigned char* bLoc = pixBuffer + pitch * (height-1-y) + x * channels;
+
+				unsigned char tBlue = *aLoc;
+				unsigned char tGreen = *(aLoc + 1);
+				unsigned char tRed = *(aLoc + 2);
+				unsigned char tAlpha = *(aLoc + 3);
+
+				*aLoc = *bLoc;
+				*(aLoc + 1) = *(bLoc + 1);
+				*(aLoc + 2) = *(bLoc + 2);
+				*(aLoc + 3) = *(bLoc + 3);
+
+				*bLoc = tBlue;
+				*(bLoc + 1) = tGreen;
+				*(bLoc + 2) = tRed;
+				*(bLoc + 3) = tAlpha;
+			}
+		}
+	}
+
 	void Canvas::Clear()
 	{
 		for (unsigned int i = 0; i < numOfPixels*4; i += 4) {
