@@ -27,6 +27,9 @@ namespace spn
 		inline bool IsInitSucceded(){
 			return initializationResult == 0;
 		}
+		inline bool IsInitFailed(){
+			return initializationResult != 0;
+		}
 		inline int GetInitializationResult() {
 			return initializationResult;
 		}
