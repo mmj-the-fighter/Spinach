@@ -127,6 +127,36 @@ namespace spn
 		}
 	}
 
+	void Canvas::DrawLine(int x0, int y0, int x1, int y1)
+	{
+		float x, y, xIncr, yIncr;
+		int steps;
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+
+		if (abs(dx) > abs(dy)) {
+			steps = abs(dx);
+		}
+		else {
+			steps = abs(dy);
+		}
+		xIncr = dx / static_cast<float>(steps);
+		yIncr = dy / static_cast<float>(steps);
+		x = x0;
+		y = y0;
+		for (int i = 0; i < steps; i++) {
+			int ix = static_cast<int>(x + 0.5f);
+			int iy = static_cast<int>(y + 0.5f);
+			unsigned char* dstLoc = pixBuffer + pitch * iy + ix * channels;
+			*dstLoc++ = primaryColorB;
+			*dstLoc++ = primaryColorG;
+			*dstLoc++ = primaryColorR;
+			*dstLoc = 255;
+			x += xIncr;
+			y += yIncr;
+		}
+	}
+
 	void Canvas::DrawImage(Image* image, int x, int y)
 	{
 		Canvas *imCanvas = image->GetCanvas();
