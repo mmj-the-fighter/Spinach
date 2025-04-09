@@ -115,6 +115,8 @@ namespace spn
 		file >> height;
 		file >> colorDepth;
 
+		file.get();
+
 
 		int numPixels = width * height;
 		canvas = new Canvas(width, height);
