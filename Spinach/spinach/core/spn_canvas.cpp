@@ -166,6 +166,27 @@ namespace spn
 			x, y);
 	}
 
+	void Canvas::DrawImageChromaKeyed(Image* image,
+		int x, int y,
+		int chromaR, int chromaG, int chromaB)
+	{
+		Canvas *imCanvas = image->GetCanvas();
+		CopyPixels(
+			0,
+			0,
+			imCanvas->GetWidth(),
+			imCanvas->GetHeight(),
+			imCanvas->GetWidth(),
+			imCanvas->GetHeight(),
+			imCanvas->GetPixelBuffer(),
+			x,
+			y,
+			chromaR,
+			chromaG,
+			chromaB
+			);
+	}
+
 	void Canvas::DrawText(const char* text, int x, int y)
 	{
 		if (font == nullptr) {
