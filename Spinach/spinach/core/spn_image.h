@@ -14,6 +14,10 @@ namespace spn
 		Image(Canvas* aCanvas);
 		Image();
 		~Image();
+		void CreateCheckerImage(int width, int height, 
+			int tileSize, 
+			int color1R, int color1G, int color1B, 
+			int color2R, int color2G, int color2B);
 		bool CreateFromPng(const std::string& fileName);
 		bool CreateFromPpmRaw(const std::string& fileName);
 		bool CreateFromPpmAscii(const std::string& fileName);
