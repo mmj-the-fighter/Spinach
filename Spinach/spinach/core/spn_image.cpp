@@ -52,6 +52,36 @@ namespace spn
 		return newImage;
 	}
 
+	//AI is used for making this function
+	void Image::CreateCheckerImage(int width, int height, 
+		int tileSize, 
+		int color1R, int color1G, int color1B, 
+		int color2R, int color2G, int color2B) 
+	{
+		canvas = new Canvas(width, height);
+		unsigned char* pixels = canvas->GetPixelBuffer();
+		int pitch = canvas->GetPitch();
+
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				unsigned char* loc = pixels + pitch * y + x * 4;
+				bool isColor1 = (((x / tileSize) & 1) == ((y / tileSize) & 1));
+				if (isColor1) {
+					*loc++ = color1B;
+					*loc++ = color1G;
+					*loc++ = color1R;
+					*loc = 255;
+				}
+				else {
+					*loc++ = color2B;
+					*loc++ = color2G;
+					*loc++ = color2R;
+					*loc = 255;
+				}
+			}
+		}
+	}
+
 	bool Image::CreateFromPng(const std::string& fileName)
 	{
 		if (nullptr != canvas) {
