@@ -187,6 +187,29 @@ namespace spn
 			);
 	}
 
+	void Canvas::DrawSubImageChromaKeyed(Image* image,
+		int x, int y,
+		int tileStartX, int tileStartY,
+		int tileWidth, int tileHeight,
+		int chromaR, int chromaG, int chromaB
+	) {
+		Canvas* imCanvas = image->GetCanvas();
+		CopyPixels(
+			tileStartX,
+			tileStartY,
+			tileWidth,
+			tileHeight,
+			imCanvas->GetWidth(),
+			imCanvas->GetHeight(),
+			imCanvas->GetPixelBuffer(),
+			x,
+			y,
+			chromaR,
+			chromaG,
+			chromaB
+		);
+	}
+
 	void Canvas::DrawText(const char* text, int x, int y)
 	{
 		if (font == nullptr) {
