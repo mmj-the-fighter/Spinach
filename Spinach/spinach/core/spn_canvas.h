@@ -21,6 +21,12 @@ namespace spn
 		void DrawImageChromaKeyed(Image* image, 
 			int x, int y, 
 			int chromaR, int chromaG, int chromaB);
+		void DrawSubImageChromaKeyed(Image* image,
+			int x, int y,
+			int tileStartX, int tileStartY,
+			int tileWidth, int tileHeight,
+			int chromaR, int chromaG, int chromaB
+		);
 		void DrawText(const char* text, int x, int y);
 		void DrawString(const std::string& text, int x, int y);
 		void FlipHorizontally();
