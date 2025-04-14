@@ -52,6 +52,22 @@ Useful for:
    - **Linker -> Input**
      - Add `SDL3.lib` under **Additional Dependencies**.
 
+### How to run in Dev-C++
+#### 1) Download mingw package
+- Download and unzip the following package in a folder of your choice:
+- [SDL3 Development Files for MinGW](https://github.com/libsdl-org/SDL/releases/download/release-3.2.10/SDL3-devel-3.2.10-mingw.zip)
+- This package contains the necessary `.lib`, `.dll`, and `include` files.
+#### 2) Copy SDL3 DLL
+- Copy `SDL3.DLL` into your project folder.
+#### 3) Fix Dependencies in Project
+1. **Open your project in Dev-C++**.
+2. **Modify project properties**:
+- Take project options by right clicking on the prject name in the project tab.
+- Set the include directory from the unzipped mingw package, in Project Options -> Directories -> Include Directories 
+- e.g. D:\Lib\SDL3-devel-3.2.10-mingw\SDL3-3.2.10\x86_64-w64-mingw32\include
+- Set the lib directory from the unzipped mingw package, in Project Options -> Directories -> Library Directories 
+- e.g. D:\Lib\SDL3-devel-3.2.10-mingw\SDL3-3.2.10\x86_64-w64-mingw32\lib
+- Set the parameter: -lSDL3 in Project Options -> Parmeters -> Linker window
 ### Reference
 - [SDL Official Website](https://www.libsdl.org/)
 
