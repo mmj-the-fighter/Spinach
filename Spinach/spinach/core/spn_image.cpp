@@ -52,6 +52,26 @@ namespace spn
 		return newImage;
 	}
 
+	void Image::CreateSolidColorBlockImage(int width, int height,
+		int colorR, int colorG, int colorB, float alpha)
+	{
+		canvas = new Canvas(width, height);
+		unsigned char* pixels = canvas->GetPixelBuffer();
+		int pitch = canvas->GetPitch();
+		int colorA = alpha * 255.0;
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				unsigned char* loc = pixels + pitch * y + x * 4;
+				*loc++ = colorB;
+				*loc++ = colorG;
+				*loc++ = colorR;
+				*loc = colorA;
+
+			}
+		}
+
+	}
+
 	//AI is used for making this function
 	void Image::CreateCheckerImage(int width, int height, 
 		int tileSize, 
