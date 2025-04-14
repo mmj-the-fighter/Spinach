@@ -9,7 +9,7 @@ namespace spn
 	Canvas::Canvas(unsigned int aWidth, unsigned int aHeight)
 		:width(aWidth), height(aHeight), lastFrameTime(0.0f), font(nullptr),
 		primaryColorR(255), primaryColorG(255), primaryColorB(255),
-		clearColorR(0), clearColorG(0), clearColorB(0)
+		clearColorR(0), clearColorG(0), clearColorB(0), isAlphaBlendingEnabled(false)
 	{
 		channels = 4;
 		pitch = width * 4;

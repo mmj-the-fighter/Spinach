@@ -102,6 +102,10 @@ namespace spn
 			return aspectRatio;
 		}
 
+		inline void EnableAlphaBlending(bool flag) {
+			isAlphaBlendingEnabled = flag;
+		}
+
 	private:
 		RFont * font;
 		unsigned char * pixBuffer;
@@ -119,7 +123,7 @@ namespace spn
 		unsigned char clearColorR;
 		unsigned char clearColorG;
 		unsigned char clearColorB;
-
+		bool isAlphaBlendingEnabled;
 		void CopyAllPixels(
 			int srcWidth,
 			int srcHeight,
