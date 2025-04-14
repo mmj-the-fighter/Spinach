@@ -63,10 +63,13 @@ Useful for:
 1. **Open your project in Dev-C++**.
 2. **Modify project properties**:
 - Take project options by right clicking on the prject name in the project tab.
+**Set Header Files**
 - Set the include directory from the unzipped mingw package, in Project Options -> Directories -> Include Directories 
 - e.g. D:\Lib\SDL3-devel-3.2.10-mingw\SDL3-3.2.10\x86_64-w64-mingw32\include
+**Set Lib Files**
 - Set the lib directory from the unzipped mingw package, in Project Options -> Directories -> Library Directories 
 - e.g. D:\Lib\SDL3-devel-3.2.10-mingw\SDL3-3.2.10\x86_64-w64-mingw32\lib
+**Set Linker option**
 - Set the parameter: -lSDL3 in Project Options -> Parmeters -> Linker window
 ### Reference
 - [SDL Official Website](https://www.libsdl.org/)
