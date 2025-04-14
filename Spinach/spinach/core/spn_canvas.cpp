@@ -342,8 +342,6 @@ namespace spn
 		int newColorG,
 		int newColorB
 	) {
-
-
 		bool isSourceCropped = srcWidth > 0 && srcHeight > 0;
 		if (!isSourceCropped) {
 			srcWidth = srcTotalWidth;
@@ -358,7 +356,7 @@ namespace spn
 		int dstHeight = height;
 		int dstPitch = pitch;
 		int x, y;
-		double oneOver255 = 1.0 / 255.0;
+		
 
 		/* culling */
 		if (
@@ -431,16 +429,13 @@ namespace spn
 					srcLoc += 4;
 				}
 				else {
-					unsigned char srcAlpha = *(srcLoc + 3);
-					float alpha = static_cast<float>(srcAlpha) / 255.0f;
-					float oneMinusAlpha = 1.0f - alpha;
-					float b = alpha * sB + oneMinusAlpha * (*dstLoc);
-					float g = alpha * sG + oneMinusAlpha * (*(dstLoc + 1));
-					float r = alpha * sR + oneMinusAlpha * (*(dstLoc + 2));
-					*dstLoc++ = static_cast<unsigned char> (b);
-					*dstLoc++ = static_cast<unsigned char> (g);
-					*dstLoc++ = static_cast<unsigned char> (r);
-					*dstLoc = 255;
+					//0.003921568627451 = 1 / 255
+					float srcAlpha = sA * 0.003921568627451f; 
+					float oneMinusSrcAlpha = 1.0f - srcAlpha;
+					*dstLoc++ = srcAlpha * sB + oneMinusSrcAlpha * (*dstLoc); //b
+					*dstLoc++ = srcAlpha * sG + oneMinusSrcAlpha * (*(dstLoc + 1)); //g
+					*dstLoc++ = srcAlpha * sR + oneMinusSrcAlpha * (*(dstLoc + 2)); //r
+					*dstLoc = 255; //a
 				}
 			}
 		}
