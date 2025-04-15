@@ -325,6 +325,7 @@ namespace spn
 
 	}
 
+#define ONEOVER255 0.00392156862745098f
 	void Canvas::BitBlockTransfer(
 		unsigned char* srcPixels,
 		int srcTotalWidth,
@@ -429,18 +430,21 @@ namespace spn
 					srcLoc += 4;
 				}
 				else {
-					//0.003921568627451 = 1 / 255
-					float srcAlpha = sA * 0.003921568627451f; 
+					float srcAlpha = sA * ONEOVER255;
 					float oneMinusSrcAlpha = 1.0f - srcAlpha;
-					*dstLoc++ = srcAlpha * sB + oneMinusSrcAlpha * (*dstLoc); //b
-					*dstLoc++ = srcAlpha * sG + oneMinusSrcAlpha * (*(dstLoc + 1)); //g
-					*dstLoc++ = srcAlpha * sR + oneMinusSrcAlpha * (*(dstLoc + 2)); //r
-					*dstLoc = 255; //a
+					float b = srcAlpha * sB + oneMinusSrcAlpha * (*dstLoc);
+					float g = srcAlpha * sG + oneMinusSrcAlpha * (*(dstLoc + 1));
+					float r = srcAlpha * sR + oneMinusSrcAlpha * (*(dstLoc + 2));
+					*dstLoc++ = static_cast<unsigned char> (b);
+					*dstLoc++ = static_cast<unsigned char> (g);
+					*dstLoc++ = static_cast<unsigned char> (r);
+					*dstLoc = 255;
 				}
 			}
 		}
 
 	}
+#undef ONEOVER255
 
 	//void Canvas::CopyAllPixels(
 	//	int srcWidth, int srcHeight,
