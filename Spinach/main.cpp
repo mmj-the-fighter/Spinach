@@ -37,17 +37,18 @@ void HandleInput(const SDL_Event* sdlEvent) {
 int main(int argc, char* argv[])
 {
 	spn::SpinachCore sc(640, 480, UpdateAndRender, HandleInput);
-	if (sc.IsInitSucceded()){
-		//sc.SetUpdateAndRenderHandler(UpdateAndRender);
-		//sc.SetInputHandler(HandleInput);
-		sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
-		sc.MainLoop();
-	}
-	else{
+	if (sc.IsInitFailed()) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;
+		return 1;
 	}
+	//sc.SetUpdateAndRenderHandler(UpdateAndRender);
+	//sc.SetInputHandler(HandleInput);	
+	sc.SetWindowTitle("Spinach Demo");
+	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
+	sc.SetTargetFramesPerSecond(30);
+	sc.MainLoop();
 	return 0;
 }
 
