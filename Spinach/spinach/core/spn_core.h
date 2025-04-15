@@ -39,6 +39,12 @@ namespace spn
 		inline void SetUserWantsToQuit(int flag) {
 			userWantsToQuit = flag;
 		}
+		inline void SetWindowTitle(const char* text) {
+			if (nullptr == window) {
+				return;
+			}
+			SDL_SetWindowTitle(window, text);
+		}
 		void SetTargetFramesPerSecond(unsigned int aFps);
 	private:
 		SDL_Window* window;
