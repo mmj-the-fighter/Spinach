@@ -157,6 +157,54 @@ namespace spn
 		}
 	}
 
+	void Canvas::DrawFilledRectangularRegion(int left, int top, int right, int bottom) {
+
+		unsigned char* loc;
+		int x, y;
+
+		//clip points
+		//left
+		if (left >= width) {
+			left = width - 1;
+		}
+		else if (left < 0) {
+			left = 0;
+		}
+		//right
+		if (right >= width) {
+			right = width - 1;
+		}
+		else if (right < 0) {
+			right = 0;
+		}
+		//top
+		if (top >= height) {
+			top = height - 1;
+		}
+		else if (top < 0) {
+			top = 0;
+		}
+		//bottom
+		if (bottom >= height) {
+			bottom = height - 1;
+		}
+		else if (bottom < 0) {
+			bottom = 0;
+		}
+
+		for (y = top; y <= bottom; ++y)
+		{
+			for (x = left; x <= right; ++x)
+			{
+				loc = pixBuffer + pitch * y + x * channels;
+				*loc++ = primaryColorB;
+				*loc++ = primaryColorG;
+				*loc++ = primaryColorR;
+				*loc = 255;
+			}
+		}
+	}
+
 	void Canvas::DrawImage(Image* image, int x, int y)
 	{
 		Canvas *imCanvas = image->GetCanvas();
@@ -325,7 +373,7 @@ namespace spn
 
 	}
 
-#define ONEOVER255 0.00392156862745098f
+
 	void Canvas::BitBlockTransfer(
 		unsigned char* srcPixels,
 		int srcTotalWidth,
@@ -343,6 +391,7 @@ namespace spn
 		int newColorG,
 		int newColorB
 	) {
+#define ONEOVER255 0.00392156862745098f
 		bool isSourceCropped = srcWidth > 0 && srcHeight > 0;
 		if (!isSourceCropped) {
 			srcWidth = srcTotalWidth;
@@ -442,9 +491,9 @@ namespace spn
 				}
 			}
 		}
-
-	}
 #undef ONEOVER255
+	}
+
 
 	//void Canvas::CopyAllPixels(
 	//	int srcWidth, int srcHeight,

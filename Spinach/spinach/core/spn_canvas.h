@@ -17,6 +17,7 @@ namespace spn
 		void FillAnything();
 		void Clear();
 		void DrawLine(int x0, int y0, int x1, int y1);
+		void DrawFilledRectangularRegion(int left, int top, int right, int bottom);
 		void DrawImage(Image* image, int x, int y);
 		void DrawImageChromaKeyed(Image* image, 
 			int x, int y, 
