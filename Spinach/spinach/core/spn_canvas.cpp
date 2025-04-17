@@ -373,6 +373,15 @@ namespace spn
 
 	}
 
+	void Canvas::SetAlpha(float alpha) {
+		int ialpha = alpha * 255.0;
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+				unsigned char* loc = pixBuffer + pitch * y + x * 4;
+				*(loc + 3) = ialpha;
+			}
+		}
+	}
 
 	void Canvas::BitBlockTransfer(
 		unsigned char* srcPixels,

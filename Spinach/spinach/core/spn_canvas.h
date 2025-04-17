@@ -32,6 +32,7 @@ namespace spn
 		void DrawString(const std::string& text, int x, int y);
 		void FlipHorizontally();
 		void FlipVertically();
+		void SetAlpha(float alpha);
 
 		inline void SetPixel(int x, int y, int r, int g, int b) {
 			unsigned char* dstLoc = pixBuffer + pitch * y + x * channels;
