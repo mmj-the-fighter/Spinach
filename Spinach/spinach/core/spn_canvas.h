@@ -19,6 +19,10 @@ namespace spn
 		void DrawLine(int x0, int y0, int x1, int y1);
 		void DrawFilledRectangularRegion(int left, int top, int right, int bottom);
 		void DrawImage(Image* image, int x, int y);
+		void DrawSubImage(Image* image, int x, int y,
+			int tileStartX, int tileStartY,
+			int tileWidth, int tileHeight
+			);
 		void DrawImageChromaKeyed(Image* image, 
 			int x, int y, 
 			int chromaR, int chromaG, int chromaB);
