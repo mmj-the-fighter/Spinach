@@ -9,7 +9,7 @@
 
 namespace spn
 {
-	void IntersctRectRect(const Rect& r1, const Rect& r2, Rect& ir)
+	void FindRectToRectIntersection(const Rect& r1, const Rect& r2, Rect& ir)
 	{
 		/*compute intersection*/
 		//1st rectangle

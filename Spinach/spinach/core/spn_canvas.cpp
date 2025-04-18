@@ -455,7 +455,7 @@ namespace spn
 		r2.height = dstHeight;
 
 		Rect ir;
-		IntersctRectRect(r1, r2, ir);
+		FindRectToRectIntersection(r1, r2, ir);
 
 
 		/*clip new */

@@ -10,7 +10,7 @@ namespace spn
 		int width;
 		int height;
 	}Rect;
-	void IntersctRectRect(const Rect& r1, const Rect& r2, Rect& ir);
+	void FindRectToRectIntersection(const Rect& r1, const Rect& r2, Rect& ir);
 	std::string GetTimeBasedScreenShotFileName();
 }
 
