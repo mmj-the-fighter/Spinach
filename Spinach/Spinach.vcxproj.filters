@@ -39,6 +39,18 @@
     <ClInclude Include="spinach\core\spn_rfont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="spinach\core\anim\spn_alpha_animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spinach\core\anim\spn_animator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spinach\core\anim\spn_move_alpha_animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spinach\core\anim\spn_move_animation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="spinach\core\spn_canvas.cpp">
@@ -60,6 +72,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="spinach\common\spn_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spinach\core\anim\spn_alpha_animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spinach\core\anim\spn_animator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spinach\core\anim\spn_move_alpha_animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

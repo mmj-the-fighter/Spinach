@@ -132,6 +132,10 @@
   <ItemGroup>
     <ClInclude Include="imageproc\imageproc.h" />
     <ClInclude Include="spinach\common\spn_utils.h" />
+    <ClInclude Include="spinach\core\anim\spn_alpha_animation.h" />
+    <ClInclude Include="spinach\core\anim\spn_animator.h" />
+    <ClInclude Include="spinach\core\anim\spn_move_alpha_animation.h" />
+    <ClInclude Include="spinach\core\anim\spn_move_animation.hpp" />
     <ClInclude Include="spinach\core\spn_canvas.h" />
     <ClInclude Include="spinach\core\spn_core.h" />
     <ClInclude Include="spinach\core\spn_image.h" />
@@ -143,6 +147,9 @@
     <ClCompile Include="imageproc\imageproc.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="spinach\common\spn_utils.cpp" />
+    <ClCompile Include="spinach\core\anim\spn_alpha_animation.cpp" />
+    <ClCompile Include="spinach\core\anim\spn_animator.cpp" />
+    <ClCompile Include="spinach\core\anim\spn_move_alpha_animation.cpp" />
     <ClCompile Include="spinach\core\spn_canvas.cpp" />
     <ClCompile Include="spinach\core\spn_core.cpp" />
     <ClCompile Include="spinach\core\spn_image.cpp" />
