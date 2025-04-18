@@ -3,6 +3,11 @@
 #include <string>
 namespace spn
 {
+	typedef struct _Vector2D {
+		float x;
+		float y;
+	}Vector2D;
+
 	typedef struct _Rect
 	{
 		int left;
