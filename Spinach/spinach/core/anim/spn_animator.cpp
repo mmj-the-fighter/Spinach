@@ -63,12 +63,16 @@ namespace spn {
 	}
 
 	bool Animator::DeactivateAnimsIfFinished() {
+		if (!isActive) {
+			return true;
+		}
 		for (auto& anim : animations) {
 			if (anim->IsFinished() == false) {
 				return false;
 			}
 		}
 		Clear();
+		SetActive(false);
 		return true;
 	}
 
