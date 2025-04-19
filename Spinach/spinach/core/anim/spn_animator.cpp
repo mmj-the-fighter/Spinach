@@ -8,6 +8,10 @@ namespace spn {
 	
 	Animator::Animator() {
 		isActive = false;
+	}	
+	
+	Animator::~Animator() {
+		Clear();
 	}
 
 	void Animator::EnqueueMoveAnim(spn::Image* image, 

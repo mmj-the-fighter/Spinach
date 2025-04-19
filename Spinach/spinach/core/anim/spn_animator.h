@@ -13,6 +13,7 @@ namespace spn {
 	{
 	public:
 		Animator();
+		~Animator();
 		void Clear();
 		void EnqueueMoveAnim(spn::Image* image, Vector2D srcPos, Vector2D dstPos, float duration);
 		void EnqueueAlphaAnim(spn::Image* image, Vector2D pos, float targetAlpha, float duration);
