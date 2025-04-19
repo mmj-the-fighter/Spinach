@@ -6,6 +6,7 @@
 #include "../spn_canvas.h"
 #include "spn_move_animation.hpp"
 #include "spn_alpha_animation.h"
+#include "spn_alpha_rev_animation.h"
 #include "spn_move_alpha_animation.h"
 
 
@@ -18,6 +19,7 @@ namespace spn {
 		void Clear();
 		void EnqueueMoveAnim(spn::Image* image, Vector2D srcPos, Vector2D dstPos, float duration);
 		void EnqueueAlphaAnim(spn::Image* image, Vector2D pos, float targetAlpha, float duration);
+		void EnqueueAlphaRevAnim(spn::Image* image, Vector2D pos, float targetAlpha, float duration);
 		void EnqueueMoveAlphaAnim(
 			spn::Image* image, 
 			Vector2D srcPos, Vector2D dstPos, 
@@ -33,6 +35,7 @@ namespace spn {
 		bool isActive;
 		std::vector<MoveAnimation*> moveAnimQueue;
 		std::vector<AlphaAnimation*> alphaAnimQueue;
+		std::vector<AlphaRevAnimation*> alphaRevAnimQueue;
 		std::vector<MoveAlphaAnimation*> moveAlphaAnimQueue;
 	};
 }

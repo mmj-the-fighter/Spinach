@@ -20,6 +20,13 @@ namespace spn {
 		alphaAnimQueue.push_back(new AlphaAnimation(image, pos, targetAlpha, duration));
 	}	
 	
+	void Animator::EnqueueAlphaRevAnim(spn::Image* image, 
+		Vector2D pos, 
+		float targetAlpha, 
+		float duration) {
+		alphaRevAnimQueue.push_back(new AlphaRevAnimation(image, pos, targetAlpha, duration));
+	}	
+	
 	void Animator::EnqueueMoveAlphaAnim(
 		spn::Image* image,
 		Vector2D srcPos, Vector2D dstPos,
@@ -51,6 +58,12 @@ namespace spn {
 				anim->Update(dt);
 			}
 		}
+		
+		for (auto& anim : alphaRevAnimQueue) {
+			if (!anim->IsAnimFinished()) {
+				anim->Update(dt);
+			}
+		}
 	}
 
 	void Animator::Render(spn::Canvas* canvas) {
@@ -66,6 +79,10 @@ namespace spn {
 		}		
 		
 		for (auto& anim : moveAlphaAnimQueue) {
+			anim->Render(canvas);
+		}
+		
+		for (auto& anim : alphaRevAnimQueue) {
 			anim->Render(canvas);
 		}
 	}
@@ -88,6 +105,12 @@ namespace spn {
 				return false;
 			}
 		}
+		
+		for (auto& anim : alphaRevAnimQueue) {
+			if (anim->IsAnimFinished() == false) {
+				return false;
+			}
+		}
 
 		Clear();
 		return true;
@@ -105,9 +128,14 @@ namespace spn {
 		for (auto& anim : moveAlphaAnimQueue) {
 			delete anim;
 		}
+		
+		for (auto& anim : alphaRevAnimQueue) {
+			delete anim;
+		}
 		moveAnimQueue.clear();
 		alphaAnimQueue.clear();
 		moveAlphaAnimQueue.clear();
+		alphaRevAnimQueue.clear();
 	}
 
 
