@@ -29,6 +29,17 @@ namespace spn {
 		delete toImage;
 	}
 
+	bool MoveAlphaAnimation::IsFinished() const
+	{
+		return (alphaElapsedTime >= duration && posElapsedTime >= duration);
+	}
+
+	void MoveAlphaAnimation::Render(spn::Canvas* canvas)
+	{
+		canvas->DrawImage(image, curPos.x, curPos.y);
+	}
+
+
 	void MoveAlphaAnimation::Update(float deltaTime) {
 		UpdateAlpha(deltaTime);
 		UpdatePos(deltaTime);

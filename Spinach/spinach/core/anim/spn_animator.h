@@ -4,10 +4,7 @@
 #include "../../common/spn_utils.h"
 #include "../spn_image.h"
 #include "../spn_canvas.h"
-#include "spn_move_animation.hpp"
-#include "spn_alpha_animation.h"
-#include "spn_alpha_rev_animation.h"
-#include "spn_move_alpha_animation.h"
+#include "spn_animation.h"
 
 
 namespace spn {
@@ -33,10 +30,7 @@ namespace spn {
 		bool DeactivateAnimsIfFinished();
 	private:
 		bool isActive;
-		std::vector<MoveAnimation*> moveAnimQueue;
-		std::vector<AlphaAnimation*> alphaAnimQueue;
-		std::vector<AlphaRevAnimation*> alphaRevAnimQueue;
-		std::vector<MoveAlphaAnimation*> moveAlphaAnimQueue;
+		std::vector<Animation*> animations;
 	};
 }
 

@@ -1,3 +1,7 @@
+#include "spn_move_animation.h"
+#include "spn_alpha_animation.h"
+#include "spn_alpha_rev_animation.h"
+#include "spn_move_alpha_animation.h"
 #include "spn_animator.h"
 
 namespace spn {
@@ -10,21 +14,21 @@ namespace spn {
 		Vector2D srcPos, Vector2D dstPos, 
 		float duration) 
 	{
-		moveAnimQueue.push_back(new MoveAnimation(image, srcPos, dstPos, duration));
+		animations.push_back(new MoveAnimation(image, srcPos, dstPos, duration));
 	}
 	
 	void Animator::EnqueueAlphaAnim(spn::Image* image, 
 		Vector2D pos, 
 		float targetAlpha, 
 		float duration) {
-		alphaAnimQueue.push_back(new AlphaAnimation(image, pos, targetAlpha, duration));
+		animations.push_back(new AlphaAnimation(image, pos, targetAlpha, duration));
 	}	
 	
 	void Animator::EnqueueAlphaRevAnim(spn::Image* image, 
 		Vector2D pos, 
 		float targetAlpha, 
 		float duration) {
-		alphaRevAnimQueue.push_back(new AlphaRevAnimation(image, pos, targetAlpha, duration));
+		animations.push_back(new AlphaRevAnimation(image, pos, targetAlpha, duration));
 	}	
 	
 	void Animator::EnqueueMoveAlphaAnim(
@@ -33,7 +37,7 @@ namespace spn {
 		float targetAlpha,
 		float duration) 
 	{
-		moveAlphaAnimQueue.push_back(new MoveAlphaAnimation(image, srcPos, dstPos, targetAlpha, duration));
+		animations.push_back(new MoveAlphaAnimation(image, srcPos, dstPos, targetAlpha, duration));
 	}
 
 
@@ -41,26 +45,8 @@ namespace spn {
 		if (!isActive) {
 			return;
 		}
-		for (auto& anim : moveAnimQueue) {
-			if (!anim->IsAnimFinished()) {
-				anim->Update(dt);
-			}
-		}
-		
-		for (auto& anim : alphaAnimQueue) {
-			if (!anim->IsAnimFinished()) {
-				anim->Update(dt);
-			}
-		}		
-		
-		for (auto& anim : moveAlphaAnimQueue) {
-			if (!anim->IsAnimFinished()) {
-				anim->Update(dt);
-			}
-		}
-		
-		for (auto& anim : alphaRevAnimQueue) {
-			if (!anim->IsAnimFinished()) {
+		for (auto& anim : animations) {
+			if (!anim->IsFinished()) {
 				anim->Update(dt);
 			}
 		}
@@ -71,71 +57,27 @@ namespace spn {
 			return;
 		}
 
-		for (auto& anim : moveAnimQueue) {
-			anim->Render(canvas);
-		}
-		for (auto& anim : alphaAnimQueue) {
-			anim->Render(canvas);
-		}		
-		
-		for (auto& anim : moveAlphaAnimQueue) {
-			anim->Render(canvas);
-		}
-		
-		for (auto& anim : alphaRevAnimQueue) {
+		for (auto& anim : animations) {
 			anim->Render(canvas);
 		}
 	}
 
 	bool Animator::DeactivateAnimsIfFinished() {
-		for (auto& anim : moveAnimQueue) {
-			if (anim->IsAnimFinished() == false) {
+		for (auto& anim : animations) {
+			if (anim->IsFinished() == false) {
 				return false;
 			}
 		}
-
-		for (auto& anim : alphaAnimQueue) {
-			if (anim->IsAnimFinished() == false) {
-				return false;
-			}
-		}		
-		
-		for (auto& anim : moveAlphaAnimQueue) {
-			if (anim->IsAnimFinished() == false) {
-				return false;
-			}
-		}
-		
-		for (auto& anim : alphaRevAnimQueue) {
-			if (anim->IsAnimFinished() == false) {
-				return false;
-			}
-		}
-
 		Clear();
 		return true;
 	}
 
 
 	void Animator::Clear() {
-		for (auto& anim : moveAnimQueue) {
+		for (auto& anim : animations) {
 			delete anim;
 		}
-		for (auto& anim : alphaAnimQueue) {
-			delete anim;
-		}		
-		
-		for (auto& anim : moveAlphaAnimQueue) {
-			delete anim;
-		}
-		
-		for (auto& anim : alphaRevAnimQueue) {
-			delete anim;
-		}
-		moveAnimQueue.clear();
-		alphaAnimQueue.clear();
-		moveAlphaAnimQueue.clear();
-		alphaRevAnimQueue.clear();
+		animations.clear();
 	}
 
 

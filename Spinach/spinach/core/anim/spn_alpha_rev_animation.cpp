@@ -22,6 +22,17 @@ namespace spn {
 		delete toImage;
 	}
 
+	bool AlphaRevAnimation::IsFinished() const
+	{
+		return (elapsedTime >= duration);
+	}
+
+
+	void AlphaRevAnimation::Render(spn::Canvas* canvas) {
+		canvas->DrawImage(image, pos.x, pos.y);
+	}
+
+
 	void AlphaRevAnimation::Update(float deltaTime)
 	{
 		elapsedTime += deltaTime;

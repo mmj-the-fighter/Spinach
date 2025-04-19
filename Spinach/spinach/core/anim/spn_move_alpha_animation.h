@@ -4,8 +4,10 @@
 #include "../../common/spn_utils.h"
 #include "../spn_image.h"
 #include "../spn_canvas.h"
+#include "spn_animation.h"
+
 namespace spn {
-	class MoveAlphaAnimation {
+	class MoveAlphaAnimation : public Animation{
 		spn::Image* image;
 		spn::Image* fromImage;
 		spn::Image* toImage;
@@ -29,14 +31,9 @@ namespace spn {
 		~MoveAlphaAnimation();
 		void Update(float deltaTime);
 
-		inline bool IsAnimFinished() const
-		{
-			return (alphaElapsedTime >= duration && posElapsedTime >= duration);
-		}
+		bool IsFinished() const;
 
-		inline void Render(spn::Canvas* canvas) {
-			canvas->DrawImage(image, curPos.x, curPos.y);
-		}
+		void Render(spn::Canvas* canvas);
 
 	private:
 		void UpdatePos(float deltaTime);

@@ -1,5 +1,5 @@
-#ifndef _ALPHA_ANIM_H_
-#define _ALPHA_ANIM_H_
+#ifndef _MOVE_ANIM_H_
+#define _MOVE_ANIM_H_
 
 #include "../../common/spn_utils.h"
 #include "../spn_image.h"
@@ -7,23 +7,20 @@
 #include "spn_animation.h"
 
 namespace spn {
-	class AlphaAnimation : public Animation{
+	class MoveAnimation : public Animation {
 		spn::Image* image;
-		spn::Image* fromImage;
-		spn::Image* toImage;
-		spn::Vector2D pos;
+		Vector2D startPos;
+		Vector2D endPos;
+		Vector2D curPos;
+		Vector2D moveDelta;
 		float duration;
-		float finalAlpha;
 		float elapsedTime;
 		bool isAnimFinished;
 	public:
-		AlphaAnimation(spn::Image* img, spn::Vector2D from, float endAlpha, float totalTime);
-		~AlphaAnimation();
+		MoveAnimation(spn::Image* img, Vector2D from, Vector2D to, float totalTime);
 		void Update(float deltaTime);
-
 		bool IsFinished() const;
 		void Render(spn::Canvas* canvas);
 	};
 }
-
 #endif
