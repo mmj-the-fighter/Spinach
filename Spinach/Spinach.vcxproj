@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="imageproc\imageproc.h" />
+    <ClInclude Include="spinach\common\spn_profiler.hpp" />
     <ClInclude Include="spinach\common\spn_utils.h" />
     <ClInclude Include="spinach\core\spn_canvas.h" />
     <ClInclude Include="spinach\core\spn_core.h" />

@@ -39,6 +39,9 @@
     <ClInclude Include="spinach\core\spn_rfont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="spinach\common\spn_profiler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="spinach\core\spn_canvas.cpp">

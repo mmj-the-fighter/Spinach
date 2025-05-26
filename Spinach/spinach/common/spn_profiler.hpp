@@ -172,8 +172,8 @@ namespace spn {
 	{
 	public:
 		bool profilerStarted;
-		ProfilerLimitedScope(long num, long limit){
-			if (num < limit){
+		ProfilerLimitedScope(long num, long lowerLimit, long upperLimit){
+			if (num >= lowerLimit && num <= upperLimit){
 				spn::Profiler::GetInstance().Begin(num);
 				profilerStarted = true;
 			}
