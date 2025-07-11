@@ -4,6 +4,7 @@
 #include <iostream>
 #include "spinach/core/spn_canvas.h"
 #include "spinach/core/spn_core.h"
+#include "spinach/common/spn_utils.h"
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	static int k = 1;

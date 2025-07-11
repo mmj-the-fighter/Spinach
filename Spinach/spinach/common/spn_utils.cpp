@@ -4,6 +4,7 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 #include "spn_utils.h"
 
 
@@ -34,6 +35,31 @@ namespace spn
 		ir.top = p5y;
 		ir.width = std::abs(p5x - p6x);
 		ir.height = std::abs(p5y - p6y);
+	}
+
+	void FindRectToRectUnion(const Rect& r1, const Rect& r2, Rect& ur)
+	{
+		ur.left = std::min(r1.left, r2.left);
+		int r1Right = r1.left + r1.width;
+		int r2Right = r2.left + r2.width;
+		int right = std::max(r1Right, r2Right);
+		ur.width = right - ur.left;
+
+		ur.top = std::min(r1.top, r2.top);
+		int r1Bottom = r1.top + r1.height;
+		int r2Bottom = r2.top + r2.height;
+		int bottom = std::max(r1Bottom, r2Bottom);
+		ur.height = bottom - ur.top;
+	}
+
+	void testRectUnion() {
+		Rect r1 = { 10,10,10,300 }; 
+		Rect r2 = { 10,20,20,30 };
+
+		Rect r;
+		FindRectToRectUnion(r1, r2, r);
+
+		std::cout << r.left << " " << r.top << " " << r.width << " " << r.height << "\n";
 	}
 
 	//This function was developed with the help of ChatGPT AI agent

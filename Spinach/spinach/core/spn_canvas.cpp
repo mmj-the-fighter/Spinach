@@ -2,7 +2,7 @@
 #include "spn_canvas.h"
 #include "spn_image.h"
 #include "spn_rfont.h"
-#include "../common/spn_utils.h"
+
 
 namespace spn 
 {
@@ -64,6 +64,9 @@ namespace spn
 
 	void Canvas::FlipHorizontally() 
 	{
+		if (calculateRefreshRects) {
+			RecordDrawCall(0, 0, width, height);
+		}
 		for (int y = 0; y < height; ++y)
 		{
 			for (int x = 0; x < width/2; ++x)
@@ -91,7 +94,10 @@ namespace spn
 
 	void Canvas::FlipVertically() 
 	{
-		
+		if (calculateRefreshRects) {
+			RecordDrawCall(0, 0, width, height);
+		}
+
 		for (int x = 0; x < width; ++x)
 		{
 			for (int y = 0; y < height/2; ++y)
@@ -119,6 +125,10 @@ namespace spn
 
 	void Canvas::Clear()
 	{
+		if (calculateRefreshRects) {
+			RecordDrawCall(0, 0, width, height);
+		}
+
 		for (unsigned int i = 0; i < numOfPixels*4; i += 4) {
 			pixBuffer[i] = clearColorB;
 			pixBuffer[i + 1] = clearColorG;
@@ -129,6 +139,7 @@ namespace spn
 
 	void Canvas::DrawLine(int x0, int y0, int x1, int y1)
 	{
+
 		float x, y, xIncr, yIncr;
 		int steps;
 		int dx = x1 - x0;
@@ -140,6 +151,10 @@ namespace spn
 		else {
 			steps = abs(dy);
 		}
+		if (calculateRefreshRects) {
+			RecordDrawCall(std::min(x0,x1), std::min(y0,y1), abs(dx), abs(dy));
+		}
+
 		xIncr = dx / static_cast<float>(steps);
 		yIncr = dy / static_cast<float>(steps);
 		x = x0;
@@ -161,6 +176,10 @@ namespace spn
 
 		unsigned char* loc;
 		int x, y;
+
+		if (calculateRefreshRects) {
+			RecordDrawCall(left, top, right-left, bottom-left);
+		}
 
 		//clip points
 		//left
@@ -457,6 +476,9 @@ namespace spn
 		Rect ir;
 		FindRectToRectIntersection(r1, r2, ir);
 
+		if (calculateRefreshRects) {
+			RecordDrawCall(ir.left, ir.top, ir.width, ir.height);
+		}
 
 		/*clip new */
 		int sx, sy, tw, th;

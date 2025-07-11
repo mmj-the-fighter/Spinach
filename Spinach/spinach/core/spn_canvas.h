@@ -2,9 +2,11 @@
 #define _CANVAS_H_
 
 #include <string>
+#include "../common/spn_utils.h"
 
 namespace spn 
 {
+#define MAXREFRESHRECTS 256
 	class Image;
 	class RFont;
 
@@ -44,6 +46,9 @@ namespace spn
 			*dstLoc++ = g;
 			*dstLoc++ = r;
 			*dstLoc = 255;
+			if (calculateRefreshRects) {
+				RecordDrawCall(x, y, 1, 1);
+			}
 		}
 
 		inline void SetPrimaryColor(int r, int g, int b) {
@@ -112,8 +117,28 @@ namespace spn
 			isAlphaBlendingEnabled = flag;
 		}
 
+		inline void EnableRefreshRectCalculation(bool flag) {
+			calculateRefreshRects = flag;
+		}
+
+		inline void BeginDraw() {
+			drawCallIndex = -1;
+			tooManyDrawCalls = false;
+		}
+
+		inline void EndDraw() {
+			if (drawCallIndex > MAXREFRESHRECTS - 1) {
+				tooManyDrawCalls = true;
+			}
+			//merge refreshrects
+		}
+
 	private:
+		Rect refreshRectArray[MAXREFRESHRECTS];
+		int drawCallIndex = -1;
+		bool tooManyDrawCalls = false;
 		RFont * font;
+		bool calculateRefreshRects = false;
 		unsigned char * pixBuffer;
 		unsigned int width;
 		unsigned int height;
@@ -130,6 +155,17 @@ namespace spn
 		unsigned char clearColorG;
 		unsigned char clearColorB;
 		bool isAlphaBlendingEnabled;
+
+		void RecordDrawCall(int left, int top, int width, int height) {
+			++drawCallIndex;
+			if (drawCallIndex < MAXREFRESHRECTS - 1) {
+				Rect& r = refreshRectArray[drawCallIndex];
+				r.left = left;
+				r.width = width;
+				r.top = top;
+				r.height = height;
+			}
+		}
 
 		void BitBlockTransfer(
 			unsigned char* srcPixels,
