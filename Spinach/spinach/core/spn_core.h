@@ -14,6 +14,7 @@ namespace spn
 	{
 	public:
 		SpinachCore(unsigned int width, unsigned int height,
+			bool enableRefreshCalculation,
 			std::function<void(Canvas* canvas)> updateAndRenderFn = nullptr,
 			std::function<void(const SDL_Event* sdlEvent)> inputFn = nullptr
 			);
@@ -59,7 +60,7 @@ namespace spn
 		int userWantsToQuit;
 		std::function<void(Canvas* canvas)> updateAndRenderHandler;
 		std::function<void(const SDL_Event* sdlEvent)> inputHandler;
-		int Init(unsigned int width, unsigned int height);
+		int Init(unsigned int width, unsigned int height, bool enableRefreshCalculation);
 
 		void Destroy();
 	};

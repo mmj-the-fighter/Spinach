@@ -14,6 +14,7 @@ namespace spn
 	void SetInputHandler(std::function<void(const SDL_Event* sdlEvent)>);
 
 	SpinachCore::SpinachCore(unsigned int width, unsigned int height, 
+		bool enableRefreshCalculation,
 		std::function<void(Canvas* canvas)> updateAndRenderFn, 
 		std::function<void(const SDL_Event* sdlEvent)> inputFn
 		) :
@@ -25,7 +26,7 @@ namespace spn
 		SetTargetFramesPerSecond(DEFAULTFPS);
 		SetUpdateAndRenderHandler(updateAndRenderFn);
 		SetInputHandler(inputFn);
-		initializationResult = Init(width, height);
+		initializationResult = Init(width, height, enableRefreshCalculation);
 	}
 
 	SpinachCore::~SpinachCore()
@@ -40,7 +41,7 @@ namespace spn
 	}
 
 
-	int SpinachCore::Init(unsigned int width, unsigned int height)
+	int SpinachCore::Init(unsigned int width, unsigned int height, bool enableRefreshCalculation)
 	{
 		userWantsToQuit = 0;
 
@@ -80,6 +81,7 @@ namespace spn
 		}
 		canvas = new Canvas(width, height);
 		canvas->SetFont(font);
+		canvas->EnableRefreshRectCalculation(enableRefreshCalculation);
 		return 0;
 	}
 
@@ -112,7 +114,7 @@ namespace spn
 			canvas->SetLastFrameTime(static_cast<float>(frameProcTime + waitTime) / 1000.0f);
 			while (SDL_PollEvent(&event))
 			{
-				switch (event.type){
+				switch (event.type) {
 				case SDL_EVENT_QUIT:
 					userWantsToQuit = 1;
 #ifdef SHOWFRAMESTATS
@@ -130,10 +132,10 @@ namespace spn
 						std::string fileName = GetTimeBasedScreenShotFileName();
 						SaveScreenShot(fileName);
 					}
-						break;
+					break;
 					}
 				default:
-					if (nullptr != inputHandler){
+					if (nullptr != inputHandler) {
 						inputHandler(&event);
 					}
 					break;
@@ -141,22 +143,61 @@ namespace spn
 			}
 
 			if (nullptr != updateAndRenderHandler) {
-				updateAndRenderHandler(canvas);
+				if (!canvas->IsRefreshRectCalculationEnabled()) {
+					updateAndRenderHandler(canvas);
+				}
+				else {
+					canvas->BeginRefreshRectCalculation();
+					updateAndRenderHandler(canvas);
+					canvas->EndRefreshRectCalculation();
+				}
 			}
 
 			unsigned char* destPixels;
 			int destPitch;
 			if (SDL_LockTexture(texture, NULL, (void**)&destPixels, &destPitch))
 			{
+				if (!canvas->IsRefreshRectCalculationEnabled() || canvas->IsTooManyDrawcalls())
+				{
 #ifdef SINGLEMEMCOPY
-				memcpy(destPixels, pixels, bufferBytesLength);
+					memcpy(destPixels, pixels, bufferBytesLength);
 #else
-				for (int y = 0; y < height; ++y) {
-					memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
-				}
+					for (int y = 0; y < height; ++y)
+					{
+						memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
+					}
 #endif
+				}
+				else {
+					Rect r;
+					canvas->StartRefreshRectArrayIteration();
+					while (canvas->GetRefreshRectAndIterate(r)) {
+						//std::cout << r.left << " " << r.top << " " << r.width << " " << r.height << "\n";
+						int y1 = r.top;
+						int y2 = r.top + r.height;
+						int x1 = r.left;
+						int x2 = r.left + r.width;
+						for (int y = y1; y < y2; ++y) {
+							memcpy(destPixels + y * destPitch + x1 * 4, 
+								pixels + y * pitch + x1 * 4, 
+								(x2 - x1) * 4
+							);
+						}
+					}
+				}
 				SDL_UnlockTexture(texture);
 			}
+		
+//
+//#ifdef SINGLEMEMCOPY
+//				memcpy(destPixels, pixels, bufferBytesLength);
+//#else
+//				for (int y = 0; y < height; ++y) {
+//					memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
+//				}
+//#endif
+				//SDL_UnlockTexture(texture);
+			//}
 			SDL_RenderTexture(renderer, texture, NULL, NULL);
 			SDL_RenderPresent(renderer);
 			frameProcTime = (SDL_GetTicks() - frameStartTime);
@@ -213,14 +254,43 @@ namespace spn
 		int destPitch;
 		if (SDL_LockTexture(texture, NULL, (void**)&destPixels, &destPitch))
 		{
+			if (!canvas->IsRefreshRectCalculationEnabled() || canvas->IsTooManyDrawcalls())
+			{
 #ifdef SINGLEMEMCOPY
-			memcpy(destPixels, pixels, bufferBytesLength);
+				memcpy(destPixels, pixels, bufferBytesLength);
 #else
-			for (int y = 0; y < height; ++y) {
-				memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
-			}
+				for (int y = 0; y < height; ++y)
+				{
+					memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
+				}
 #endif
+			}
+			else {
+				Rect r;
+				canvas->StartRefreshRectArrayIteration();
+				while (canvas->GetRefreshRectAndIterate(r)) {
+					//std::cout << r.left << " " << r.top << " " << r.width << " " << r.height << "\n";
+					int y1 = r.top;
+					int y2 = r.top + r.height;
+					int x1 = r.left;
+					int x2 = r.left + r.width;
+					for (int y = y1; y < y2; ++y) {
+						memcpy(destPixels + y * destPitch + x1 * 4,
+							pixels + y * pitch + x1 * 4,
+							(x2 - x1) * 4
+						);
+					}
+				}
+			}
 			SDL_UnlockTexture(texture);
+//#ifdef SINGLEMEMCOPY
+//			memcpy(destPixels, pixels, bufferBytesLength);
+//#else
+//			for (int y = 0; y < height; ++y) {
+//				memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
+//			}
+//#endif
+			//SDL_UnlockTexture(texture);
 		}
 		SDL_RenderTexture(renderer, texture, NULL, NULL);
 		SDL_RenderPresent(renderer);

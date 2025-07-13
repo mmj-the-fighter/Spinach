@@ -8,7 +8,7 @@
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	static int k = 1;
-	std::string str = std::to_string(canvas->GetLastFrameTime() * 1000);
+	/*std::string str = std::to_string(canvas->GetLastFrameTime() * 1000);
 	unsigned char *pixBuffer = canvas->GetPixelBuffer();
 	int bytes = canvas->GetPixelDataLength();
 	int half = bytes / 2;
@@ -28,6 +28,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	}
 	++k;
 	k = k % 254;
+	*/
 	canvas->DrawText("the quick brown fox 1234567890", 245, 40);
 }
 
@@ -37,7 +38,7 @@ void HandleInput(const SDL_Event* sdlEvent) {
 
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(640, 480, UpdateAndRender, HandleInput);
+	spn::SpinachCore sc(640, 480, true, UpdateAndRender, HandleInput);
 	if (sc.IsInitFailed()) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
@@ -68,7 +69,7 @@ int main(int argc, char* argv[])
 	spn::Image* sepiaImage = img.Clone();
 	ApplySepiaFilter(sepiaImage);
 
-	spn::SpinachCore sc(640, 480);
+	spn::SpinachCore sc(640, 480, true);
 
 	if (sc.IsInitSucceded()){
 		spn::Canvas* canvas = sc.GetCanvas();

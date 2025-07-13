@@ -2,6 +2,8 @@
 #define _CANVAS_H_
 
 #include <string>
+#include <iostream>
+#include <algorithm>
 #include "../common/spn_utils.h"
 
 namespace spn 
@@ -120,20 +122,97 @@ namespace spn
 		inline void EnableRefreshRectCalculation(bool flag) {
 			calculateRefreshRects = flag;
 		}
+		
+		inline bool IsRefreshRectCalculationEnabled() {
+			return calculateRefreshRects;
+		}
 
-		inline void BeginDraw() {
+		inline void BeginRefreshRectCalculation() {
 			drawCallIndex = -1;
 			tooManyDrawCalls = false;
 		}
 
-		inline void EndDraw() {
+		inline void EndRefreshRectCalculation() {
 			if (drawCallIndex > MAXREFRESHRECTS - 1) {
 				tooManyDrawCalls = true;
 			}
-			//merge refreshrects
+			Rect temp[MAXREFRESHRECTS];
+			int n = drawCallIndex + 1;
+			int k = 0;
+			for (int i = 0; i < n; i++) 
+			{
+				//add
+				//check
+				if (i == 0) {
+					temp[0] = refreshRectArray[0];
+					++k;
+				}
+				else 
+				{
+					temp[k] = refreshRectArray[i];
+					k++;
+					Rect& r = temp[k-1];
+					bool unionOccured = false;
+					for (int j = k - 2; j >= 0; --j) {
+						Rect& rPrev = temp[j];
+						if (CheckCollision(r, rPrev)) {
+							Rect ur;
+							FindRectToRectUnion(r, rPrev, rPrev);
+							unionOccured = true;
+						}
+					}
+					if (unionOccured) {
+						--k;
+					}
+				}
+			}
+
+			for (int i = 0; i < k; i++) {
+				refreshRectArray[i] = temp[i];
+			}
+			drawCallIndex = k - 1;
+
+
 		}
 
+		inline bool IsTooManyDrawcalls() {
+			return tooManyDrawCalls;
+		}
+
+		inline int GetDrawcallCount() {
+			return drawCallIndex + 1;
+		}
+
+		inline void StartRefreshRectArrayIteration() {
+			refreshRectIndex = 0;
+		}
+
+		inline bool GetRefreshRectAndIterate(Rect& r) {
+			//std::cout <<"drawCallIndex " << drawCallIndex << "\n";
+			if (refreshRectIndex <= drawCallIndex) {
+				r = refreshRectArray[refreshRectIndex];
+				++refreshRectIndex;
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		void RecordDrawCall(int left, int top, int width, int height) {
+			++drawCallIndex;
+			if (drawCallIndex < MAXREFRESHRECTS - 1) {
+				Rect& r = refreshRectArray[drawCallIndex];
+				r.left = left;
+				r.width = width;
+				r.top = top;
+				r.height = height;
+			}
+		}
+
+
 	private:
+		int refreshRectIndex;
 		Rect refreshRectArray[MAXREFRESHRECTS];
 		int drawCallIndex = -1;
 		bool tooManyDrawCalls = false;
@@ -156,16 +235,7 @@ namespace spn
 		unsigned char clearColorB;
 		bool isAlphaBlendingEnabled;
 
-		void RecordDrawCall(int left, int top, int width, int height) {
-			++drawCallIndex;
-			if (drawCallIndex < MAXREFRESHRECTS - 1) {
-				Rect& r = refreshRectArray[drawCallIndex];
-				r.left = left;
-				r.width = width;
-				r.top = top;
-				r.height = height;
-			}
-		}
+		
 
 		void BitBlockTransfer(
 			unsigned char* srcPixels,

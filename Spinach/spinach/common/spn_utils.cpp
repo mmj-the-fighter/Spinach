@@ -39,17 +39,22 @@ namespace spn
 
 	void FindRectToRectUnion(const Rect& r1, const Rect& r2, Rect& ur)
 	{
-		ur.left = std::min(r1.left, r2.left);
+		Rect temp;
+		temp.left = std::min(r1.left, r2.left);
 		int r1Right = r1.left + r1.width;
 		int r2Right = r2.left + r2.width;
 		int right = std::max(r1Right, r2Right);
-		ur.width = right - ur.left;
+		temp.width = right - temp.left;
 
-		ur.top = std::min(r1.top, r2.top);
+		temp.top = std::min(r1.top, r2.top);
 		int r1Bottom = r1.top + r1.height;
 		int r2Bottom = r2.top + r2.height;
 		int bottom = std::max(r1Bottom, r2Bottom);
-		ur.height = bottom - ur.top;
+		temp.height = bottom - temp.top;
+		ur.left = temp.left;
+		ur.top = temp.top;
+		ur.width = temp.width;
+		ur.height = temp.height;
 	}
 
 	void testRectUnion() {
