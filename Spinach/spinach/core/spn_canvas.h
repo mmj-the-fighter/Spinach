@@ -138,7 +138,8 @@ namespace spn
 			}
 			Rect temp[MAXREFRESHRECTS];
 			int n = drawCallIndex + 1;
-			int k = 0;
+			int cur = 0;
+			/*
 			for (int i = 0; i < n; i++) 
 			{
 				//add
@@ -166,11 +167,46 @@ namespace spn
 					}
 				}
 			}
-
-			for (int i = 0; i < k; i++) {
+			*/
+			for (int i = 0; i < n; i++)
+			{
+				if (i == 0) {
+					//add the first rectangle
+					temp[0] = refreshRectArray[0];
+					cur=1;
+				}
+				else
+				{
+					//add the next rectangle
+					temp[cur] = refreshRectArray[i];
+					Rect* rCur = &temp[cur];
+					//01 23 4
+					//check if it is to be merged with the previous rectangles
+					int prev = cur - 1;
+					do{
+						bool unionOccured = false;
+						for (; prev >= 0; --prev) {
+							Rect& rPrev = temp[prev];
+							if (CheckCollision(*rCur, rPrev)) {
+								FindRectToRectUnion(*rCur, rPrev, rPrev);
+								unionOccured = true;
+								rCur = &temp[prev];
+								prev = prev - 1;
+								break;
+							}
+						}
+						if (!unionOccured) {
+							++cur;
+						}
+						
+					} while (prev >= 0);
+				}
+			}
+			for (int i = 0; i < cur; i++) {
 				refreshRectArray[i] = temp[i];
 			}
-			drawCallIndex = k - 1;
+			drawCallIndex = cur - 1;
+			std::cout << drawCallIndex << "  \n";
 
 
 		}

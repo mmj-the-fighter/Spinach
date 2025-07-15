@@ -1,4 +1,4 @@
-#define FIRSTEXAMPLE
+//#define FIRSTEXAMPLE
 
 #ifdef FIRSTEXAMPLE
 #include <iostream>
@@ -73,15 +73,19 @@ int main(int argc, char* argv[])
 
 	if (sc.IsInitSucceded()){
 		spn::Canvas* canvas = sc.GetCanvas();
+		canvas->BeginRefreshRectCalculation();
 		canvas->SetPrimaryColor(0, 255, 0);
 		canvas->DrawImage(&img,0,0);
 		canvas->DrawText("base image", 100, 400);
+		canvas->EndRefreshRectCalculation();
 		sc.RenderCanvas();
 
 		sc.WaitForEvents();
 
+		canvas->BeginRefreshRectCalculation();
 		canvas->DrawImage(sepiaImage,0,0);
 		canvas->DrawText("after applying sepia filter", 100, 400);
+		canvas->EndRefreshRectCalculation();
 		sc.RenderCanvas();
 		sc.WaitForEvents();
 

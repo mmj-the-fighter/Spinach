@@ -268,8 +268,9 @@ namespace spn
 			else {
 				Rect r;
 				canvas->StartRefreshRectArrayIteration();
+				std::cout << "((\n";
 				while (canvas->GetRefreshRectAndIterate(r)) {
-					//std::cout << r.left << " " << r.top << " " << r.width << " " << r.height << "\n";
+					std::cout << r.left << " " << r.top << " " << r.width << " " << r.height << "\n";
 					int y1 = r.top;
 					int y2 = r.top + r.height;
 					int x1 = r.left;
