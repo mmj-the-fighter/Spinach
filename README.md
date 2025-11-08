@@ -16,7 +16,12 @@ Useful for:
 
 ## Parent project  
  [Graphics Lab Framework (in C and SDL2)](https://github.com/mmj-the-fighter/GraphicsLabFramework)
- 
+
+ # Projects that use Spinach  
+- [Namaste3D Software rasterizer](https://github.com/mmj-the-fighter/Namaste3D)
+- [Chess Game](https://github.com/RohithKKannan/Chess-Game)
+- [Flappy Bird Clone](https://github.com/mmj-the-fighter/FlappyBirdClone)
+- [Snake 2D](https://github.com/mmj-the-fighter/Snake2D)
 
 ## Fixing SDL3 Dependencies
 
