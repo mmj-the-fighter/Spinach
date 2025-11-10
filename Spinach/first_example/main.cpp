@@ -2,6 +2,21 @@
 #include "../spinach/core/spn_canvas.h"
 #include "../spinach/core/spn_core.h"
 
+void CubicBezierTests(spn::Canvas* canvas) 
+{
+	//Cubic Bezier tests
+	canvas->DrawCubicBezierUniform(100, 100, 200, 100, 300, 100, 400, 100);
+	canvas->DrawCubicBezierUniform(100, 100, 150, 300, 250, 300, 300, 500);
+	canvas->DrawCubicBezierUniform(100, 500, 250, 100, 550, 700, 700, 200);
+	canvas->DrawCubicBezierUniform(100, 300, 200, 100, 600, 100, 700, 300);
+	canvas->DrawCubicBezierUniform(400, 100, 600, 200, 600, 400, 400, 500);
+	canvas->DrawCubicBezierUniform(300, 300, 320, 280, 340, 320, 360, 300);
+	canvas->DrawCubicBezierUniform(700, 500, 600, 200, 500, 200, 400, 500);
+	canvas->DrawCubicBezierUniform(50, 550, 200, 50, 600, 550, 750, 100);
+	canvas->DrawCubicBezierUniform(100, 100, 250, 105, 550, 95, 700, 100);
+	canvas->DrawCubicBezierUniform(150, 300, 350, 100, 450, 500, 650, 300);
+}
+
 void UpdateAndRender(spn::Canvas* canvas) {
 	static int k = 1;
 	std::string str = std::to_string(canvas->GetLastFrameTime() * 1000);
@@ -25,6 +40,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	++k;
 	k = k % 254;
 	canvas->DrawText("the quick brown fox 1234567890", 245, 40);
+	//CubicBezierTests(canvas);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {

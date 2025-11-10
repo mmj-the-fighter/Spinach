@@ -5,6 +5,8 @@
 
 namespace spn 
 {
+	struct Vec2 { float x, y; Vec2() {} Vec2(float X, float Y) :x(X), y(Y) {} };
+
 	class Image;
 	class RFont;
 
@@ -19,6 +21,12 @@ namespace spn
 		void DrawLine(int x0, int y0, int x1, int y1);
 		void DrawFilledRectangularRegion(int left, int top, int right, int bottom);
 		void DrawCircle(int x, int y, int radius);
+		void DrawCubicBezierUniform(
+			float x0, float y0,
+			float x1, float y1,
+			float x2, float y2,
+			float x3, float y3,
+			int segments = 32);
 		void DrawImage(Image* image, int x, int y);
 		void DrawSubImage(Image* image, int x, int y,
 			int tileStartX, int tileStartY,

@@ -129,6 +129,13 @@ namespace spn
 
 	void Canvas::DrawLine(int x0, int y0, int x1, int y1)
 	{
+		if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
+			return;
+		}
+		if (x1 < 0 || x1 > width - 1 || y1 < 0 || y1 > height - 1) {
+			return;
+		}
+
 		float x, y, xIncr, yIncr;
 		int steps;
 		int dx = x1 - x0;
@@ -190,6 +197,36 @@ namespace spn
 			SetPixelWithPrimaryColor(xPos - y, yPos + x);
 			SetPixelWithPrimaryColor(xPos + y, yPos - x);
 			SetPixelWithPrimaryColor(xPos - y, yPos - x);
+		}
+	}
+
+	//This function was developed with the help of ChatGPT AI agent
+	void Canvas::DrawCubicBezierUniform(
+		float x0, float y0,
+		float x1, float y1,
+		float x2, float y2,
+		float x3, float y3,
+		int segments)
+	{
+		if (segments < 1) segments = 1;
+		Vec2 prev{ x0, y0 };
+		for (int i = 1; i <= segments; ++i) {
+			float t = (float)i / (float)segments;
+			float mt = 1.0f - t;
+
+			// cubic bezier parametric
+			float x = mt * mt * mt * x0
+				+ 3 * mt * mt * t * x1
+				+ 3 * mt * t * t * x2
+				+ t * t * t * x3;
+			float y = mt * mt * mt * y0
+				+ 3 * mt * mt * t * y1
+				+ 3 * mt * t * t * y2
+				+ t * t * t * y3;
+
+			DrawLine((int)round(prev.x), (int)round(prev.y),
+				(int)round(x), (int)round(y));
+			prev.x = x; prev.y = y;
 		}
 	}
 
