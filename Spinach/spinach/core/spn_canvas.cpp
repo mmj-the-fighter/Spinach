@@ -157,6 +157,42 @@ namespace spn
 		}
 	}
 
+	//This function was developed with the help of ChatGPT AI agent
+	void Canvas::DrawCircle(int xPos, int yPos, int radius) {
+		int x = 0;
+		int y = radius;
+		int p = 1 - radius;
+
+		SetPixelWithPrimaryColor(xPos + x, yPos + y);
+		SetPixelWithPrimaryColor(xPos - x, yPos + y);
+		SetPixelWithPrimaryColor(xPos + x, yPos - y);
+		SetPixelWithPrimaryColor(xPos - x, yPos - y);
+		SetPixelWithPrimaryColor(xPos + y, yPos + x);
+		SetPixelWithPrimaryColor(xPos - y, yPos + x);
+		SetPixelWithPrimaryColor(xPos + y, yPos - x);
+		SetPixelWithPrimaryColor(xPos - y, yPos - x);
+		
+		while (x < y) {
+			if (p < 0) {
+				p += 2 * x + 3;
+				++x;
+			}
+			else {
+				p += 2 * (x - y) + 5;
+				++x;
+				y--;
+			}
+			SetPixelWithPrimaryColor(xPos + x, yPos + y);
+			SetPixelWithPrimaryColor(xPos - x, yPos + y);
+			SetPixelWithPrimaryColor(xPos + x, yPos - y);
+			SetPixelWithPrimaryColor(xPos - x, yPos - y);
+			SetPixelWithPrimaryColor(xPos + y, yPos + x);
+			SetPixelWithPrimaryColor(xPos - y, yPos + x);
+			SetPixelWithPrimaryColor(xPos + y, yPos - x);
+			SetPixelWithPrimaryColor(xPos - y, yPos - x);
+		}
+	}
+
 	void Canvas::DrawFilledRectangularRegion(int left, int top, int right, int bottom) {
 
 		unsigned char* loc;

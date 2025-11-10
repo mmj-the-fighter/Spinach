@@ -18,6 +18,7 @@ namespace spn
 		void Clear();
 		void DrawLine(int x0, int y0, int x1, int y1);
 		void DrawFilledRectangularRegion(int left, int top, int right, int bottom);
+		void DrawCircle(int x, int y, int radius);
 		void DrawImage(Image* image, int x, int y);
 		void DrawSubImage(Image* image, int x, int y,
 			int tileStartX, int tileStartY,
@@ -43,6 +44,16 @@ namespace spn
 			*dstLoc++ = b;
 			*dstLoc++ = g;
 			*dstLoc++ = r;
+			*dstLoc = 255;
+		}
+		inline void SetPixelWithPrimaryColor(int x, int y) {
+			if (x < 0 || x > width - 1 || y < 0 || y > height - 1) {
+				return;
+			}
+			unsigned char* dstLoc = pixBuffer + pitch * y + x * channels;
+			*dstLoc++ = primaryColorB;
+			*dstLoc++ = primaryColorG;
+			*dstLoc++ = primaryColorR;
 			*dstLoc = 255;
 		}
 
