@@ -17,6 +17,15 @@ void CubicBezierTests(spn::Canvas* canvas)
 	canvas->DrawCubicBezierUniform(150, 300, 350, 100, 450, 500, 650, 300);
 }
 
+void ArcTests(spn::Canvas* canvas)
+{
+	canvas->DrawArc(100, 300, 200, 200, 0, false, true, 300, 100);
+	canvas->DrawArc(100, 300, 200, 200, 0, false, false, 300, 100);
+	canvas->DrawArc(100, 300, 200, 200, 0, true, true, 300, 100);
+	canvas->DrawArc(200, 300, 100, 50, 45.0f, false, true, 400, 300);
+	canvas->DrawArc(100, 300, 150, 50, 0, false, true, 400, 300);
+}
+
 void UpdateAndRender(spn::Canvas* canvas) {
 	static int k = 1;
 	std::string str = std::to_string(canvas->GetLastFrameTime() * 1000);
@@ -41,6 +50,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	k = k % 254;
 	canvas->DrawText("the quick brown fox 1234567890", 245, 40);
 	//CubicBezierTests(canvas);
+	ArcTests(canvas);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cmath>
+#include <algorithm>
 #include "spn_canvas.h"
 #include "spn_image.h"
 #include "spn_rfont.h"
@@ -229,6 +231,82 @@ namespace spn
 			prev.x = x; prev.y = y;
 		}
 	}
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+	//This function was developed with the help of ChatGPT AI agent
+	void Canvas::DrawArc(float x0, float y0,
+		float rx, float ry,
+		float xAxisRotationDeg,
+		bool largeArcFlag, bool sweepFlag,
+		float x1, float y1)
+	{
+		// 1. Convert degrees to radians
+		float phi = xAxisRotationDeg * (M_PI / 180.0f);
+		float cosPhi = cosf(phi);
+		float sinPhi = sinf(phi);
+
+		// 2. Step 1: Compute midpoint between start and end
+		float dx2 = (x0 - x1) / 2.0f;
+		float dy2 = (y0 - y1) / 2.0f;
+
+		// 3. Transform to the rotated coordinate system
+		float x1p = cosPhi * dx2 + sinPhi * dy2;
+		float y1p = -sinPhi * dx2 + cosPhi * dy2;
+
+		// 4. Correct radii if too small
+		float rx_sq = rx * rx;
+		float ry_sq = ry * ry;
+		float x1p_sq = x1p * x1p;
+		float y1p_sq = y1p * y1p;
+
+		float radicant = (rx_sq * ry_sq - rx_sq * y1p_sq - ry_sq * x1p_sq)
+			/ (rx_sq * y1p_sq + ry_sq * x1p_sq);
+		if (radicant < 0) radicant = 0;
+		float coef = (largeArcFlag != sweepFlag ? 1 : -1) * sqrtf(radicant);
+
+		float cxp = coef * ((rx * y1p) / ry);
+		float cyp = coef * (-(ry * x1p) / rx);
+
+		// 5. Transform back to original coordinate system
+		float cx = cosPhi * cxp - sinPhi * cyp + (x0 + x1) / 2.0f;
+		float cy = sinPhi * cxp + cosPhi * cyp + (y0 + y1) / 2.0f;
+
+		// 6. Compute start and end angles
+		auto angleBetween = [](float ux, float uy, float vx, float vy) {
+			float dot = ux * vx + uy * vy;
+			float len = sqrtf((ux * ux + uy * uy) * (vx * vx + vy * vy));
+			float ang = acosf(std::clamp(dot / len, -1.0f, 1.0f));
+			if (ux * vy - uy * vx < 0) ang = -ang;
+			return ang;
+			};
+
+		float ux = (x1p - cxp) / rx;
+		float uy = (y1p - cyp) / ry;
+		float vx = (-x1p - cxp) / rx;
+		float vy = (-y1p - cyp) / ry;
+
+		float startAngle = angleBetween(1, 0, ux, uy);
+		float deltaAngle = angleBetween(ux, uy, vx, vy);
+		if (!sweepFlag && deltaAngle > 0)
+			deltaAngle -= 2 * M_PI;
+		else if (sweepFlag && deltaAngle < 0)
+			deltaAngle += 2 * M_PI;
+
+		// 7. Sample points along arc
+		int segments = static_cast<int>(fabs(deltaAngle) * 60); // approx 1° per segment
+		for (int i = 0; i <= segments; ++i)
+		{
+			float theta = startAngle + deltaAngle * (i / (float)segments);
+			float x = cosPhi * (rx * cosf(theta)) - sinPhi * (ry * sinf(theta)) + cx;
+			float y = sinPhi * (rx * cosf(theta)) + cosPhi * (ry * sinf(theta)) + cy;
+
+			if (x >= 0 && y >= 0 && x < GetWidth() && y < GetHeight())
+				SetPixelWithPrimaryColor((int)x, (int)y);
+		}
+	}
+
 
 	void Canvas::DrawFilledRectangularRegion(int left, int top, int right, int bottom) {
 
