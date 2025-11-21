@@ -8,6 +8,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../external/stb/stb_image.h"
 
+#define NANOSVG_IMPLEMENTATION
+#include "../external/nanosvg/nanosvg.h"
+
+#define NANOSVGRAST_IMPLEMENTATION
+#include "../external/nanosvg/nanosvgrast.h"
+
 #include "spn_canvas.h"
 
 namespace spn
@@ -100,6 +106,59 @@ namespace spn
 				}
 			}
 		}
+	}
+
+	bool Image::CreateFromSvg(const std::string& fileName, float dpi)
+	{
+		if (nullptr != canvas) {
+			return false;
+		}
+		unsigned char* srcloc, * dstloc;
+		NSVGimage* image = NULL;
+		NSVGrasterizer* rast = NULL;
+		unsigned char* img = NULL;
+		int w, h, bpp;
+		int num_of_pixels;
+		int i;
+		image = nsvgParseFromFile(fileName.c_str(), "px", dpi);
+		if (image == NULL) {
+			printf("nanosvg: Cannot open %s \n", fileName.c_str());
+			return false;
+		}
+		w = (int)image->width;
+		h = (int)image->height;
+
+		rast = nsvgCreateRasterizer();
+		if (rast == NULL) {
+			printf("nanosvg: Could not init rasterizer.\n");
+			nsvgDelete(image);
+			return false;
+		}
+
+		img = (unsigned char*)malloc(w * h * 4);
+		if (img == NULL) {
+			printf("nanosvg: Could not alloc image buffer.\n");
+			nsvgDeleteRasterizer(rast);
+			nsvgDelete(image);
+			return false;
+		}
+		nsvgRasterize(rast, image, 0, 0, 1, img, w, h, w * 4);
+		canvas = new Canvas(w, h);
+		dstloc = canvas->GetPixelBuffer();
+		srcloc = img;
+		num_of_pixels = canvas->GetNumOfPixels();
+		for (i = 0; i < num_of_pixels; ++i) {
+			unsigned char r = *srcloc++;
+			unsigned char b = *srcloc++;
+			unsigned char g = *srcloc++;
+			unsigned char a = *srcloc++;
+			*dstloc++ = b;
+			*dstloc++ = g;
+			*dstloc++ = r;
+			*dstloc++ = a;
+		}
+		free(img);
+		return true;
 	}
 
 	bool Image::CreateFromPng(const std::string& fileName)

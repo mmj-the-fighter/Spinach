@@ -20,6 +20,7 @@ namespace spn
 			int tileSize, 
 			int color1R, int color1G, int color1B, 
 			int color2R, int color2G, int color2B);
+		bool CreateFromSvg(const std::string& fileName, float dpi);
 		bool CreateFromPng(const std::string& fileName);
 		bool CreateFromPpmRaw(const std::string& fileName);
 		bool CreateFromPpmAscii(const std::string& fileName);

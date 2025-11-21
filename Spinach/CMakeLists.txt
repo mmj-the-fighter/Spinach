@@ -55,6 +55,10 @@ file(GLOB_RECURSE SPINACH_H CONFIGURE_DEPENDS
     spinach/external/stb/*.h
 )
 
+# Collect headers for nanosvg
+file(GLOB_RECURSE NANOSVG_H CONFIGURE_DEPENDS
+	spinach/external/nanosvg/*.h
+)
 
 # 1. first_example
 # Collect C++ source files
@@ -74,12 +78,14 @@ add_executable(	${FIRST_EXAMPLE}
     ${SPINACH_C_SRC}
     ${FIRST_EXAMPLE_CPP_H} 
 	${SPINACH_H}
+	${NANOSVG_H}
 )
 
 target_include_directories(${FIRST_EXAMPLE} PRIVATE
     spinach/common
     spinach/core
     spinach/external/stb
+	spinach/external/nanosvg
 	first_example
 )
 
@@ -107,11 +113,13 @@ add_executable(	${SECOND_EXAMPLE}
     ${SPINACH_C_SRC}
     ${SECOND_EXAMPLE_CPP_H} 
 	${SPINACH_H}
+	${NANOSVG_H}
 )
 target_include_directories(${SECOND_EXAMPLE} PRIVATE
     spinach/common
     spinach/core
     spinach/external/stb
+	spinach/external/nanosvg
 	second_example
 	second_example/image_proc
 )
