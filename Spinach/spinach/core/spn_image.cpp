@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include "spn_image.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -122,7 +123,7 @@ namespace spn
 		int i;
 		image = nsvgParseFromFile(fileName.c_str(), "px", dpi);
 		if (image == NULL) {
-			printf("nanosvg: Cannot open %s \n", fileName.c_str());
+			std::cout<<"nanosvg: Cannot open: "<<fileName<<"\n";
 			return false;
 		}
 		w = (int)image->width;
@@ -130,14 +131,14 @@ namespace spn
 
 		rast = nsvgCreateRasterizer();
 		if (rast == NULL) {
-			printf("nanosvg: Could not init rasterizer.\n");
+			std::cout<<"nanosvg: Could not init rasterizer\n";
 			nsvgDelete(image);
 			return false;
 		}
 
 		img = (unsigned char*)malloc(w * h * 4);
 		if (img == NULL) {
-			printf("nanosvg: Could not alloc image buffer.\n");
+			std::cout<<"nanosvg: Could not alloc image buffer.\n";
 			nsvgDeleteRasterizer(rast);
 			nsvgDelete(image);
 			return false;
@@ -158,6 +159,8 @@ namespace spn
 			*dstloc++ = a;
 		}
 		free(img);
+		nsvgDeleteRasterizer(rast);
+		nsvgDelete(image);
 		return true;
 	}
 
