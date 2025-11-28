@@ -150,8 +150,8 @@ namespace spn
 		num_of_pixels = canvas->GetNumOfPixels();
 		for (i = 0; i < num_of_pixels; ++i) {
 			unsigned char r = *srcloc++;
-			unsigned char b = *srcloc++;
 			unsigned char g = *srcloc++;
+			unsigned char b = *srcloc++;
 			unsigned char a = *srcloc++;
 			*dstloc++ = b;
 			*dstloc++ = g;
