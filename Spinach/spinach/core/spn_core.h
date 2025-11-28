@@ -14,6 +14,7 @@ namespace spn
 	{
 	public:
 		SpinachCore(unsigned int width, unsigned int height,
+			std::string resourcesDir = "res/",
 			std::function<void(Canvas* canvas)> updateAndRenderFn = nullptr,
 			std::function<void(const SDL_Event* sdlEvent)> inputFn = nullptr
 			);
@@ -47,6 +48,7 @@ namespace spn
 		}
 		void SetTargetFramesPerSecond(unsigned int aFps);
 	private:
+		std::string resourcesDirectory;
 		SDL_Window* window;
 		SDL_Renderer* renderer;
 		SDL_Texture* texture;

@@ -50,16 +50,23 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	k = k % 254;
 	canvas->DrawText("the quick brown fox 1234567890", 245, 40);
 	//CubicBezierTests(canvas);
-	ArcTests(canvas);
+	//ArcTests(canvas);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
 	//std::cout << "*";
 }
 
+// note
+// res folder and build_root folder are inside the project folder
+// build_root is where solution is built using cmake
+// there for the correct resources folder for me is "../res/"
+// note that i have included build_root in .gitignore
+
+
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(640, 480, UpdateAndRender, HandleInput);
+	spn::SpinachCore sc(640, 480, "../res/", UpdateAndRender, HandleInput);
 	if (sc.IsInitFailed()) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()

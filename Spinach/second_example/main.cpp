@@ -5,17 +5,26 @@
 #include "../spinach/core/spn_image.h"
 #include "imageproc/imageproc.h"
 
+
+// note
+// res folder and build_root folder are inside the project folder
+// build_root is where solution is built using cmake
+// there for the correct resources folder for me is "../res/"
+// note that i have included build_root in .gitignore
+
 int main(int argc, char* argv[])
 {
 	spn::Image img;
-	img.CreateFromPng("res/road.png");
+
+
+	img.CreateFromPng("../res/road.png");
 	spn::Image* sepiaImage = img.Clone();
 	ApplySepiaFilter(sepiaImage);
 
 	spn::Image svgImg;
-	svgImg.CreateFromSvg("res/NAND_ANSI.svg",100);
+	svgImg.CreateFromSvg("../res/NAND_ANSI.svg",100);
 
-	spn::SpinachCore sc(640, 480);
+	spn::SpinachCore sc(640, 480,"../res/");
 
 	if (sc.IsInitSucceded()){
 		spn::Canvas* canvas = sc.GetCanvas();
