@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <cstring>
 #include <algorithm>
 #include "spn_canvas.h"
 #include "spn_image.h"
