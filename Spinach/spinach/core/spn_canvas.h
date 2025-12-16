@@ -136,6 +136,12 @@ namespace spn
 			isAlphaBlendingEnabled = flag;
 		}
 
+		inline void SetPrimaryColorUint(unsigned int color) {
+			primaryColorR = (unsigned char)((color >> 16) & 0xFF);
+			primaryColorG = (unsigned char)((color >> 8) & 0xFF);
+			primaryColorB = (unsigned char)(color & 0xFF);
+		}
+
 	private:
 		RFont * font;
 		unsigned char * pixBuffer;
