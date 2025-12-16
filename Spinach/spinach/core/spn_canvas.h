@@ -142,6 +142,30 @@ namespace spn
 			primaryColorB = (unsigned char)(color & 0xFF);
 		}
 
+		inline void SetClearColorUint(unsigned int color) {
+			clearColorR = (unsigned char)((color >> 16) & 0xFF);
+			clearColorG = (unsigned char)((color >> 8) & 0xFF);
+			clearColorB = (unsigned char)(color & 0xFF);
+		}
+
+		inline void SaveColors() {
+			originalPrimaryColorR = primaryColorR;
+			originalPrimaryColorG = primaryColorG;
+			originalPrimaryColorB = primaryColorB;
+			originalClearColorR = clearColorR;
+			originalClearColorG = clearColorG;
+			originalClearColorB = clearColorB;
+		}
+
+		inline void RestoreColors() {
+			primaryColorR = originalPrimaryColorR;
+			primaryColorG = originalPrimaryColorG;
+			primaryColorB = originalPrimaryColorB;
+			clearColorR = originalClearColorR;
+			clearColorG = originalClearColorG;
+			clearColorB = originalClearColorB;
+		}
+
 	private:
 		RFont * font;
 		unsigned char * pixBuffer;
@@ -160,6 +184,14 @@ namespace spn
 		unsigned char clearColorG;
 		unsigned char clearColorB;
 		bool isAlphaBlendingEnabled;
+
+		unsigned char originalPrimaryColorR;
+		unsigned char originalPrimaryColorG;
+		unsigned char originalPrimaryColorB;
+
+		unsigned char originalClearColorR;
+		unsigned char originalClearColorG;
+		unsigned char originalClearColorB;
 
 		void BitBlockTransfer(
 			unsigned char* srcPixels,
