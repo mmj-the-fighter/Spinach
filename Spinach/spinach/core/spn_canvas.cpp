@@ -444,7 +444,7 @@ namespace spn
 
 	}
 
-	void Canvas::DrawText(const char* text, int x, int y)
+	void Canvas::DrawCString(const char* text, int x, int y)
 	{
 		if (font == nullptr) {
 			return;

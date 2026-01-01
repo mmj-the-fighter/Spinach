@@ -47,7 +47,7 @@ namespace spn
 			int tileWidth, int tileHeight,
 			int chromaR, int chromaG, int chromaB
 		);
-		void DrawText(const char* text, int x, int y);
+		void DrawCString(const char* text, int x, int y);
 		void DrawString(const std::string& text, int x, int y);
 		void FlipHorizontally();
 		void FlipVertically();
