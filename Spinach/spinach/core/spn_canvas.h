@@ -18,6 +18,7 @@ namespace spn
 
 		void FillAnything();
 		void Clear();
+		void SetClippingRectangle(int left, int top, int widht, int height);
 		void DrawLine(int x0, int y0, int x1, int y1);
 		void DrawFilledRectangularRegion(int left, int top, int right, int bottom);
 		void DrawCircle(int x, int y, int radius);
@@ -167,6 +168,7 @@ namespace spn
 		}
 
 	private:
+		spn::Rect clipRect;
 		RFont * font;
 		unsigned char * pixBuffer;
 		unsigned int width;

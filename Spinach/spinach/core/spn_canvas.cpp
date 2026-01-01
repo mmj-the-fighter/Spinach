@@ -20,6 +20,9 @@ namespace spn
 		numOfPixels = aWidth * aHeight;
 		pixelDataLength = numOfPixels * 4;
 		pixBuffer = new unsigned char[pixelDataLength];
+		clipRect.left = clipRect.top = 0;
+		clipRect.width = aWidth;
+		clipRect.height = aHeight;
 	}
 
 	Canvas::~Canvas(){
@@ -549,6 +552,13 @@ namespace spn
 		}
 	}
 
+	void Canvas::SetClippingRectangle(int aLeft, int aTop, int aWidth, int aHeight) {
+		clipRect.left = aLeft;
+		clipRect.top = aTop;
+		clipRect.width = aWidth;
+		clipRect.height = aHeight;
+	}
+
 	void Canvas::BitBlockTransfer(
 		unsigned char* srcPixels,
 		int srcTotalWidth,
@@ -577,16 +587,20 @@ namespace spn
 		unsigned char* dstPixels = pixBuffer;
 		unsigned char* dstLoc, * srcLoc;
 		int srcPitch = srcTotalWidth * numOfChannels;
-		int dstWidth = width;
-		int dstHeight = height;
+		//int dstWidth = width;
+		//int dstHeight = height;
 		int dstPitch = pitch;
 		int x, y;
-		
+
 
 		/* culling */
 		if (
-			(dstXStart + srcWidth < 0 || dstXStart >= dstWidth) ||
-			(dstYStart + srcHeight < 0 || dstYStart >= dstHeight)
+			//(dstXStart + srcWidth < 0 || dstXStart >= width) ||
+			//(dstYStart + srcHeight < 0 || dstYStart >= height)
+			//)
+
+			(dstXStart + srcWidth < 0 || dstXStart >= clipRect.left + clipRect.width) ||
+			(dstYStart + srcHeight < 0 || dstYStart >= clipRect.top + clipRect.height)
 			)
 		{
 			return;
@@ -600,11 +614,11 @@ namespace spn
 		r1.width = srcWidth;
 		r1.height = srcHeight;
 
-		Rect r2;
-		r2.left = 0;
-		r2.top = 0;
-		r2.width = dstWidth;
-		r2.height = dstHeight;
+		Rect r2 = clipRect;
+		//r2.left = 0;
+		//r2.top = 0;
+		//r2.width = dstWidth;
+		//r2.height = dstHeight;
 
 		Rect ir;
 		FindRectToRectIntersection(r1, r2, ir);
