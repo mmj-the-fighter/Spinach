@@ -1,5 +1,5 @@
-#ifndef _SPN_RFONT_H_
-#define _SPN_RFONT_H_
+#ifndef SPN_RFONT_H
+#define SPN_RFONT_H
 #include <string>
 #include "spn_image.h"
 

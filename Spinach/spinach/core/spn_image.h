@@ -1,5 +1,5 @@
-#ifndef _IMAGE_H_
-#define _IMAGE_H_
+#ifndef SPN_IMAGE_H
+#define SPN_IMAGE_H
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef _CANVAS_H_
-#define _CANVAS_H_
+#ifndef SPN_CANVAS_H
+#define SPN_CANVAS_H
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef _SPN_UTILS_H_
-#define _SPN_UTILS_H_
+#ifndef SPN_UTILS_H
+#define SPN_UTILS_H
 #include <string>
 namespace spn
 {

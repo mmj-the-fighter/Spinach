@@ -1,5 +1,5 @@
-#ifndef _SPINACH_CORE_H_
-#define _SPINACH_CORE_H_
+#ifndef SPN_CORE_H
+#define SPN_CORE_H
 
 #include <functional>
 #include <string>

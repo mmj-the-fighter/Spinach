@@ -4,6 +4,7 @@
 #include "../spinach/core/spn_canvas.h"
 #include "../spinach/core/spn_core.h"
 #include "../spinach/core/spn_image.h"
+#include "../spinach/common/spn_profiler.h"
 #include "imageproc/imageproc.h"
 
 
@@ -20,6 +21,7 @@ struct vec2
 };
 
 void Sierpinski(spn::Canvas* canvas, vec2 points[3], int iterations) {
+	spn::ProfilerScope scope(1003);
 	vec2 p;
 	vec2 q;
 	vec2 u, v;
@@ -47,12 +49,24 @@ int main(int argc, char* argv[])
 
 	img.CreateFromPng("../res/road.png");
 	spn::Image* sepiaImage = img.Clone();
-	ApplySepiaFilter(sepiaImage);
+	
 
+	//Begin, End Paradigm
+	auto& profiler = spn::Profiler::GetInstance();
+	profiler.SetMillisAsTimeUnit();
+	profiler.Begin(1001);   // tag = 1001
+	ApplySepiaFilter(sepiaImage);
+	profiler.End();
+	
+
+	
+	profiler.Begin(1002);
 	spn::Image svgImg;
-	svgImg.CreateFromSvg("../res/NAND_ANSI.svg",100);
+	svgImg.CreateFromSvg("../res/NAND_ANSI.svg", 100);
+	profiler.End();
 
 	spn::SpinachCore sc(640, 480,"../res/");
+	
 
 	if (sc.IsInitFailed()) {
 		return 1;
@@ -74,7 +88,9 @@ int main(int argc, char* argv[])
 	canvas->Clear();
 	canvas->EnableAlphaBlending(false);
 	canvas->SetClearColor(0, 0, 0);
+	
 	Sierpinski(canvas, points, 4000);
+
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 
@@ -101,6 +117,6 @@ int main(int argc, char* argv[])
 	sc.WaitForEvents();
 
 	delete sepiaImage;
-	
+	profiler.Print();
 	return 0;
 }

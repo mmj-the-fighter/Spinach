@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../spinach/core/spn_canvas.h"
 #include "../spinach/core/spn_core.h"
+#include "../spinach/common/spn_profiler.h"
 
 void CubicBezierTests(spn::Canvas* canvas) 
 {
@@ -27,6 +28,9 @@ void ArcTests(spn::Canvas* canvas)
 }
 
 void UpdateAndRender(spn::Canvas* canvas) {
+	static int frameNum = 0;
+	++frameNum;
+	spn::ProfilerLimitedScope scope(frameNum, 10, 40);
 	static int k = 1;
 	std::string str = std::to_string(canvas->GetLastFrameTime() * 1000);
 	unsigned char *pixBuffer = canvas->GetPixelBuffer();
@@ -79,5 +83,6 @@ int main(int argc, char* argv[])
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.SetTargetFramesPerSecond(30);
 	sc.MainLoop();
+	spn::Profiler::GetInstance().Print();
 	return 0;
 }
