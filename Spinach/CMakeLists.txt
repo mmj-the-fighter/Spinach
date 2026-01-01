@@ -9,6 +9,8 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(FIRST_EXAMPLE first_example)
 set(SECOND_EXAMPLE second_example)
+set(THIRD_EXAMPLE third_example)
+
 
 
 # Platform-specific flags
@@ -40,6 +42,7 @@ endif()
 file(GLOB_RECURSE SPINACH_CPP_SRC CONFIGURE_DEPENDS
     spinach/common/*.cpp
     spinach/core/*.cpp
+	spinach/ui/*.cpp
 )
 
 
@@ -52,6 +55,7 @@ file(GLOB_RECURSE SPINACH_C_SRC CONFIGURE_DEPENDS
 file(GLOB_RECURSE SPINACH_H CONFIGURE_DEPENDS
     spinach/common/*.[h|hpp]
     spinach/core/*.[h|hpp]
+	spinach/ui/*.[h|hpp]
     spinach/external/stb/*.h
 )
 
@@ -84,6 +88,7 @@ add_executable(	${FIRST_EXAMPLE}
 target_include_directories(${FIRST_EXAMPLE} PRIVATE
     spinach/common
     spinach/core
+    spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
 	first_example
@@ -118,6 +123,7 @@ add_executable(	${SECOND_EXAMPLE}
 target_include_directories(${SECOND_EXAMPLE} PRIVATE
     spinach/common
     spinach/core
+    spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
 	second_example
@@ -126,3 +132,36 @@ target_include_directories(${SECOND_EXAMPLE} PRIVATE
 
 
 target_link_libraries(${SECOND_EXAMPLE} PRIVATE SDL3::SDL3)
+
+
+# 3. third_example
+# Collect C++ source files
+file(GLOB_RECURSE THIRD_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
+    third_example/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE THIRD_EXAMPLE_CPP_H CONFIGURE_DEPENDS
+	third_example/*.h
+)
+
+# Create the executable
+add_executable(	${THIRD_EXAMPLE}
+	${THIRD_EXAMPLE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${THIRD_EXAMPLE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${THIRD_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	third_example
+)
+
+
+target_link_libraries(${THIRD_EXAMPLE} PRIVATE SDL3::SDL3)

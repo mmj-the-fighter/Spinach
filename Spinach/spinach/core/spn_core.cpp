@@ -64,6 +64,11 @@ namespace spn
 			return 2;
 		}
 
+		if (!SDL_TextInputActive(window))
+		{
+			SDL_StartTextInput(window);
+		}
+
 		texture = SDL_CreateTexture(renderer,
 			SDL_PIXELFORMAT_ARGB8888,
 			SDL_TEXTUREACCESS_STREAMING,
