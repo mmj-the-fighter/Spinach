@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 	canvas->SetPrimaryColor(0, 0, 128);
 	canvas->EnableAlphaBlending(true);//needed for rendering images with transparency whether loaded from png or svg.
 	canvas->DrawImage(&svgImg, 10, 10);
-	canvas->DrawText("NAN gate rendered from svg", 100, 150);
+	canvas->DrawCString("NAN gate rendered from svg", 100, 150);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 	
@@ -107,12 +107,12 @@ int main(int argc, char* argv[])
 	canvas->Clear();
 	canvas->SetPrimaryColor(0, 255, 0);
 	canvas->DrawImage(&img,0,0);
-	canvas->DrawText("base image", 100, 400);
+	canvas->DrawCString("base image", 100, 400);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 	
 	canvas->DrawImage(sepiaImage,0,0);
-	canvas->DrawText("after applying sepia filter", 100, 400);
+	canvas->DrawCString("after applying sepia filter", 100, 400);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 

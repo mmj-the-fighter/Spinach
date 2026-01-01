@@ -52,7 +52,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	}
 	++k;
 	k = k % 254;
-	canvas->DrawText("the quick brown fox 1234567890", 245, 40);
+	canvas->DrawCString("the quick brown fox 1234567890", 245, 40);
 	//CubicBezierTests(canvas);
 	//ArcTests(canvas);
 }
