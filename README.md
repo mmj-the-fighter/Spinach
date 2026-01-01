@@ -12,6 +12,24 @@ Useful for:
 - Games
 - and so on.
 
+## Build / Project Generation
+
+**Prerequisites**
+
+* The root folder must contain the `res` directory.
+* CMake must be installed.
+
+**Steps**
+
+1. Create a directory named `build` in the project root.
+2. Open a terminal in the project root and run:
+
+```bash
+cd build
+cmake ../
+```
+
+This will generate the project files inside the `build` directory.
 ## Parent project  
  [Graphics Lab Framework (in C and SDL2)](https://github.com/mmj-the-fighter/GraphicsLabFramework)
 
