@@ -311,8 +311,15 @@ namespace spn
 		}
 	}
 
+	void Canvas::DrawRectangle(int left, int top, int right, int bottom) {
+		DrawLine(left, top, right, top);
+		DrawLine(right, top, right, bottom);
+		DrawLine(right, bottom, left, bottom);
+		DrawLine(left, bottom, left, top);
+	}
 
-	void Canvas::DrawFilledRectangularRegion(int left, int top, int right, int bottom) {
+
+	void Canvas::DrawFilledRectangle(int left, int top, int right, int bottom) {
 
 		unsigned char* loc;
 		int x, y;
@@ -493,6 +500,54 @@ namespace spn
 
 	}
 
+	void Canvas::DrawCStringInRange(const char* text, int startIndex, int endIndex, int x, int y) {
+		if (font == nullptr) {
+			return;
+		}
+		int atlasWidth = font->GetCanvas()->GetWidth();
+		int atlasHeight = font->GetCanvas()->GetHeight();
+		int cellWidth = font->GetCellWidth();
+		int cellHeight = font->GetCellHeight();
+		int maxCols = atlasWidth / cellWidth;
+		unsigned char baseChar = font->GetBaseChar();
+		unsigned char* srcPixels = font->GetCanvas()->GetPixelBuffer();
+		if (srcPixels == nullptr) {
+			return;
+		}
+
+
+		int xpos = x;
+		int i = 0;
+		unsigned char c;
+		for (i = startIndex; i <= endIndex; i++) {
+			c = text[i];
+			if (c != ' ') {
+				unsigned char charDiff = c - baseChar;
+				int row = charDiff / maxCols;
+				int col = charDiff - (row * maxCols);
+				int atlasX = col * cellWidth;
+				int atlasY = row * cellHeight;
+				//draw a region of atlas at xpos
+				BitBlockTransfer(srcPixels, atlasWidth, atlasHeight,
+					xpos, y, atlasX, atlasY, cellWidth,
+					cellHeight, 0, 0, 0, primaryColorR,
+					primaryColorG, primaryColorB);
+
+				//CopyPixels(atlasX, atlasY, cellWidth, cellHeight,
+				//	atlasWidth, atlasHeight, srcPixels, xpos, y,
+				//	0, 0, 0,
+				//	primaryColorR,
+				//	primaryColorG,
+				//	primaryColorB
+				//	);
+
+			}
+			xpos += font->GetCharWidth(c);
+		}
+
+
+	}
+
 	void Canvas::DrawString(const std::string& str, int x, int y)
 	{
 		if (font == nullptr) {
@@ -540,6 +595,63 @@ namespace spn
 		}
 
 
+	}
+
+	void Canvas::GetCharDisplaySize(char c, float& w, float& h) {
+		if (font == nullptr) {
+			w = 0;
+			h = 0;
+		}
+		int textHeight = font->GetCellHeight();
+		int textWidth = font->GetCharWidth(c);
+		w = textWidth;
+		h = textHeight;
+	}
+
+
+	void Canvas::GetCStringDisplaySize(const char* text, float& w, float& h) {
+		if (font == nullptr) {
+			w = 0;
+			h = 0;
+		}
+		int textHeight = font->GetCellHeight();
+		unsigned char c;
+		int textWidth = 0;
+		for (int i = 0; (c = text[i]) != '\0'; i++) {
+			textWidth += font->GetCharWidth(c);
+		}
+		w = textWidth;
+		h = textHeight;
+	}
+
+	void Canvas::GetStringDisplaySize(const std::string& text, float& w, float& h) {
+		if (font == nullptr) {
+			w = 0;
+			h = 0;
+		}
+		int textHeight = font->GetCharHeight();
+		unsigned char c;
+		int textWidth = 0;
+		for (int i = 0; (c = text[i]) != '\0'; i++) {
+			textWidth += font->GetCharWidth(c);
+		}
+		w = textWidth;
+		h = textHeight;
+	}
+
+	void Canvas::GetStringDisplaySizeInRange(const std::string& text, int start, int end, float& w, float& h) {
+		if (font == nullptr) {
+			w = 0;
+			h = 0;
+		}
+		int textHeight = font->GetCharHeight();
+		unsigned char c;
+		int textWidth = 0;
+		for (int i = start; i <= end && (c = text[i]) != '\0'; i++) {
+			textWidth += font->GetCharWidth(c);
+		}
+		w = textWidth;
+		h = textHeight;
 	}
 
 	void Canvas::SetAlpha(float alpha) {

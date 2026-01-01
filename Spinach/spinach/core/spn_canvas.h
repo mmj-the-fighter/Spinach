@@ -2,6 +2,7 @@
 #define SPN_CANVAS_H
 
 #include <string>
+#include "../common/spn_utils.h"
 
 namespace spn 
 {
@@ -19,8 +20,27 @@ namespace spn
 		void FillAnything();
 		void Clear();
 		void SetClippingRectangle(int left, int top, int widht, int height);
+		inline bool IsOutsideBounds(int x, int y) {
+			return (x < 0 || x > width - 1 || y < 0 || y > height - 1);
+		}
+
+		inline bool IsInsideBounds(int x, int y) {
+			return (x >= 0 && x < width && y >= 0 && y < height);
+		}
 		void DrawLine(int x0, int y0, int x1, int y1);
-		void DrawFilledRectangularRegion(int left, int top, int right, int bottom);
+		
+		inline void ClipLineNaive(int& x0, int& y0, int& x1, int& y1) {
+			if (x0 < 0) x0 = 0;
+			if (x0 >= width) x0 = width - 1;
+			if (y0 < 0) y0 = 0;
+			if (y0 >= height) y0 = height - 1;
+			if (x1 < 0) x1 = 0;
+			if (x1 >= width) x1 = width - 1;
+			if (y1 < 0) y1 = 0;
+			if (y1 >= height) y1 = height - 1;
+		}
+		void DrawRectangle(int left, int top, int right, int bottom);
+		void DrawFilledRectangle(int left, int top, int right, int bottom);
 		void DrawCircle(int x, int y, int radius);
 		void DrawCubicBezierUniform(
 			float x0, float y0,
@@ -48,7 +68,13 @@ namespace spn
 			int chromaR, int chromaG, int chromaB
 		);
 		void DrawCString(const char* text, int x, int y);
+		void DrawCStringInRange(const char* text, int startIndex, int endIndex, int x, int y);
 		void DrawString(const std::string& text, int x, int y);
+		void GetCharDisplaySize(char c, float& w, float& h);
+		void GetCStringDisplaySize(const char* text, float& w, float& h);
+		void GetStringDisplaySize(const std::string& text, float& w, float& h);
+		void GetStringDisplaySizeInRange(const std::string& text, int start, int end, float& w, float& h);
+
 		void FlipHorizontally();
 		void FlipVertically();
 		void SetAlpha(float alpha);
@@ -168,7 +194,7 @@ namespace spn
 		}
 
 	private:
-		spn::Rect clipRect;
+		Rect clipRect;
 		RFont * font;
 		unsigned char * pixBuffer;
 		unsigned int width;
