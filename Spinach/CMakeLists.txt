@@ -165,3 +165,36 @@ target_include_directories(${THIRD_EXAMPLE} PRIVATE
 
 
 target_link_libraries(${THIRD_EXAMPLE} PRIVATE SDL3::SDL3)
+
+
+# 4. fourth_example
+# Collect C++ source files
+file(GLOB_RECURSE FOURTH_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
+    fourth_example/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE FOURTH_EXAMPLE_CPP_H CONFIGURE_DEPENDS
+	fourth_example/*.h
+)
+
+# Create the executable
+add_executable(	${FOURTH_EXAMPLE}
+	${FOURTH_EXAMPLE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${FOURTH_EXAMPLE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${FOURTH_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	fourth_example
+)
+
+
+target_link_libraries(${FOURTH_EXAMPLE} PRIVATE SDL3::SDL3)
