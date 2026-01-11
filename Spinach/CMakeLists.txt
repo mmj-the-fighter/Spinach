@@ -10,6 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(FIRST_EXAMPLE first_example)
 set(SECOND_EXAMPLE second_example)
 set(THIRD_EXAMPLE third_example)
+set(FOURTH_EXAMPLE fourth_example)
 
 
 

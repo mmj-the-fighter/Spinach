@@ -20,6 +20,7 @@ int startX = 10;
 int startY = 10;
 bool isGameOver = false;
 bool isGameWon = false;
+bool lockInput = false;
 spn::Image greyTile;
 spn::Image flagTile;
 spn::Image dangerTile;
@@ -68,7 +69,7 @@ void CheckIfGameWon() {
 	isGameWon = true;
 }
 
-void OpenPositiveDncTiles(int row, int col) {
+void OpenEmptyAndPositiveDncTiles(int row, int col) {
 	//std::cout << "dnc " << row << "\t" << col << "\n";
 	if (IsInvalidRowCol(row, col)) {
 		return;
@@ -82,7 +83,7 @@ void OpenPositiveDncTiles(int row, int col) {
 		for (int dr = -1; dr <= 1; dr++) {
 			for (int dc = -1; dc <= 1; dc++) {
 				if (!(dr == 0 && dc == 0) && IsValidRowCol(row + dr, col + dc)) {
-					OpenPositiveDncTiles(row + dr, col + dc);
+					OpenEmptyAndPositiveDncTiles(row + dr, col + dc);
 				}
 			}
 		}
@@ -178,7 +179,9 @@ void MarkBoard(int x, int y, int opcode) {
 	if (opcode == 0) {
 		//std::cout << "visited\n";
 		if (t.dangerousNeighbourCount == 0) {
-			OpenPositiveDncTiles(r, c);
+			lockInput = true;
+			OpenEmptyAndPositiveDncTiles(r, c);
+			lockInput = false;
 		}
 		t.isVisited = true;
 	}
@@ -276,6 +279,9 @@ void UpdateAndRender(spn::Canvas* canvas) {
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
+	if (lockInput) {
+		return;
+	}
 
 	UiEvent uie;
 	TranslateSdlEvent(sdlEvent, uie);
@@ -293,7 +299,7 @@ void HandleInput(const SDL_Event* sdlEvent) {
 			}
 		}
 		break;
-	case UiEventType::ActionKeyDown:
+	case UiEventType::ActionKeyUp:
 		//std::cout << "action\n";
 		if (uie.keyCode == KeyCode::Right) {
 			InitBoard();
