@@ -22,6 +22,12 @@ static void TranslateSdlEvent(const SDL_Event* e, UiEvent& uie) {
 			uie.mouseX = e->button.x;
 			uie.mouseY = e->button.y;
 		}
+		else if (e->button.button == SDL_BUTTON_RIGHT) {
+			uie.eventType = UiEventType::MouseDown;
+			uie.mouseButton = MouseButton::Right;
+			uie.mouseX = e->button.x;
+			uie.mouseY = e->button.y;
+		}
 		break;
 	case SDL_EVENT_MOUSE_MOTION:
 		if (e->motion.state & SDL_BUTTON_LMASK) {
@@ -43,6 +49,12 @@ static void TranslateSdlEvent(const SDL_Event* e, UiEvent& uie) {
 			uie.mouseX = e->button.x;
 			uie.mouseY = e->button.y;
 		}
+		else if (e->button.button == SDL_BUTTON_RIGHT) {
+			uie.eventType = UiEventType::MouseUp;
+			uie.mouseButton = MouseButton::Right;
+			uie.mouseX = e->button.x;
+			uie.mouseY = e->button.y;
+		}
 		break;
 
 	case SDL_EVENT_TEXT_INPUT:
@@ -53,7 +65,7 @@ static void TranslateSdlEvent(const SDL_Event* e, UiEvent& uie) {
 	case SDL_EVENT_KEY_DOWN:
 		uie.eventType = UiEventType::ActionKeyDown;
 		uie.keyCode = KeyCode::Unknown;
-		switch (e->key.key) 
+		switch (e->key.key)
 		{
 		case SDLK_BACKSPACE:
 			uie.keyCode = KeyCode::Backspace;
@@ -70,11 +82,33 @@ static void TranslateSdlEvent(const SDL_Event* e, UiEvent& uie) {
 		case SDLK_DOWN:
 			uie.keyCode = KeyCode::Down;
 			break;
-
+		}
+		break;
+	case SDL_EVENT_KEY_UP:
+		uie.eventType = UiEventType::ActionKeyUp;
+		uie.keyCode = KeyCode::Unknown;
+		switch (e->key.key)
+		{
+		case SDLK_BACKSPACE:
+			uie.keyCode = KeyCode::Backspace;
+			break;
+		case SDLK_LEFT:
+			uie.keyCode = KeyCode::Left;
+			break;
+		case SDLK_RIGHT:
+			uie.keyCode = KeyCode::Right;
+			break;
+		case SDLK_UP:
+			uie.keyCode = KeyCode::Up;
+			break;
+		case SDLK_DOWN:
+			uie.keyCode = KeyCode::Down;
+			break;
 		}
 		break;
 	}
 }
+
 
 
 #endif 
