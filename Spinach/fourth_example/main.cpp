@@ -2,11 +2,14 @@
 #include <algorithm>
 #include <random>
 #include <thread>
+#include <vector>
 #include "../spinach/core/spn_canvas.h"
 #include "../spinach/core/spn_core.h"
 #include "../spinach/common/spn_profiler.h"
 #include <ui_event.h>
 #include <ui_event_translator.h>
+#include <ui_manager.h>
+#include <button.h>
 
 
 #define GAMERESOLUTIONX 800
@@ -27,6 +30,9 @@ spn::Image dangerTile;
 float runningTime = 0;
 int blastRow = -1;
 int blastCol = -1;
+Button* solveButton;
+Button* nextButton;
+UiManager* uim;
 
 struct MinuteSecond {
 	int totalSeconds;
@@ -152,23 +158,7 @@ void InitBoard() {
 	blastCol = -1;
 }
 
-void MarkBoard(int x, int y, int opcode) {
-	int minx = startX;
-	int miny = startY;
-	int maxy = startY + MAXROWS * TILEH;
-	int maxx = startX + MAXCOLS * TILEW;
-	if (x < minx || x > maxx || y < miny || y > maxy) {
-		//std::cout << "out1\n";
-		return;
-	}
-	float spany = (maxy - miny);
-	float dy = (y - miny);
-	int r = (dy / spany) * MAXROWS;
-
-	float spanx = (maxx - minx);
-	float dx = (x - minx);
-	int c = (dx / spanx) * MAXCOLS;
-
+void MarkBoardRowCol(int r, int c, int opcode) {
 	if (r < 0 || r > MAXROWS - 1 || c < 0 || c > MAXCOLS - 1) {
 		//std::cout << "out2\n";
 		return;
@@ -205,6 +195,27 @@ void MarkBoard(int x, int y, int opcode) {
 	}
 }
 
+void MarkBoard(int x, int y, int opcode) {
+	int minx = startX;
+	int miny = startY;
+	int maxy = startY + MAXROWS * TILEH;
+	int maxx = startX + MAXCOLS * TILEW;
+	if (x < minx || x > maxx || y < miny || y > maxy) {
+		//std::cout << "out1\n";
+		return;
+	}
+	float spany = (maxy - miny);
+	float dy = (y - miny);
+	int r = (dy / spany) * MAXROWS;
+
+	float spanx = (maxx - minx);
+	float dx = (x - minx);
+	int c = (dx / spanx) * MAXCOLS;
+
+	MarkBoardRowCol(r, c, opcode);
+	
+}
+
 void DisplayTime(spn::Canvas* canvas) {
 	char buffer[256];
 	sprintf(buffer, "%2d:%2d", ms.minutes, ms.seconds);
@@ -233,6 +244,14 @@ void DisplayBoard(spn::Canvas* canvas) {
 				canvas->SetPrimaryColorUint(0xfffff);
 				//canvas->DrawCString("F", x + padding, y + padding);
 				canvas->DrawImage(&flagTile, x, y);
+				if (isGameOver || isGameWon) {
+					if (!t.isDangerous) {
+						canvas->SetPrimaryColorUint(0xff0000);
+						canvas->DrawRectangle(x + 2, y + 2, x + TILEW - 2, y + TILEH - 2);
+						canvas->DrawLine(x + 2, y + 2, x + TILEW - 2, y + TILEH - 2);
+						canvas->DrawLine(x + 2, y + TILEH - 2, x + TILEW - 2, y + 2);
+					}
+				}
 			}
 			else if (t.isVisited && t.isDangerous) {
 			//else if (t.isDangerous) {
@@ -253,17 +272,121 @@ void DisplayBoard(spn::Canvas* canvas) {
 	if (isGameOver) {
 		int by = startY + blastRow * TILEH;
 		int bx = startX + blastCol * TILEW;
-		canvas->SetPrimaryColorUint(0xff0000);
+		canvas->SetPrimaryColorUint(0xffffff);
 		canvas->DrawRectangle(bx+2, by+2, bx + TILEW-2, by + TILEH-2);
 		canvas->DrawRectangle(bx + 4, by + 4, bx + TILEW - 4, by + TILEH - 4);
 		canvas->DrawRectangle(bx + 6, by + 6, bx + TILEW - 6, by + TILEH - 6);
 		canvas->DrawCString("Game Over!", GAMERESOLUTIONX/(float)(2), GAMERESOLUTIONY / (float)(2));
 	}
 	else if (isGameWon) {
-		canvas->SetPrimaryColorUint(0x0000ff);
+		canvas->SetPrimaryColorUint(0xffffff);
 		canvas->DrawCString("You Won!", GAMERESOLUTIONX / (float)(2), GAMERESOLUTIONY / (float)(2));
 	}
 }
+
+struct RowCol {
+	int r;
+	int c;
+};
+bool SolveBoardIteration() {
+	bool isBoardDataChanged = false;
+	std::vector<RowCol> unvisitedNeighbours;
+	std::vector<RowCol> unflaggedAndUnvistedNeighbours;
+	unvisitedNeighbours.reserve(10);
+	unflaggedAndUnvistedNeighbours.reserve(10);
+	//if dnc == number of unvisited neighbours: flag the neighbours
+	//if dnc == number of flagged neighbours: open the unvisited neighbours
+	for (int i = 0; i < MAXROWS; i++) {
+		for (int j = 0; j < MAXCOLS; j++) {
+			Tile& t = board[i][j];
+			if (t.isVisited == false) continue;
+			unvisitedNeighbours.clear();
+			int uvnc = 0;
+			for (int dr = -1; dr <= 1; dr++) {
+				for (int dc = -1; dc <= 1; dc++) {
+					if (IsInvalidRowCol(i + dr, j + dc) || (dc == 0 && dr == 0)) {
+						continue;
+					}
+					if (board[i + dr][j + dc].isVisited == false) {
+						++uvnc;
+						unvisitedNeighbours.push_back({ i + dr,j + dc });
+					}
+				}
+			}
+			//std::cout << t.dangerousNeighbourCount << " " << uvnc << " / " << fnc << "\n";
+			if (t.dangerousNeighbourCount == uvnc) {
+				for (const auto& rc : unvisitedNeighbours) {
+					if (!board[rc.r][rc.c].isFlagged) {
+						board[rc.r][rc.c].isFlagged = true;
+						isBoardDataChanged = true;
+					}
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < MAXROWS; i++) {
+		for (int j = 0; j < MAXCOLS; j++) {
+			Tile& t = board[i][j];
+			if (t.isVisited == false) continue;
+			unflaggedAndUnvistedNeighbours.clear();
+			int fnc = 0;
+			for (int dr = -1; dr <= 1; dr++) {
+				for (int dc = -1; dc <= 1; dc++) {
+					if (IsInvalidRowCol(i + dr, j + dc) || (dc == 0 && dr == 0)) {
+						continue;
+					}
+
+					if (board[i + dr][j + dc].isFlagged == true) {
+						++fnc;
+					}
+					if (board[i + dr][j + dc].isVisited == false &&
+						board[i + dr][j + dc].isFlagged == false
+						) {
+						unflaggedAndUnvistedNeighbours.push_back({ i + dr,j + dc });
+					}
+				}
+			}
+			//std::cout << t.dangerousNeighbourCount << " " << uvnc << " / " << fnc << "\n";
+			if (t.dangerousNeighbourCount == fnc) {
+				for (const auto& rc : unflaggedAndUnvistedNeighbours) {
+					if (!board[rc.r][rc.c].isVisited) {
+						MarkBoardRowCol(rc.r, rc.c, 0);
+						isBoardDataChanged = true;
+					}
+				}
+			}
+		}
+	}
+	return isBoardDataChanged;
+}
+
+void SolveBoard() {
+	while (SolveBoardIteration()) {
+		;
+	}
+}
+
+
+void InitUi() {
+	uim = &UiManager::GetInstance();
+	solveButton = uim->CreateWidget<Button>();
+	solveButton->SetPosition(GAMERESOLUTIONX - 130, GAMERESOLUTIONY / 3);
+	solveButton->SetSize(128, 32);
+	solveButton->SetString("Pick Them");
+	solveButton->SetCallback([=](int id) {
+		SolveBoard();
+		});
+
+	nextButton = uim->CreateWidget<Button>();
+	nextButton->SetPosition(GAMERESOLUTIONX-130, GAMERESOLUTIONY - 34);
+	nextButton->SetSize(128, 32);
+	nextButton->SetString("Next");
+	nextButton->SetCallback([=](int id) {
+		InitBoard();
+		});
+}
+
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	runningTime += canvas->GetLastFrameTime();
@@ -276,6 +399,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	//canvas->DrawCString("the quick brown fox 1234567890", 245, 40);
 	DisplayBoard(canvas);
 	DisplayTime(canvas);
+	uim->Display(canvas);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
@@ -285,6 +409,10 @@ void HandleInput(const SDL_Event* sdlEvent) {
 
 	UiEvent uie;
 	TranslateSdlEvent(sdlEvent, uie);
+	bool hasUiConsumedEvent = uim->HandleUiEvent(uie);
+	if (hasUiConsumedEvent) {
+		return;
+	}
 
 	switch (uie.eventType) {
 	case UiEventType::MouseUp:
@@ -303,6 +431,9 @@ void HandleInput(const SDL_Event* sdlEvent) {
 		//std::cout << "action\n";
 		if (uie.keyCode == KeyCode::Right) {
 			InitBoard();
+		}
+		else if (uie.keyCode == KeyCode::Down) {
+			SolveBoard();
 		}
 		break;
 	}
@@ -326,6 +457,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	InitBoard();
+	InitUi();
 	
 	sc.SetUpdateAndRenderHandler(UpdateAndRender);
 	sc.SetInputHandler(HandleInput);	
