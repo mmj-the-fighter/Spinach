@@ -40,6 +40,11 @@ struct MinuteSecond {
 	int seconds;
 };
 
+enum class Opcode {
+	FLAG_TILE,
+	OPEN_TILE
+};
+
 MinuteSecond ms;
 
 
@@ -158,7 +163,7 @@ void InitBoard() {
 	blastCol = -1;
 }
 
-void MarkBoardRowCol(int r, int c, int opcode) {
+void MarkBoardRowCol(int r, int c, Opcode opcode) {
 	if (r < 0 || r > MAXROWS - 1 || c < 0 || c > MAXCOLS - 1) {
 		//std::cout << "out2\n";
 		return;
@@ -166,7 +171,7 @@ void MarkBoardRowCol(int r, int c, int opcode) {
 
 	//std::cout << r << " " << c << "\n";
 	Tile& t = board[r][c];
-	if (opcode == 0) {
+	if (opcode == Opcode::OPEN_TILE) {
 		//std::cout << "visited\n";
 		if (t.dangerousNeighbourCount == 0) {
 			lockInput = true;
@@ -175,7 +180,7 @@ void MarkBoardRowCol(int r, int c, int opcode) {
 		}
 		t.isVisited = true;
 	}
-	else if (opcode == 1 && t.isVisited == false) {
+	else if (opcode == Opcode::FLAG_TILE && t.isVisited == false) {
 		//std::cout << "flagged\n";
 		t.isFlagged = !t.isFlagged;
 	}
@@ -195,7 +200,7 @@ void MarkBoardRowCol(int r, int c, int opcode) {
 	}
 }
 
-void MarkBoard(int x, int y, int opcode) {
+void MarkBoard(int x, int y, Opcode opcode) {
 	int minx = startX;
 	int miny = startY;
 	int maxy = startY + MAXROWS * TILEH;
@@ -255,7 +260,7 @@ void DisplayBoard(spn::Canvas* canvas) {
 			}
 			else if (t.isVisited && t.isDangerous) {
 			//else if (t.isDangerous) {
-				canvas->SetPrimaryColorUint(0xff0000);
+				//canvas->SetPrimaryColorUint(0xff0000);
 				//canvas->DrawCString("M", x + padding, y + padding);
 				canvas->DrawImage(&dangerTile, x, y);
 			}
@@ -272,7 +277,7 @@ void DisplayBoard(spn::Canvas* canvas) {
 	if (isGameOver) {
 		int by = startY + blastRow * TILEH;
 		int bx = startX + blastCol * TILEW;
-		canvas->SetPrimaryColorUint(0xffffff);
+		canvas->SetPrimaryColorUint(0xff0000);
 		canvas->DrawRectangle(bx+2, by+2, bx + TILEW-2, by + TILEH-2);
 		canvas->DrawRectangle(bx + 4, by + 4, bx + TILEW - 4, by + TILEH - 4);
 		canvas->DrawRectangle(bx + 6, by + 6, bx + TILEW - 6, by + TILEH - 6);
@@ -288,6 +293,21 @@ struct RowCol {
 	int r;
 	int c;
 };
+
+void RevealBoard() {
+	for (int i = 0; i < MAXROWS; i++) {
+		for (int j = 0; j < MAXCOLS; j++) {
+			Tile& t = board[i][j];
+			if (t.isDangerous) {
+				t.isFlagged = true;
+			}
+			else {
+				t.isVisited = true;
+			}
+		}
+	}
+}
+
 bool SolveBoardIteration() {
 	bool isBoardDataChanged = false;
 	std::vector<RowCol> unvisitedNeighbours;
@@ -351,7 +371,7 @@ bool SolveBoardIteration() {
 			if (t.dangerousNeighbourCount == fnc) {
 				for (const auto& rc : unflaggedAndUnvistedNeighbours) {
 					if (!board[rc.r][rc.c].isVisited) {
-						MarkBoardRowCol(rc.r, rc.c, 0);
+						MarkBoardRowCol(rc.r, rc.c, Opcode::OPEN_TILE);
 						isBoardDataChanged = true;
 					}
 				}
@@ -362,8 +382,22 @@ bool SolveBoardIteration() {
 }
 
 void SolveBoard() {
+	if (isGameOver || isGameWon) {
+		std::cout << "Game over!\n";
+		std::cout << "Revealing Board..\n";
+		RevealBoard();
+		return;
+	}
+	std::cout << "Finding deterministic solution...\n";
 	while (SolveBoardIteration()) {
 		;
+	}
+	CheckIfGameWon();
+	if (!isGameWon) {
+		std::cout << "Cannot solve from this data...\n";
+	}
+	else {
+		std::cout << "Solved.\n";
 	}
 }
 
@@ -418,12 +452,12 @@ void HandleInput(const SDL_Event* sdlEvent) {
 	case UiEventType::MouseUp:
 		if (uie.mouseButton == MouseButton::Left) {
 			if (!isGameWon && !isGameOver) {
-				MarkBoard(uie.mouseX, uie.mouseY, 0);
+				MarkBoard(uie.mouseX, uie.mouseY, Opcode::OPEN_TILE);
 			}
 		}
 		else {
 			if (!isGameWon && !isGameOver) {
-				MarkBoard(uie.mouseX, uie.mouseY, 1);
+				MarkBoard(uie.mouseX, uie.mouseY, Opcode::FLAG_TILE);
 			}
 		}
 		break;
