@@ -1,9 +1,6 @@
 #include <iostream>
 #include <algorithm>
-#include <random>
-#include <thread>
 #include <string>
-#include <vector>
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
