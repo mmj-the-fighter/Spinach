@@ -1,7 +1,7 @@
 #include <iostream>
-#include "../spinach/core/spn_canvas.h"
-#include "../spinach/core/spn_core.h"
-#include "../spinach/common/spn_profiler.h"
+#include <spn_canvas.h>
+#include <spn_core.h>
+#include <spn_profiler.h>
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	static int frameNum = 0;
