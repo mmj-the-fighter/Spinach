@@ -81,8 +81,9 @@ public:
 	}
 
 	bool OnLmbUp(int mx, int my) {
+		SetFocus(false);
 		if (IsPointInsideBtn(mx, my)) {
-			SetFocus(false);
+			
 			if (onClickFn != nullptr) {
 				onClickFn(id);
 			}
