@@ -41,18 +41,6 @@ namespace spn
 		}
 		void DrawRectangle(int left, int top, int right, int bottom);
 		void DrawFilledRectangle(int left, int top, int right, int bottom);
-		void DrawCircle(int x, int y, int radius);
-		void DrawCubicBezierUniform(
-			float x0, float y0,
-			float x1, float y1,
-			float x2, float y2,
-			float x3, float y3,
-			int segments = 32);
-		void DrawArc(float x0, float y0,
-			float rx, float ry,
-			float xAxisRotationDeg,
-			bool largeArcFlag, bool sweepFlag,
-			float x1, float y1);
 		void DrawImage(Image* image, int x, int y);
 		void DrawSubImage(Image* image, int x, int y,
 			int tileStartX, int tileStartY,
