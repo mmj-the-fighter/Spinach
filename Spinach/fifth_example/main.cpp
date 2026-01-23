@@ -32,7 +32,15 @@ void Filter()
 	int kernel_size = 3;
 	int width = sourceImage.GetCanvas()->GetWidth();
 	int height = sourceImage.GetCanvas()->GetHeight();
-	kernel_size = std::stoi(kernelSizeTextBox->GetText());
+	try {
+		kernel_size = std::stoi(kernelSizeTextBox->GetText());
+	}
+	catch (...) {
+		std::cout << "Parsing int failed...\n";
+		std::cout << "Blurring with kernel size 3\n";
+		kernel_size = 3;
+	}
+	
 	if (kernel_size % 2 == 0) {
 		std::cout << "Can't work on even kernel size\n";
 		return;
