@@ -17,48 +17,56 @@
 spn::Image sourceImage;
 spn::Image* workingImage;
 Button* doFilterButton;
+Button* showOriginalButton;
 Textbox* kernelSizeTextBox;
 UiManager* uim;
 bool inputEnabled = true;
 //allocate temporary buffers
-unsigned char* fully_filtered_img;
-unsigned char* horiz_filtered_img;
+unsigned char* fullyFilteredImagePixels;
+unsigned char* horizontallyFilteredImagePixels;
 
-void Filter()
-{
+void Filter(bool noFiltering)
+{	
 	int i, j;
 	int x, y;
 	const int channels = 4;
-	int kernel_size = 3;
+	int kernelSize = 3;
+	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
+	unsigned char* dstImg = workingImage->GetCanvas()->GetPixelBuffer();
 	int width = sourceImage.GetCanvas()->GetWidth();
 	int height = sourceImage.GetCanvas()->GetHeight();
+	if (noFiltering) {
+		std::cout << "Restoring the original image\n";
+		memcpy(dstImg, srcImg, width * height * channels);
+		return;
+	}
+
+
 	try {
-		kernel_size = std::stoi(kernelSizeTextBox->GetText());
+		kernelSize = std::stoi(kernelSizeTextBox->GetText());
 	}
 	catch (...) {
 		std::cout << "Parsing int failed...\n";
 		std::cout << "Blurring with kernel size 3\n";
-		kernel_size = 3;
+		kernelSize = 3;
 	}
 	
-	if (kernel_size % 2 == 0) {
+	if (kernelSize % 2 == 0) {
 		std::cout << "Can't work on even kernel size\n";
 		return;
 	}
-	if (kernel_size < 0 || kernel_size > 100) {
+	if (kernelSize < 0 || kernelSize > 100) {
 		std::cout << "Invalid kernel size\n";
 		return;
 	}
-	spn::ProfilerScope prof(kernel_size);
+	spn::ProfilerScope prof(kernelSize);
 	inputEnabled = false;
-	std::cout << "Kernel size: " << kernel_size << std::endl;
-	int half_kernel_size = kernel_size / 2;
+	std::cout << "Kernel size: " << kernelSize << std::endl;
+	int halfKernelSize = kernelSize / 2;
 
 	//init horizontal and vertical kernels (for box filtering)
-	float filter_value = 1.0f / (float)kernel_size;
+	float filterValue = 1.0f / (float)kernelSize;
 
-	unsigned char* src_img = sourceImage.GetCanvas()->GetPixelBuffer();
-	unsigned char* dst_img = workingImage->GetCanvas()->GetPixelBuffer();
 
 	//apply filter horizontally
 	for (y = 0; y < height; ++y) {
@@ -66,17 +74,17 @@ void Filter()
 			float bs = 0.0;
 			float gs = 0.0;
 			float rs = 0.0;
-			for (i = -half_kernel_size; i <= half_kernel_size; ++i) {
-				int sample_location_x = std::clamp(x + i, 0, width - 1);
-				unsigned char* buffer = src_img +
+			for (i = -halfKernelSize; i <= halfKernelSize; ++i) {
+				int sampleLocationX = std::clamp(x + i, 0, width - 1);
+				unsigned char* buffer = srcImg +
 					(width * channels * y) +
-					(sample_location_x * channels);
-				bs += filter_value * *buffer;
-				gs += filter_value * *(buffer + 1);
-				rs += filter_value * *(buffer + 2);
+					(sampleLocationX * channels);
+				bs += filterValue * *buffer;
+				gs += filterValue * *(buffer + 1);
+				rs += filterValue * *(buffer + 2);
 			}
 			unsigned char* outbuffer =
-				horiz_filtered_img +
+				horizontallyFilteredImagePixels +
 				(width * channels * y) +
 				(x * channels);
 			*outbuffer = bs;
@@ -92,19 +100,19 @@ void Filter()
 			float bs = 0.0;
 			float gs = 0.0;
 			float rs = 0.0;
-			for (i = -half_kernel_size; i <= half_kernel_size; ++i) {
-				int sample_location_y = std::clamp(y + i, 0, height - 1);
+			for (i = -halfKernelSize; i <= halfKernelSize; ++i) {
+				int sampleLocationY = std::clamp(y + i, 0, height - 1);
 				unsigned char* buffer =
-					horiz_filtered_img +
-					(width * channels * sample_location_y) +
+					horizontallyFilteredImagePixels +
+					(width * channels * sampleLocationY) +
 					(x * channels);
-				bs += filter_value * *buffer;
-				gs += filter_value * *(buffer + 1);
-				rs += filter_value * *(buffer + 2);
+				bs += filterValue * *buffer;
+				gs += filterValue * *(buffer + 1);
+				rs += filterValue * *(buffer + 2);
 			}
 
 			unsigned char* outbuffer =
-				fully_filtered_img +
+				fullyFilteredImagePixels +
 				(width * channels * y) +
 				(x * channels);
 
@@ -115,8 +123,8 @@ void Filter()
 		}
 	}
 
-	//change the source image to filtered
-	memcpy(dst_img, fully_filtered_img, width * height * channels);
+	//change the dest image to be filtered
+	memcpy(dstImg, fullyFilteredImagePixels, width * height * channels);
 
 	inputEnabled = true;
 }
@@ -129,8 +137,17 @@ void InitUi() {
 	doFilterButton->SetSize(128, 32);
 	doFilterButton->SetString("Blur");
 	doFilterButton->SetCallback([=](int id) {
-		Filter();
+		Filter(false);
 		});
+
+	showOriginalButton = uim->CreateWidget<Button>();
+	showOriginalButton->SetPosition(80+140, MAXRESY - 50);
+	showOriginalButton->SetSize(128, 32);
+	showOriginalButton->SetString("Show Original");
+	showOriginalButton->SetCallback([=](int id) {
+		Filter(true);
+		});
+
 	kernelSizeTextBox = uim->CreateWidget<Textbox>();
 	kernelSizeTextBox->SetPosition(10, MAXRESY-50);
 	kernelSizeTextBox->SetSize(64, 30);
@@ -145,13 +162,13 @@ void InitApp() {
 	int height = sourceImage.GetCanvas()->GetHeight();
 
 	//allocate temporary buffers
-	fully_filtered_img = new unsigned char[width * height * channels];
-	horiz_filtered_img = new unsigned char[width * height * channels];
+	fullyFilteredImagePixels = new unsigned char[width * height * channels];
+	horizontallyFilteredImagePixels = new unsigned char[width * height * channels];
 }
 
 void DestroyApp() {
-	delete[] fully_filtered_img;
-	delete[] horiz_filtered_img;
+	delete[] fullyFilteredImagePixels;
+	delete[] horizontallyFilteredImagePixels;
 }
 
 
