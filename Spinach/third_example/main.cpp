@@ -105,7 +105,7 @@ void Init(float maxwidth, float maxheight)
 		knots[i].y = knots[i-1].y + knots[i].radius * sin(knots[i].theta);
 		knots[i].x = knots[i-1].x + knots[i].radius * cos(knots[i].theta);
 	}
-
+	UiScheme::GetInstance().LoadSchemeFile("../res/ui.scheme");
 	uim = &UiManager::GetInstance();
 	slider = uim->CreateWidget<Slider>();
 	slider->SetId(100);
