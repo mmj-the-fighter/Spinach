@@ -12,6 +12,13 @@ Useful for:
 - Games
 - and so on.
 
+## Examples / Tutorials
+- [first_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/first_example/main.cpp) shows how spinach can be used for displaying pixels in a render loop (use case for software rasterization and raytracing)
+- [second_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/second_example/main.cpp)  shows how spinach can be used without render loop  
+- [third_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/third_example/main.cpp)  shows how rmgui in spinach can be used
+- [fourth_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/fourth_example/main.cpp) shows how a clone of mine sweeper game can be developed  
+- [fifth_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/fifth_example/main.cpp) shows how spinach can be used for image processing  
+
 ## Build / Project Generation
 
 **Prerequisites**
