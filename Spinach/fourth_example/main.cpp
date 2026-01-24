@@ -30,9 +30,9 @@ spn::Image dangerTile;
 float runningTime = 0;
 int blastRow = -1;
 int blastCol = -1;
-Button* solveButton;
-Button* nextButton;
-UiManager* uim;
+spn::rmgui::Button* solveButton;
+spn::rmgui::Button* nextButton;
+spn::rmgui::UiManager* uim;
 
 struct MinuteSecond {
 	int totalSeconds;
@@ -403,6 +403,7 @@ void SolveBoard() {
 
 
 void InitUi() {
+	using namespace spn::rmgui;
 	uim = &UiManager::GetInstance();
 	solveButton = uim->CreateWidget<Button>();
 	solveButton->SetPosition(GAMERESOLUTIONX - 130, GAMERESOLUTIONY / 3);
@@ -437,6 +438,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
+	using namespace spn::rmgui;
 	if (lockInput) {
 		return;
 	}

@@ -9,121 +9,124 @@
 #include <cctype>
 #include <iostream>
 
-class UiScheme
-{
-private:
-    inline static void Trim(std::string& s)
+namespace spn::rmgui {
+    class UiScheme
     {
-        size_t start = 0;
-        while (start < s.size() && std::isspace((unsigned char)s[start]))
-            ++start;
-
-        size_t end = s.size();
-        while (end > start && std::isspace((unsigned char)s[end - 1]))
-            --end;
-
-        s.erase(end);
-        s.erase(0, start);
-    }
-
-    static unsigned int ParseColorOrDecimal(const std::string& valueStr)
-    {
-        std::string v = valueStr;
-
-        if (v.empty()) return 0;
-
-        // Hex color (HTML style)
-        if (v[0] == '#')
+    private:
+        inline static void Trim(std::string& s)
         {
-            v.erase(0, 1);
-            return (unsigned int)std::stoul(v, nullptr, 16);
+            size_t start = 0;
+            while (start < s.size() && std::isspace((unsigned char)s[start]))
+                ++start;
+
+            size_t end = s.size();
+            while (end > start && std::isspace((unsigned char)s[end - 1]))
+                --end;
+
+            s.erase(end);
+            s.erase(0, start);
         }
 
-        // Otherwise treat as decimal
-        return (unsigned int)std::stoul(v, nullptr, 10);
-    }
-
-public:
-    inline static UiScheme& GetInstance() {
-        static UiScheme instance;
-        return instance;
-    }
-
-    inline bool LoadSchemeFile(const std::string& uiSchemeFilePath)
-    {
-        std::ifstream file(uiSchemeFilePath);
-        if (!file.is_open()) {
-            std::cout << "Failed to open ui scheme file...\n";
-            return false;
-        }
-
-        std::unordered_map<std::string, unsigned int*> skinMap = {
-            {"checkboxSize",      &checkboxSize},      // decimal only
-            {"checkboxColor",     &checkboxColor},
-            {"checkboxFillColor", &checkboxFillColor},
-            {"textColor",         &textColor},
-            {"buttonReleaseColor",&buttonReleaseColor},
-            {"buttonHoverColor",  &buttonHoverColor},
-            {"buttonPressColor",  &buttonPressColor},
-            {"sliderTrackColor",  &sliderTrackColor},
-            {"sliderKnobColor",  &sliderKnobColor},
-            {"sliderKnobHoverColor",  &sliderKnobHoverColor},
-            {"sliderTextColor",  &sliderTextColor}
-        };
-
-        std::string line;
-        while (std::getline(file, line))
+        static unsigned int ParseColorOrDecimal(const std::string& valueStr)
         {
-            // Skip empty lines
-            if (line.find_first_not_of(" \t\r\n") == std::string::npos)
-                continue;
+            std::string v = valueStr;
 
-            // Skip comments
-            size_t pos = line.find_first_not_of(" \t\r\n");
-            if (pos != std::string::npos && line[pos] == '#')
-                continue;
+            if (v.empty()) return 0;
 
-            std::stringstream ss(line);
-            std::string key, value;
-
-            if (std::getline(ss, key, '=') && std::getline(ss, value))
+            // Hex color (HTML style)
+            if (v[0] == '#')
             {
-                Trim(key);
-                Trim(value);
+                v.erase(0, 1);
+                return (unsigned int)std::stoul(v, nullptr, 16);
+            }
 
-                auto it = skinMap.find(key);
-                if (it != skinMap.end())
+            // Otherwise treat as decimal
+            return (unsigned int)std::stoul(v, nullptr, 10);
+        }
+
+    public:
+        inline static UiScheme& GetInstance() {
+            static UiScheme instance;
+            return instance;
+        }
+
+        inline bool LoadSchemeFile(const std::string& uiSchemeFilePath)
+        {
+            std::ifstream file(uiSchemeFilePath);
+            if (!file.is_open()) {
+                std::cout << "Failed to open ui scheme file...\n";
+                return false;
+            }
+
+            std::unordered_map<std::string, unsigned int*> skinMap = {
+                {"checkboxSize",      &checkboxSize},      // decimal only
+                {"checkboxColor",     &checkboxColor},
+                {"checkboxFillColor", &checkboxFillColor},
+                {"textColor",         &textColor},
+                {"buttonReleaseColor",&buttonReleaseColor},
+                {"buttonHoverColor",  &buttonHoverColor},
+                {"buttonPressColor",  &buttonPressColor},
+                {"sliderTrackColor",  &sliderTrackColor},
+                {"sliderKnobColor",  &sliderKnobColor},
+                {"sliderKnobHoverColor",  &sliderKnobHoverColor},
+                {"sliderTextColor",  &sliderTextColor}
+            };
+
+            std::string line;
+            while (std::getline(file, line))
+            {
+                // Skip empty lines
+                if (line.find_first_not_of(" \t\r\n") == std::string::npos)
+                    continue;
+
+                // Skip comments
+                size_t pos = line.find_first_not_of(" \t\r\n");
+                if (pos != std::string::npos && line[pos] == '#')
+                    continue;
+
+                std::stringstream ss(line);
+                std::string key, value;
+
+                if (std::getline(ss, key, '=') && std::getline(ss, value))
                 {
-                    try {
-                        *(it->second) = ParseColorOrDecimal(value);
-                    }
-                    catch (...) {
-                        std::cout << "Invalid format for key: " << key << " value: " << value << "\n";
+                    Trim(key);
+                    Trim(value);
+
+                    auto it = skinMap.find(key);
+                    if (it != skinMap.end())
+                    {
+                        try {
+                            *(it->second) = ParseColorOrDecimal(value);
+                        }
+                        catch (...) {
+                            std::cout << "Invalid format for key: " << key << " value: " << value << "\n";
+                        }
                     }
                 }
             }
+            return true;
         }
-        return true;
-    }
 
-public:
-    // Defaults
-    unsigned int checkboxSize = 14;
-    unsigned int checkboxColor = 0x000080;
-    unsigned int checkboxFillColor = 0xCC5500;
-    unsigned int textColor = 0xFFFFFF;
-    unsigned int buttonReleaseColor = 0x000080;
-    unsigned int buttonHoverColor = 0xCC5500;
-    unsigned int buttonPressColor = 0x808080;
-    unsigned int sliderTrackColor = 0x000050;
-    unsigned int sliderKnobColor = 0x0000FF;
-    unsigned int sliderKnobHoverColor = 0xCC5500;
-    unsigned int sliderTextColor = 0xFFFFFF;
+    public:
+        // Defaults
+        unsigned int checkboxSize = 14;
+        unsigned int checkboxColor = 0x000080;
+        unsigned int checkboxFillColor = 0xCC5500;
+        unsigned int textColor = 0xFFFFFF;
+        unsigned int buttonReleaseColor = 0x000080;
+        unsigned int buttonHoverColor = 0xCC5500;
+        unsigned int buttonPressColor = 0x808080;
+        unsigned int sliderTrackColor = 0x000050;
+        unsigned int sliderKnobColor = 0x0000FF;
+        unsigned int sliderKnobHoverColor = 0xCC5500;
+        unsigned int sliderTextColor = 0xFFFFFF;
 
-private:
-    UiScheme() {}
-    UiScheme(const UiScheme&) = delete;
-    UiScheme& operator=(const UiScheme&) = delete;
-};
+    private:
+        UiScheme() {}
+        UiScheme(const UiScheme&) = delete;
+        UiScheme& operator=(const UiScheme&) = delete;
+    };
+}
+
 
 #endif

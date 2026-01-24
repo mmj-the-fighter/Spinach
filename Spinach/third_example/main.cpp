@@ -44,19 +44,19 @@ float sampleTime = 0;
 bool canSample = true;
 bool clearPoints = false;
 bool hideUi = false;
-Slider* slider;
-Slider* slider2;
-Slider* slider3;
-Slider* slider4;
-Slider* slider5;
-Dropdown* dropdown;
-Label* label;
-Button* button;
-Checkbox* checkbox;
-Textbox* textbox;
-Textbox* textbox2;
+spn::rmgui::Slider* slider;
+spn::rmgui::Slider* slider2;
+spn::rmgui::Slider* slider3;
+spn::rmgui::Slider* slider4;
+spn::rmgui::Slider* slider5;
+spn::rmgui::Dropdown* dropdown;
+spn::rmgui::Label* label;
+spn::rmgui::Button* button;
+spn::rmgui::Checkbox* checkbox;
+spn::rmgui::Textbox* textbox;
+spn::rmgui::Textbox* textbox2;
 
-UiManager* uim;
+spn::rmgui::UiManager* uim;
 
 void OnSliderValueChanged(int id, float value) {
 	//std::cout << "id " << id << "\n";
@@ -89,6 +89,7 @@ void OnSliderValueChanged(int id, float value) {
 
 void Init(float maxwidth, float maxheight)
 {
+	using namespace spn::rmgui;
 	sampleTime = samplingInterval;
 	maxPoints = 5000;
 	speedMultiplier = 20;
@@ -308,6 +309,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 
 void HandleInput(const SDL_Event* e)
 {
+	using namespace spn::rmgui;
 	float x, y, dx, dy;
 	static float prvX = 0, prvY = 0;
 	int c1 = -1, c2 = -1, n1 = -1, n2 = -1;

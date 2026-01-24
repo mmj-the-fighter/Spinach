@@ -16,10 +16,10 @@
 
 spn::Image sourceImage;
 spn::Image* workingImage;
-Button* doFilterButton;
-Button* showOriginalButton;
-Textbox* kernelSizeTextBox;
-UiManager* uim;
+spn::rmgui::Button* doFilterButton;
+spn::rmgui::Button* showOriginalButton;
+spn::rmgui::Textbox* kernelSizeTextBox;
+spn::rmgui::UiManager* uim;
 bool inputEnabled = true;
 //allocate temporary buffers
 unsigned char* fullyFilteredImagePixels;
@@ -131,6 +131,7 @@ void Filter(bool noFiltering)
 
 
 void InitUi() {
+	using namespace spn::rmgui;
 	uim = &UiManager::GetInstance();
 	doFilterButton = uim->CreateWidget<Button>();
 	doFilterButton->SetPosition(80, MAXRESY-50);
@@ -179,12 +180,13 @@ void UpdateAndRender(spn::Canvas* canvas) {
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
+
 	if (!inputEnabled) {
 		return;
 	}
 
-	UiEvent uie;
-	TranslateSdlEvent(sdlEvent, uie);
+	spn::rmgui::UiEvent uie;
+	spn::rmgui::TranslateSdlEvent(sdlEvent, uie);
 	uim->HandleUiEvent(uie);
 }
 
