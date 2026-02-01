@@ -29,6 +29,28 @@ unsigned char* horizontallyFilteredImagePixels;
 
 spn::rmgui::Slider* threshSlider;
 
+
+/*
+
+Thresholding partitions the the image into black and white
+
+Pixels having intensity less than the threshold intensity
+will become black
+
+And pixels having intensity greater than or equal to threshold
+will become white
+
+The threshold intensity has a minimum value of 0
+and a maximum value of 255
+
+Automatic threshold demonstrated here is the
+average intensity of the image
+
+Note that the intensity calculation used
+here is an approximation
+
+*/
+
 void Threshold(float thresh) {
 	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
 	unsigned char* dstImg = workingImage->GetCanvas()->GetPixelBuffer();
