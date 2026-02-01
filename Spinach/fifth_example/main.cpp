@@ -75,7 +75,7 @@ void AutoThreshold() {
 		srcImg += 4;
 	}
 	float averageIntensity = sum / (float)count;
-	Threshold(averageIntensity);
+	//Threshold(averageIntensity);
 	threshSlider->SetRangeAndValue(0, 255, averageIntensity);
 	threshSlider->CalculateKnobPosition();
 }
