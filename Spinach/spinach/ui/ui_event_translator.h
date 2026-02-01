@@ -38,10 +38,14 @@ namespace spn::rmgui {
 				uie.mouseY = e->motion.y;
 			}
 			else {
+				if (e->motion.state & SDL_BUTTON_RMASK) {
+					uie.mouseButton = MouseButton::Right;
+				}
 				uie.eventType = UiEventType::MouseMove;
 				uie.mouseX = e->motion.x;
 				uie.mouseY = e->motion.y;
 			}
+			
 			break;
 		case SDL_EVENT_MOUSE_BUTTON_UP:
 			if (e->button.button == SDL_BUTTON_LEFT) {
