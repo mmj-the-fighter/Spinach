@@ -9,6 +9,7 @@
 #include <ui_manager.h>
 #include <textbox.h>
 #include <button.h>
+#include <slider.h>
 
 
 #define MAXRESX 800
@@ -18,12 +19,75 @@ spn::Image sourceImage;
 spn::Image* workingImage;
 spn::rmgui::Button* doFilterButton;
 spn::rmgui::Button* showOriginalButton;
+spn::rmgui::Button* autoThreshButton;
 spn::rmgui::Textbox* kernelSizeTextBox;
 spn::rmgui::UiManager* uim;
 bool inputEnabled = true;
 //allocate temporary buffers
 unsigned char* fullyFilteredImagePixels;
 unsigned char* horizontallyFilteredImagePixels;
+
+spn::rmgui::Slider* threshSlider;
+
+void Threshold(float thresh) {
+	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
+	unsigned char* dstImg = workingImage->GetCanvas()->GetPixelBuffer();
+	
+	int n = sourceImage.GetCanvas()->GetNumOfPixels();
+	for (int i = 0; i < n; ++i)
+	{
+		int b = *srcImg;
+		int g = *(srcImg + 1);
+		int r = *(srcImg + 2);
+		float intensity = (float)((b + g + r)) / 3.0f;
+
+		if (intensity < thresh)
+		{
+			*dstImg++ = 0;
+			*dstImg++ = 0;
+			*dstImg++ = 0;
+			*dstImg++ = 255;
+		}
+		else
+		{
+			*dstImg++ = 255;
+			*dstImg++ = 255;
+			*dstImg++ = 255;
+			*dstImg++ = 255;
+		}
+		srcImg += 4;
+	}
+}
+
+void AutoThreshold() {
+	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
+	float sum = 0;
+	int count = 0;
+	int n = sourceImage.GetCanvas()->GetNumOfPixels();
+	for (int i = 0; i < n; ++i)
+	{
+		int b = *srcImg;
+		int g = *(srcImg + 1);
+		int r = *(srcImg + 2);
+		float intensity = (float)((b + g + r)) / 3.0f;
+		sum += intensity;
+		++count;
+		srcImg += 4;
+	}
+	float averageIntensity = sum / (float)count;
+	Threshold(averageIntensity);
+	threshSlider->SetRangeAndValue(0, 255, averageIntensity);
+	threshSlider->CalculateKnobPosition();
+}
+
+void OnSliderValueChanged(int id, float value) {
+	int i;
+	switch (id) {
+	case 100:
+		Threshold(value);
+		break;
+	}
+}
 
 void Filter(bool noFiltering)
 {	
@@ -149,9 +213,29 @@ void InitUi() {
 		Filter(true);
 		});
 
+	autoThreshButton = uim->CreateWidget<Button>();
+	autoThreshButton->SetPosition(80 + 140+140, MAXRESY - 50);
+	autoThreshButton->SetSize(128, 32);
+	autoThreshButton->SetString("Auto Thresh");
+	autoThreshButton->SetCallback([=](int id) {
+		AutoThreshold();
+		});
+
 	kernelSizeTextBox = uim->CreateWidget<Textbox>();
 	kernelSizeTextBox->SetPosition(10, MAXRESY-50);
 	kernelSizeTextBox->SetSize(64, 30);
+
+	threshSlider = uim->CreateWidget<Slider>();
+	threshSlider->SetId(100);
+	threshSlider->SetPosition(MAXRESX-250-2, MAXRESY/2);
+	threshSlider->SetSize(120, 32);
+	threshSlider->SetDecimalPlaces(2);
+	threshSlider->SetRangeAndValue(0, 255, 0);
+	threshSlider->CalculateKnobPosition();
+	threshSlider->SetCallback(OnSliderValueChanged);
+	threshSlider->SetSensitivity(0.1);
+	threshSlider->SetCStringLabel("Threshold");
+	
 }
 
 
@@ -206,12 +290,13 @@ int main(int argc, char* argv[])
 			<< std::endl;
 		return 1;
 	}
-	InitUi();
 	InitApp();
+	InitUi();
+	
 	
 	sc.SetUpdateAndRenderHandler(UpdateAndRender);
 	sc.SetInputHandler(HandleInput);	
-	sc.SetWindowTitle("Seperable Kernel Box Blur Example");
+	sc.SetWindowTitle("Image Processing Example");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.GetCanvas()->SetClearColor(0, 0, 0);
 	sc.SetTargetFramesPerSecond(30);
