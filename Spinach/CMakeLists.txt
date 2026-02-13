@@ -7,12 +7,12 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(FIRST_EXAMPLE first_example)
-set(SECOND_EXAMPLE second_example)
-set(THIRD_EXAMPLE third_example)
-set(FOURTH_EXAMPLE fourth_example)
-set(FIFTH_EXAMPLE fifth_example)
-set(SIXTH_EXAMPLE sixth_example)
+set(EXAMPLE_WITH_RENDER_LOOP example_with_render_loop)
+set(EXAMPLE_WITHOUT_RENDER_LOOP example_without_render_loop)
+set(SPIROGRAPH_WITH_RMGUI spirograph_with_rmgui)
+set(MINE_SWEEPER mine_sweeper)
+set(IMAGE_PROCESSING_WITH_RMGUI image_processing_with_rmgui)
+set(GAME_OF_LIFE game_of_life)
 
 
 
@@ -67,203 +67,203 @@ file(GLOB_RECURSE NANOSVG_H CONFIGURE_DEPENDS
 	spinach/external/nanosvg/*.h
 )
 
-# 1. first_example
+# 1. example_with_render_loop
 # Collect C++ source files
-file(GLOB_RECURSE FIRST_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
-    first_example/*.cpp
+file(GLOB_RECURSE EXAMPLE_WITH_RENDER_LOOP_CPP_SRC CONFIGURE_DEPENDS
+    examples/example_with_render_loop/*.cpp
 )
 
 # Collect headers 
-file(GLOB_RECURSE FIRST_EXAMPLE_CPP_H CONFIGURE_DEPENDS
-	first_example/*.h
+file(GLOB_RECURSE EXAMPLE_WITH_RENDER_LOOP_CPP_H CONFIGURE_DEPENDS
+	examples/example_with_render_loop/*.h
 )
 
 # Create the executable
-add_executable(	${FIRST_EXAMPLE}
-	${FIRST_EXAMPLE_CPP_SRC}
+add_executable(	${EXAMPLE_WITH_RENDER_LOOP}
+	${EXAMPLE_WITH_RENDER_LOOP_CPP_SRC}
 	${SPINACH_CPP_SRC}
     ${SPINACH_C_SRC}
-    ${FIRST_EXAMPLE_CPP_H} 
+    ${EXAMPLE_WITH_RENDER_LOOP_CPP_H} 
 	${SPINACH_H}
 	${NANOSVG_H}
 )
 
-target_include_directories(${FIRST_EXAMPLE} PRIVATE
+target_include_directories(${EXAMPLE_WITH_RENDER_LOOP} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
-	first_example
+	examples/example_with_render_loop
 )
 
 
-target_link_libraries(${FIRST_EXAMPLE} PRIVATE SDL3::SDL3)
+target_link_libraries(${EXAMPLE_WITH_RENDER_LOOP} PRIVATE SDL3::SDL3)
 
 
-# 2. second_example
+# 2. example_without_render_loop
 # Collect C++ source files
-file(GLOB_RECURSE SECOND_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
-    second_example/*.cpp
-	second_example/imageproc/*.cpp
+file(GLOB_RECURSE EXAMPLE_WITHOUT_RENDER_LOOP_CPP_SRC CONFIGURE_DEPENDS
+    examples/example_without_render_loop/*.cpp
+	examples/example_without_render_loop/imageproc/*.cpp
 )
 
 # Collect headers 
-file(GLOB_RECURSE SECOND_EXAMPLE_CPP_H CONFIGURE_DEPENDS
-	second_example/*.h
-	second_example/imageproc/*.h
+file(GLOB_RECURSE EXAMPLE_WITHOUT_RENDER_LOOP_CPP_H CONFIGURE_DEPENDS
+	examples/example_without_render_loop/*.h
+	examples/example_without_render_loop/imageproc/*.h
 )
 
 # Create the executable
-add_executable(	${SECOND_EXAMPLE}
-	${SECOND_EXAMPLE_CPP_SRC}
+add_executable(	${EXAMPLE_WITHOUT_RENDER_LOOP}
+	${EXAMPLE_WITHOUT_RENDER_LOOP_CPP_SRC}
 	${SPINACH_CPP_SRC}
     ${SPINACH_C_SRC}
-    ${SECOND_EXAMPLE_CPP_H} 
+    ${EXAMPLE_WITHOUT_RENDER_LOOP_CPP_H} 
 	${SPINACH_H}
 	${NANOSVG_H}
 )
-target_include_directories(${SECOND_EXAMPLE} PRIVATE
+target_include_directories(${EXAMPLE_WITHOUT_RENDER_LOOP} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
-	second_example
-	second_example/image_proc
+	examples/example_without_render_loop
+	examples/example_without_render_loop/image_proc
 )
 
 
-target_link_libraries(${SECOND_EXAMPLE} PRIVATE SDL3::SDL3)
+target_link_libraries(${EXAMPLE_WITHOUT_RENDER_LOOP} PRIVATE SDL3::SDL3)
 
 
-# 3. third_example
+# 3. spirograph_with_rmgui
 # Collect C++ source files
-file(GLOB_RECURSE THIRD_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
-    third_example/*.cpp
+file(GLOB_RECURSE SPIROGRAPH_WITH_RMGUI_CPP_SRC CONFIGURE_DEPENDS
+    examples/spirograph_with_rmgui/*.cpp
 )
 
 # Collect headers 
-file(GLOB_RECURSE THIRD_EXAMPLE_CPP_H CONFIGURE_DEPENDS
-	third_example/*.h
+file(GLOB_RECURSE SPIROGRAPH_WITH_RMGUI_CPP_H CONFIGURE_DEPENDS
+	examples/spirograph_with_rmgui/*.h
 )
 
 # Create the executable
-add_executable(	${THIRD_EXAMPLE}
-	${THIRD_EXAMPLE_CPP_SRC}
+add_executable(	${SPIROGRAPH_WITH_RMGUI}
+	${SPIROGRAPH_WITH_RMGUI_CPP_SRC}
 	${SPINACH_CPP_SRC}
     ${SPINACH_C_SRC}
-    ${THIRD_EXAMPLE_CPP_H} 
+    ${SPIROGRAPH_WITH_RMGUI_CPP_H} 
 	${SPINACH_H}
 	${NANOSVG_H}
 )
-target_include_directories(${THIRD_EXAMPLE} PRIVATE
+target_include_directories(${SPIROGRAPH_WITH_RMGUI} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
-	third_example
+	examples/spirograph_with_rmgui
 )
 
 
-target_link_libraries(${THIRD_EXAMPLE} PRIVATE SDL3::SDL3)
+target_link_libraries(${SPIROGRAPH_WITH_RMGUI} PRIVATE SDL3::SDL3)
 
 
-# 4. fourth_example
+# 4. mine_sweeper
 # Collect C++ source files
-file(GLOB_RECURSE FOURTH_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
-    fourth_example/*.cpp
+file(GLOB_RECURSE MINE_SWEEPER_CPP_SRC CONFIGURE_DEPENDS
+    examples/mine_sweeper/*.cpp
 )
 
 # Collect headers 
-file(GLOB_RECURSE FOURTH_EXAMPLE_CPP_H CONFIGURE_DEPENDS
-	fourth_example/*.h
+file(GLOB_RECURSE MINE_SWEEPER_CPP_H CONFIGURE_DEPENDS
+	examples/mine_sweeper/*.h
 )
 
 # Create the executable
-add_executable(	${FOURTH_EXAMPLE}
-	${FOURTH_EXAMPLE_CPP_SRC}
+add_executable(	${MINE_SWEEPER}
+	${MINE_SWEEPER_CPP_SRC}
 	${SPINACH_CPP_SRC}
     ${SPINACH_C_SRC}
-    ${FOURTH_EXAMPLE_CPP_H} 
+    ${MINE_SWEEPER_CPP_H} 
 	${SPINACH_H}
 	${NANOSVG_H}
 )
-target_include_directories(${FOURTH_EXAMPLE} PRIVATE
+target_include_directories(${MINE_SWEEPER} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
-	fourth_example
+	examples/mine_sweeper
 )
 
 
-target_link_libraries(${FOURTH_EXAMPLE} PRIVATE SDL3::SDL3)
+target_link_libraries(${MINE_SWEEPER} PRIVATE SDL3::SDL3)
 
 
-# 5. fifth_example
+# 5. image_processing_with_rmgui
 # Collect C++ source files
-file(GLOB_RECURSE FIFTH_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
-    fifth_example/*.cpp
+file(GLOB_RECURSE IMAGE_PROCESSING_WITH_RMGUI_CPP_SRC CONFIGURE_DEPENDS
+    examples/image_processing_with_rmgui/*.cpp
 )
 
 # Collect headers 
-file(GLOB_RECURSE FIFTH_EXAMPLE_CPP_H CONFIGURE_DEPENDS
-	fifth_example/*.h
+file(GLOB_RECURSE IMAGE_PROCESSING_WITH_RMGUI_CPP_H CONFIGURE_DEPENDS
+	examples/image_processing_with_rmgui/*.h
 )
 
 # Create the executable
-add_executable(	${FIFTH_EXAMPLE}
-	${FIFTH_EXAMPLE_CPP_SRC}
+add_executable(	${IMAGE_PROCESSING_WITH_RMGUI}
+	${IMAGE_PROCESSING_WITH_RMGUI_CPP_SRC}
 	${SPINACH_CPP_SRC}
     ${SPINACH_C_SRC}
-    ${FIFTH_EXAMPLE_CPP_H} 
+    ${IMAGE_PROCESSING_WITH_RMGUI_CPP_H} 
 	${SPINACH_H}
 	${NANOSVG_H}
 )
-target_include_directories(${FIFTH_EXAMPLE} PRIVATE
+target_include_directories(${IMAGE_PROCESSING_WITH_RMGUI} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
-	fifth_example
+	examples/image_processing_with_rmgui
 )
 
 
-target_link_libraries(${FIFTH_EXAMPLE} PRIVATE SDL3::SDL3)
+target_link_libraries(${IMAGE_PROCESSING_WITH_RMGUI} PRIVATE SDL3::SDL3)
 
 
-# 6. sixth_example
+# 6. game_of_life
 # Collect C++ source files
-file(GLOB_RECURSE SIXTH_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
-    sixth_example/*.cpp
+file(GLOB_RECURSE GAME_OF_LIFE_CPP_SRC CONFIGURE_DEPENDS
+    examples/game_of_life/*.cpp
 )
 
 # Collect headers 
-file(GLOB_RECURSE SIXTH_EXAMPLE_CPP_H CONFIGURE_DEPENDS
-	sixth_example/*.h
+file(GLOB_RECURSE GAME_OF_LIFE_CPP_H CONFIGURE_DEPENDS
+	examples/game_of_life/*.h
 )
 
 # Create the executable
-add_executable(	${SIXTH_EXAMPLE}
-	${SIXTH_EXAMPLE_CPP_SRC}
+add_executable(	${GAME_OF_LIFE}
+	${GAME_OF_LIFE_CPP_SRC}
 	${SPINACH_CPP_SRC}
     ${SPINACH_C_SRC}
-    ${SIXTH_EXAMPLE_CPP_H} 
+    ${GAME_OF_LIFE_CPP_H} 
 	${SPINACH_H}
 	${NANOSVG_H}
 )
-target_include_directories(${SIXTH_EXAMPLE} PRIVATE
+target_include_directories(${GAME_OF_LIFE} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
     spinach/external/stb
 	spinach/external/nanosvg
-	sixth_example
+	examples/game_of_life
 )
 
 
-target_link_libraries(${SIXTH_EXAMPLE} PRIVATE SDL3::SDL3)
+target_link_libraries(${GAME_OF_LIFE} PRIVATE SDL3::SDL3)

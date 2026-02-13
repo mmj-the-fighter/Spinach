@@ -9,12 +9,6 @@
 #include "imageproc/imageproc.h"
 
 
-// note
-// res folder and build_root folder are inside the project folder
-// build_root is where solution is built using cmake
-// there for the correct resources folder for me is "../res/"
-// note that i have included build_root in .gitignore
-
 struct vec2
 {
 	float x;
@@ -48,7 +42,7 @@ int main(int argc, char* argv[])
 	spn::Image img;
 
 
-	img.CreateFromPng("../res/road.png");
+	img.CreateFromPng("../examples/res_for_examples/road.png"); //path relative to the build folder
 	spn::Image* sepiaImage = img.Clone();
 	
 
@@ -63,10 +57,11 @@ int main(int argc, char* argv[])
 	
 	profiler.Begin(1002);
 	spn::Image svgImg;
-	svgImg.CreateFromSvg("../res/NAND_ANSI.svg", 100);
+	svgImg.CreateFromSvg("../examples/res_for_examples/NAND_ANSI.svg", 100); 
 	profiler.End();
 
-	spn::SpinachCore sc(640, 480,"../res/");
+	spn::SpinachCore sc(640, 480,"../res/"); //Note: 3rd argument is path rel. to build folder
+	
 	
 
 	if (sc.IsInitFailed()) {
@@ -92,6 +87,7 @@ int main(int argc, char* argv[])
 	
 	Sierpinski(canvas, points, 4000);
 
+	canvas->DrawCString("Click for next", 100, 100);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 
@@ -101,6 +97,7 @@ int main(int argc, char* argv[])
 	canvas->EnableAlphaBlending(true);//needed for rendering images with transparency whether loaded from png or svg.
 	canvas->DrawImage(&svgImg, 10, 10);
 	canvas->DrawCString("NAN gate rendered from svg", 100, 150);
+	canvas->DrawCString("Click for next", 100, 100);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 	
@@ -109,11 +106,13 @@ int main(int argc, char* argv[])
 	canvas->SetPrimaryColor(0, 255, 0);
 	canvas->DrawImage(&img,0,0);
 	canvas->DrawCString("base image", 100, 400);
+	canvas->DrawCString("Click for next", 100, 400-40);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 	
 	canvas->DrawImage(sepiaImage,0,0);
 	canvas->DrawCString("after applying sepia filter", 100, 400);
+	canvas->DrawCString("Click to exit", 100, 400-40);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 

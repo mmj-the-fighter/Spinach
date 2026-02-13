@@ -155,8 +155,8 @@ void InitBoard() {
 	}
 	isGameOver = false;
 	greyTile.CreateSolidColorBlockImage(TILEW-4, TILEH-4, 128, 128, 128, 1.0);
-	flagTile.CreateFromPng("../res/flag.png");
-	dangerTile.CreateFromPng("../res/danger.png");
+	flagTile.CreateFromPng("../examples/res_for_examples/flag.png");
+	dangerTile.CreateFromPng("../examples/res_for_examples/danger.png");
 	ms.totalSeconds = 0;
 	runningTime = 0;
 	blastRow = -1;
@@ -476,16 +476,10 @@ void HandleInput(const SDL_Event* sdlEvent) {
 	//std::cout << "*";
 }
 
-// note
-// res folder and build_root folder are inside the project folder
-// build_root is where solution is built using cmake
-// there for the correct resources folder for me is "../res/"
-// note that i have included build_root in .gitignore
-
 
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(GAMERESOLUTIONX, GAMERESOLUTIONY, "../res/");
+	spn::SpinachCore sc(GAMERESOLUTIONX, GAMERESOLUTIONY, "../res/"); //Note: 3rd argument is path rel. to build folder
 	if (sc.IsInitFailed()) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()

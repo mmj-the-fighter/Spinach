@@ -1,6 +1,7 @@
 #include <algorithm>
+#include <spn_canvas.h>
 #include "imageproc.h"
-#include "../../spinach/core/spn_canvas.h"
+
 
 
 //This function was developed with the help of ChatGPT AI agent

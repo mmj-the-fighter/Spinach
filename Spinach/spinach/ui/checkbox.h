@@ -4,10 +4,10 @@
 #include <iostream>
 #include <functional>
 
-#include "../spinach/core/spn_canvas.h"
-#include "../spinach/core/spn_image.h"
-#include "ui_scheme.h"
-#include "widget.h"
+#include <spn_canvas.h>
+#include <spn_image.h>
+#include <ui_scheme.h>
+#include <widget.h>
 
 namespace spn::rmgui {
 	class Checkbox : public Widget

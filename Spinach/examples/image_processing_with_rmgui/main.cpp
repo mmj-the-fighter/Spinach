@@ -262,7 +262,7 @@ void InitUi() {
 
 
 void InitApp() {
-	sourceImage.CreateFromPng("../res/road.png");
+	sourceImage.CreateFromPng("../examples/res_for_examples/road.png");
 	workingImage = sourceImage.Clone();
 	int channels = 4;
 	int width = sourceImage.GetCanvas()->GetWidth();
@@ -296,16 +296,11 @@ void HandleInput(const SDL_Event* sdlEvent) {
 	uim->HandleUiEvent(uie);
 }
 
-// note
-// res folder and build_root folder are inside the project folder
-// build_root is where solution is built using cmake
-// there for the correct resources folder for me is "../res/"
-// note that i have included build_root in .gitignore
 
 
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(MAXRESX, MAXRESY, "../res/");
+	spn::SpinachCore sc(MAXRESX, MAXRESY, "../res/"); //Note: 3rd argument is path rel. to build folder
 	if (sc.IsInitFailed()) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()

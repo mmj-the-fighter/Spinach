@@ -7,11 +7,11 @@
 #include <functional>
 #include <string>
 
-#include "../spinach/core/spn_canvas.h"
-#include "../spinach/core/spn_image.h"
-#include "../spinach/common/spn_utils.h"
-#include "ui_scheme.h"
-#include "widget.h"
+#include <spn_canvas.h>
+#include <spn_image.h>
+#include <spn_utils.h>
+#include <ui_scheme.h>
+#include <widget.h>
 
 namespace spn::rmgui {
 
