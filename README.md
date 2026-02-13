@@ -12,12 +12,20 @@ Useful for:
 - Games
 - and so on.
 
+
+
+
+
+
+
+
 ## Examples / Tutorials
-- [first_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/first_example/main.cpp) shows how spinach can be used for displaying pixels in a render loop (use case for software rasterization and raytracing)
-- [second_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/second_example/main.cpp)  shows how spinach can be used without render loop  
-- [third_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/third_example/main.cpp)  shows how rmgui in spinach can be used
-- [fourth_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/fourth_example/main.cpp) shows how a clone of mine sweeper game can be developed  
-- [fifth_example](https://github.com/mmj-the-fighter/Spinach/blob/main/Spinach/fifth_example/main.cpp) shows how spinach can be used for image processing  
+- [render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering rapidly changing pixels. use case for software rasterization and raytracing
+- [without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  shows how spinach can be used without render loop. examples: sierpienski triangle, rendering svg and sepia filter 
+- [spirograph](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/spirograph_with_rmgui)  shows how rmgui in spinach can be used for controling a spirograph
+- [mine sweeper](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/mine_sweeper) shows how a clone of mine sweeper game can be developed using spinach
+- [image processing](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui) shows how spinach can be used for image processing  and how rmgui of spinach can be used for that.
+- [game of life](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) shows how spinach can be used for programming game of life. this involves using std::thread
 
 ## Build / Project Generation
 
