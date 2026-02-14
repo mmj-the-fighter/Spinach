@@ -14,6 +14,7 @@ set(MINE_SWEEPER mine_sweeper)
 set(IMAGE_PROCESSING_WITH_RMGUI image_processing_with_rmgui)
 set(GAME_OF_LIFE game_of_life)
 set(SNAKE_CLONE snake_clone)
+set(BIRD_FLIGHT bird_flight)
 
 
 
@@ -270,7 +271,7 @@ target_include_directories(${GAME_OF_LIFE} PRIVATE
 target_link_libraries(${GAME_OF_LIFE} PRIVATE SDL3::SDL3)
 
 
-# 6. snake_clone
+# 7. snake_clone
 # Collect C++ source files
 file(GLOB_RECURSE SNAKE_CLONE_CPP_SRC CONFIGURE_DEPENDS
     examples/snake_clone/*.cpp
@@ -301,3 +302,35 @@ target_include_directories(${SNAKE_CLONE} PRIVATE
 
 
 target_link_libraries(${SNAKE_CLONE} PRIVATE SDL3::SDL3)
+
+#8. bird flight
+# Collect C++ source files
+file(GLOB_RECURSE BIRD_FLIGHT_CPP_SRC CONFIGURE_DEPENDS
+    examples/bird_flight/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE BIRD_FLIGHT_CPP_H CONFIGURE_DEPENDS
+	examples/bird_flight/*.h
+)
+
+# Create the executable
+add_executable(	${BIRD_FLIGHT}
+	${BIRD_FLIGHT_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${BIRD_FLIGHT_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${BIRD_FLIGHT} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/bird_flight
+)
+
+
+target_link_libraries(${BIRD_FLIGHT} PRIVATE SDL3::SDL3)
