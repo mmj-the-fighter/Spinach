@@ -16,6 +16,7 @@
 
 #include <spn_canvas.h>
 #include <spn_core.h>
+#include <imgui/imgui.h>
 
 constexpr double M_PI_VALUE = 3.14159265358979323846;
 
@@ -57,6 +58,8 @@ spn::rmgui::Textbox* textbox;
 spn::rmgui::Textbox* textbox2;
 
 spn::rmgui::UiManager* uim;
+spn::rmgui::UiEvent uie = {};
+
 
 void OnSliderValueChanged(int id, float value) {
 	//std::cout << "id " << id << "\n";
@@ -222,7 +225,8 @@ void UpdateAndRendertest(spn::Canvas* canvas) {
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	canvas->Clear();
-	
+	spn::imgui::ImGuiCheckbox(canvas, uie, "Show segments(imgui)", 250, 100, showSegments);
+
 	//Rotate the spirograph one time, for each segment according to its frequency
 	int n = knots.size();
 	if (spiroRunning) {
@@ -313,7 +317,7 @@ void HandleInput(const SDL_Event* e)
 	float x, y, dx, dy;
 	static float prvX = 0, prvY = 0;
 	int c1 = -1, c2 = -1, n1 = -1, n2 = -1;
-	UiEvent uie;
+	
 	TranslateSdlEvent(e, uie);
 	bool hasUiConsumedEvent = uim->HandleUiEvent(uie);
 

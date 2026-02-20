@@ -48,6 +48,7 @@ file(GLOB_RECURSE SPINACH_CPP_SRC CONFIGURE_DEPENDS
     spinach/common/*.cpp
     spinach/core/*.cpp
 	spinach/ui/*.cpp
+	spinach/ui/imgui/*.cpp
 )
 
 
@@ -61,6 +62,7 @@ file(GLOB_RECURSE SPINACH_H CONFIGURE_DEPENDS
     spinach/common/*.[h|hpp]
     spinach/core/*.[h|hpp]
 	spinach/ui/*.[h|hpp]
+	spinach/ui/imgui/*.[h|hpp]
     spinach/external/stb/*.h
 )
 
@@ -94,6 +96,7 @@ target_include_directories(${EXAMPLE_WITH_RENDER_LOOP} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
+    spinach/ui/imgui
     spinach/external/stb
 	spinach/external/nanosvg
 	examples/example_with_render_loop
@@ -129,6 +132,7 @@ target_include_directories(${EXAMPLE_WITHOUT_RENDER_LOOP} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
+    spinach/ui/imgui
     spinach/external/stb
 	spinach/external/nanosvg
 	examples/example_without_render_loop
@@ -196,6 +200,7 @@ target_include_directories(${MINE_SWEEPER} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
+	spinach/ui/imgui
     spinach/external/stb
 	spinach/external/nanosvg
 	examples/mine_sweeper

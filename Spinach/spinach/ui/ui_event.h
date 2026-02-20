@@ -14,8 +14,9 @@ namespace spn::rmgui {
 
 		ActionKeyDown = 1 << 5,
 		ActionKeyUp = 1 << 6,
-		CharInput = 1 << 7,
+		CharInput = 1 << 7
 	};
+
 
 	enum class KeyCode
 	{
