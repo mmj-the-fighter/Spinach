@@ -47,10 +47,9 @@ cd build
 cmake ../
 ```
 
-This will generate the project files inside the `build` directory.
-## Parent project  
- [Graphics Lab Framework (in C and SDL2)](https://github.com/mmj-the-fighter/GraphicsLabFramework)
+This will generate the project files inside the `build` directory.  
 
- # Projects that use Spinach  
+# Projects that use Spinach  
 - [Namaste3D Software rasterizer](https://github.com/mmj-the-fighter/Namaste3D)
 - [Chess Game](https://github.com/RohithKKannan/Chess-Game)
+- [Match 5x5 puzzle game](https://github.com/mmj-the-fighter/match5x5)
