@@ -26,6 +26,9 @@ Useful for:
 - [mine sweeper](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/mine_sweeper) shows how a clone of mine sweeper game can be developed using spinach
 - [image processing](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui) shows how spinach can be used for image processing  and how rmgui of spinach can be used for that.
 - [game of life](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) shows how spinach can be used for programming game of life. this involves using std::thread
+- [flappy bird clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/bird_flight) shows how a flappy bird like game can be made
+- [snake clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/snake_clone) shows how a snake like game can be made
+
 
 ## Build / Project Generation
 
@@ -51,5 +54,3 @@ This will generate the project files inside the `build` directory.
  # Projects that use Spinach  
 - [Namaste3D Software rasterizer](https://github.com/mmj-the-fighter/Namaste3D)
 - [Chess Game](https://github.com/RohithKKannan/Chess-Game)
-- [Flappy Bird Clone](https://github.com/mmj-the-fighter/FlappyBirdClone)
-- [Snake 2D](https://github.com/mmj-the-fighter/Snake2D)
