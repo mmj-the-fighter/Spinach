@@ -15,6 +15,7 @@ set(IMAGE_PROCESSING_WITH_RMGUI image_processing_with_rmgui)
 set(GAME_OF_LIFE game_of_life)
 set(SNAKE_CLONE snake_clone)
 set(BIRD_FLIGHT bird_flight)
+set(RAYTRACING_EXAMPLE raytracing_example)
 
 
 
@@ -339,3 +340,38 @@ target_include_directories(${BIRD_FLIGHT} PRIVATE
 
 
 target_link_libraries(${BIRD_FLIGHT} PRIVATE SDL3::SDL3)
+
+
+#8. ray tracing example
+# Collect C++ source files
+file(GLOB_RECURSE RAYTRACING_CPP_SRC CONFIGURE_DEPENDS
+    examples/raytracing_example/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE RAYTRACING_CPP_H CONFIGURE_DEPENDS
+	examples/raytracing_example/*.h
+	examples/raytracing_example/rt_in_one_weekend/*.h
+)
+
+# Create the executable
+add_executable(	${RAYTRACING_EXAMPLE}
+	${RAYTRACING_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${RAYTRACING_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${RAYTRACING_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/raytracing_example
+	examples/raytracing_example/rt_in_one_weekend
+)
+
+
+target_link_libraries(${RAYTRACING_EXAMPLE} PRIVATE SDL3::SDL3)
