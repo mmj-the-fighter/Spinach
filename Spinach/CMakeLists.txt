@@ -16,6 +16,7 @@ set(GAME_OF_LIFE game_of_life)
 set(SNAKE_CLONE snake_clone)
 set(BIRD_FLIGHT bird_flight)
 set(RAYTRACING_EXAMPLE raytracing_example)
+set(PICTUREPUZZLE_EXAMPLE picture_puzzle)
 
 
 
@@ -375,3 +376,35 @@ target_include_directories(${RAYTRACING_EXAMPLE} PRIVATE
 
 
 target_link_libraries(${RAYTRACING_EXAMPLE} PRIVATE SDL3::SDL3)
+
+
+#9. picture puzzle example
+# Collect C++ source files
+file(GLOB_RECURSE PICTUREPUZZLE_CPP_SRC CONFIGURE_DEPENDS
+    examples/picture_puzzle/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE PICTUREPUZZLE_CPP_H CONFIGURE_DEPENDS
+	examples/picture_puzzle/*.h
+)
+
+# Create the executable
+add_executable(	${PICTUREPUZZLE_EXAMPLE}
+	${PICTUREPUZZLE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${PICTUREPUZZLE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${PICTUREPUZZLE_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/picture_puzzle
+)
+
+target_link_libraries(${PICTUREPUZZLE_EXAMPLE} PRIVATE SDL3::SDL3)
