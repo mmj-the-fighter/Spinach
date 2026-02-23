@@ -46,6 +46,7 @@ namespace spn
 			int tileStartX, int tileStartY,
 			int tileWidth, int tileHeight
 			);
+		void DrawSubImage(Image* image, int x, int y, spn::Rect& sr);
 		void DrawImageChromaKeyed(Image* image, 
 			int x, int y, 
 			int chromaR, int chromaG, int chromaB);

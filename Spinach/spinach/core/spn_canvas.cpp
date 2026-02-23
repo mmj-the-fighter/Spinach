@@ -252,6 +252,16 @@ namespace spn
 
 
 	}
+	
+	void Canvas::DrawSubImage(Image* image, int x, int y, spn::Rect& sr) {
+		Canvas* imCanvas = image->GetCanvas();
+		BitBlockTransfer(imCanvas->GetPixelBuffer(),
+			imCanvas->GetWidth(),
+			imCanvas->GetHeight(),
+			x, y, 
+			sr.left, sr.top, sr.width, sr.height
+		);
+	}
 
 	void Canvas::DrawImageChromaKeyed(Image* image,
 		int x, int y,
