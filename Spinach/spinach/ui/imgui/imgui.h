@@ -21,13 +21,15 @@ namespace spn::imgui {
 		unsigned int cbColor = UiScheme::GetInstance().checkboxColor;
 		unsigned int cbFillColor = UiScheme::GetInstance().checkboxFillColor;
 		unsigned int textColor = UiScheme::GetInstance().textColor;
+		bool checkboxChanged;
+		bool lastStatus = isChecked;
 		if ((uie.eventType == UiEventType::MouseUp) && 
 			IsMouseInsideSquare(uie.mouseX, uie.mouseY, x, y, sqSize)) {
 			isChecked = !isChecked;
 			//clear event
 			uie = {};
 		}
-
+		canvas->SaveColors();
 		canvas->SetPrimaryColorUint(cbColor);
 		canvas->DrawRectangle(x, y, x + sqSize, y + sqSize);
 
@@ -41,7 +43,8 @@ namespace spn::imgui {
 		canvas->GetStringDisplaySize(labelText, tw, th);
 		canvas->SetPrimaryColorUint(textColor);
 		canvas->DrawString(labelText, x + sqSize + 4, y + (sqSize - th) / 2);
-		return isChecked;
+		canvas->RestoreColors();
+		return (lastStatus != isChecked);
 	}
 }
 
