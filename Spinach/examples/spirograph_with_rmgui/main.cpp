@@ -225,7 +225,7 @@ void UpdateAndRendertest(spn::Canvas* canvas) {
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	canvas->Clear();
-	spn::imgui::ImGuiCheckbox(canvas, uie, "Show segments(imgui)", 250, 100, showSegments);
+	spn::imgui::Checkbox(canvas, uie, "Show segments(imgui)", 250, 100, showSegments);
 
 	//Rotate the spirograph one time, for each segment according to its frequency
 	int n = knots.size();

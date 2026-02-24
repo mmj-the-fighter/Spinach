@@ -15,7 +15,7 @@ namespace spn::imgui {
 		return (mx >= x) && (mx <= x + sqSize) && (my >= y) && (my <= y + sqSize);
 	}
 	
-	static bool ImGuiCheckbox(spn::Canvas* canvas, spn::rmgui::UiEvent& uie, const char* labelText, int x, int y, bool &isChecked) {
+	static bool Checkbox(spn::Canvas* canvas, spn::rmgui::UiEvent& uie, const char* labelText, int x, int y, bool &isChecked) {
 		using namespace spn::rmgui;
 		int sqSize = UiScheme::GetInstance().checkboxSize;
 		unsigned int cbColor = UiScheme::GetInstance().checkboxColor;
