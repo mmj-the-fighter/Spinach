@@ -1,4 +1,8 @@
+#include <imgui/imgui.h>
+
+#include <ui_event_translator.h>
 #include "wireframe_renderer.h"
+
 
 
 void WireframeRenderer::UpdateAndRender(spn::Canvas* canvas) {
@@ -22,6 +26,10 @@ void WireframeRenderer::UpdateAndRender(spn::Canvas* canvas) {
 		LoadModel();
 	}
 	canvas->Clear();
+	if (spn::imgui::Checkbox(canvas, uie, "BackFaceCulling", 100, 100, backFaceCullingCheckboxStatus)) {
+		rasterizer.EnableBackFaceCulling(backFaceCullingCheckboxStatus);
+	}
+	
 	n3d::mat4x4_set_roation_y(mMat, angle);
 	angle += angleIncr;
 	if (angle > 359.9) {
@@ -41,44 +49,44 @@ void WireframeRenderer::HandleInput(const SDL_Event* sdlEvent) {
 		{
 		case SDLK_J:
 			camera.MoveCamera(n3d::DOWN);
-			break;
+			return;
 		case SDLK_U:
 			camera.MoveCamera(n3d::UP);
-			break;
+			return;
 
 		case SDLK_A:
 			camera.TurnLeft();
-			break;
+			return;
 
 		case SDLK_D:
 			camera.TurnRight();
-			break;
+			return;
 
 		case SDLK_W:
 			camera.LookDown();
-			break;
+			return;
 
 		case SDLK_S:
 			camera.LookUp();
-			break;
+			return;
 
 		case SDLK_LEFT:
 			camera.MoveCamera(n3d::LEFT);
-			break;
+			return;
 		case SDLK_RIGHT:
 			camera.MoveCamera(n3d::RIGHT);
-			break;
+			return;
 		case SDLK_UP:
 			camera.MoveCamera(n3d::FORWARD);
-			break;
+			return;
 		case SDLK_DOWN:
 			camera.MoveCamera(n3d::BACKWARD);
-			break;
+			return;
 		case SDLK_O:
 			if (camera.IsPerspective()) {
 				requestedForChangeOfCamera = true;
 			}
-			break;
+			return;
 		case SDLK_P:
 			if (!camera.IsPerspective()) {
 				requestedForChangeOfCamera = true;
@@ -87,13 +95,14 @@ void WireframeRenderer::HandleInput(const SDL_Event* sdlEvent) {
 		case SDLK_PAGEUP:
 			modelIndex--;
 			requestedForChangeOfModel = true;
-			break;
+			return;
 		case SDLK_PAGEDOWN:
 			modelIndex++;
 			requestedForChangeOfModel = true;
-			break;
+			return;
 		}
 	}
+	spn::rmgui::TranslateSdlEvent(sdlEvent, uie);
 }
 
 void WireframeRenderer::LoadModel() {

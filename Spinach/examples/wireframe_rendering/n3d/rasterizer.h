@@ -47,6 +47,11 @@ namespace n3d {
 				p.y = canvasHeight - 1;
 			}
 		}
+		
+		void EnableBackFaceCulling(bool flag) {
+			backFaceCullingOn = flag;
+		}
+
 		void RenderMesh(Mesh& mesh);
 	private:
 		mat4x4 matModel, matView, matProjection, matViewport;
@@ -55,6 +60,7 @@ namespace n3d {
 		Camera* camera;
 		int canvasWidth;
 		int canvasHeight;
+		bool backFaceCullingOn = false;
 		std::vector<SwrTriangle> inputTriList;
 		std::vector<SwrTriangle> clippedTriList;
 	};

@@ -91,10 +91,12 @@ namespace n3d
 				ClampWithInCanvasWidthAndHeight(pointB);
 				ClampWithInCanvasWidthAndHeight(pointC);
 
-				/*float twoA = compute_two_times_triangle_area_vec4f(&pointA, &pointB, &pointC);
-				if (twoA >= 0) {
-					continue;
-				}*/
+				if (backFaceCullingOn) {
+					if (compute_two_times_triangle_area_vec4f(&pointA, &pointB, &pointC) >= 0) {
+						continue;
+					}
+				}
+				
 
 				canvas->DrawLine(pointA.x, pointA.y, pointB.x, pointB.y);
 				canvas->DrawLine(pointB.x, pointB.y, pointC.x, pointC.y);
