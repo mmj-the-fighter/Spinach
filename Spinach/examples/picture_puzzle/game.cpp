@@ -115,7 +115,8 @@ void Game::Display(spn::Canvas* canvas)
 		spriteManager->Display();
 		break;
 	case SHOW_GAME_WON_MESSAGE:
-		canvas->DrawImage(&gameWonImage, gameWonImageX, gameWonImageY);
+		canvas->DrawImageChromaKeyed(&gameWonImage, gameWonImageX, gameWonImageY,0,0,128);
+		canvas->DrawCString("Press F5 to restart", gameWonImageX+10, gameWonImageY+200);
 		break;
 	}
 	
