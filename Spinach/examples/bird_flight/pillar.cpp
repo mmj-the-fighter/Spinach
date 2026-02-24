@@ -1,7 +1,7 @@
 #include <algorithm>
+#include <spn_rng.h>
 #include "bird_flight_game.h"
 #include "pillar.h"
-#include "rng.hpp"
 #include "collision_utils.hpp"
 
 
@@ -40,7 +40,7 @@ void Pillar::SetPillarImages(spn::Image* topImage, spn::Image* bottomImage) {
 
 void Pillar::MakePillar()
 {
-	randomY = Rng::Instance().GenerateInRange(0, wh);
+	randomY = spn::RandomGen::GetInstance().GenerateInRange(0, wh);
 	randomY = std::min(600 - birdHeight * 4, randomY);
 	pillarTopY = randomY - pillarTopImageHeight;
 	pillarBottomY = randomY + birdHeight * 3;

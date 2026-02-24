@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <random>
 #include <thread>
 #include <vector>
 #include <spn_canvas.h>
@@ -10,6 +9,7 @@
 #include <ui_event_translator.h>
 #include <ui_manager.h>
 #include <button.h>
+#include <spn_rng.h>
 
 
 #define GAMERESOLUTIONX 800
@@ -118,9 +118,9 @@ void InitBoard() {
 		dboard[k] = 0;
 	}
 
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::shuffle(std::begin(dboard), std::end(dboard), gen);
+	//std::random_device rd;
+	//std::mt19937 gen(rd());
+	std::shuffle(std::begin(dboard), std::end(dboard), spn::RandomGen::GetInstance().GetRng());
 	
 	k = 0;
 	for (int i = 0; i < MAXROWS; i++) {
