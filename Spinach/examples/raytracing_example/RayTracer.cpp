@@ -23,7 +23,6 @@ color ray_color(const ray& r) {
 
 void RayTracer::Render()
 {
-	isRenderingCompleted = false;
 	double percentRemaining = 100.0;
 	spn::Profiler::GetInstance().Begin(123);
 	int imageHeight = rtCanvas->GetHeight();
@@ -43,5 +42,4 @@ void RayTracer::Render()
 	std::cout <<"0% remaining \n";
 	spn::Profiler::GetInstance().End();
 	spn::Profiler::GetInstance().Print();
-	isRenderingCompleted = true;
 }
