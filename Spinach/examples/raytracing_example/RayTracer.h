@@ -15,7 +15,6 @@ color ray_color(const ray& r);
 class RayTracer
 {
 private:
-	double aspectRatio;
 	int imageWidth;
 	int imageHeight;
 	double focalLength;
@@ -36,13 +35,11 @@ private:
 	vec3 pixelTopLeftLoc;
 
 	//
-	unsigned char* pixels;
-	bool isRenderingCompleted;
 	spn::Canvas* rtCanvas;
 
 public:
-	static int CalculateImageHeight(double aspectRatio, int imageWidth) {
-		int imageHeight;
+	static constexpr int CalculateImageHeight(double aspectRatio, int imageWidth) {
+		int imageHeight = 0;
 		imageHeight = int(imageWidth / aspectRatio);
 		imageHeight = (imageHeight < 1) ? 1 : imageHeight;
 		return imageHeight;
@@ -78,10 +75,7 @@ public:
 			- viewportU / 2
 			- viewportV / 2;
 		pixelTopLeftLoc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
-		//extra
-		isRenderingCompleted = false;
 	}
-	inline bool IsRenderingCompleted() { return isRenderingCompleted; }
 	void Render();
 };
 #endif
