@@ -45,7 +45,53 @@ cmake ../
 
 This will generate the project files inside the `build` directory.  
 
+## Key Bindings
+
+Two keys are handled in the engine:
+
+| Key | Behaviour |
+|-----|-----------|
+| `Esc` | Application closes |
+| `F12` | A screenshot is saved with the current timestamp |
+
 # Projects that use Spinach  
 - [Namaste3D Software rasterizer](https://github.com/mmj-the-fighter/Namaste3D)
 - [Chess Game](https://github.com/RohithKKannan/Chess-Game)
-- [Match 5x5 puzzle game](https://github.com/mmj-the-fighter/match5x5)
+- [Match 5x5 puzzle game](https://github.com/mmj-the-fighter/match5x5) 
+
+## App Skeleton
+```cpp
+#include <iostream>
+#include <spn_canvas.h>
+#include <spn_core.h>
+
+void UpdateAndRender(spn::Canvas* canvas) {
+    // Use the canvas to draw something
+}
+
+void HandleInput(const SDL_Event* sdlEvent) {
+    // Process input events
+}
+
+int main(int argc, char* argv[])
+{
+    spn::SpinachCore sc(640, 480, "../res/");
+
+    if (sc.IsInitFailed()) {
+        std::cout << "Initialization failed with error "
+                  << sc.GetInitializationResult()
+                  << std::endl;
+        return 1;
+    }
+
+    sc.SetUpdateAndRenderHandler(UpdateAndRender);
+    sc.SetInputHandler(HandleInput);
+    sc.SetWindowTitle("Spinach App");
+	sc.GetCanvas()->SetPrimaryColorUint(0x0000ff);
+    sc.GetCanvas()->SetClearColorUint(0x0);
+    sc.SetTargetFramesPerSecond(30);
+    sc.MainLoop();
+
+    return 0;
+}
+```
