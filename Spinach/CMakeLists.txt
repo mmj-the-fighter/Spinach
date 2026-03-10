@@ -18,7 +18,7 @@ set(BIRD_FLIGHT bird_flight)
 set(RAYTRACING_EXAMPLE raytracing_example)
 set(PICTUREPUZZLE_EXAMPLE picture_puzzle)
 set(WIREFRAME_RENDERING_EXAMPLE wireframe_rendering)
-
+set(LOGARITHMIC_SPIRAL logarithmic_spiral)
 
 
 # Platform-specific flags
@@ -444,3 +444,36 @@ target_include_directories(${WIREFRAME_RENDERING_EXAMPLE} PRIVATE
 )
 
 target_link_libraries(${WIREFRAME_RENDERING_EXAMPLE} PRIVATE SDL3::SDL3)
+
+
+# 11. logarithmic spiral
+# Collect C++ source files
+file(GLOB_RECURSE LOGARITHMIC_SPIRAL_CPP_SRC CONFIGURE_DEPENDS
+    examples/logarithmic_spiral/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE LOGARITHMIC_SPIRAL_CPP_H CONFIGURE_DEPENDS
+	examples/logarithmic_spiral/*.h
+)
+
+# Create the executable
+add_executable(	${LOGARITHMIC_SPIRAL}
+	${LOGARITHMIC_SPIRAL_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${LOGARITHMIC_SPIRAL_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${LOGARITHMIC_SPIRAL} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/logarithmic_spiral
+)
+
+
+target_link_libraries(${LOGARITHMIC_SPIRAL} PRIVATE SDL3::SDL3)
