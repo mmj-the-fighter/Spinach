@@ -15,16 +15,17 @@ Useful for:
  
 ## Examples / Tutorials
 - [render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering rapidly changing pixels. use case for software rasterization and raytracing
-- [without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  shows how spinach can be used without render loop. examples: sierpienski triangle, rendering svg and sepia filter 
-- [spirograph simulation with spn::rmgui](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/spirograph_with_rmgui)  shows how rmgui in Spinach can be used for controling a spirograph
-- [game of life simulation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) shows how Spinach can be used for programming game of life. this involves using std::thread
-- [mine sweeper clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/mine_sweeper) shows how a clone of mine sweeper game can be developed using Spinach
-- [flappy bird clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/bird_flight) shows how a flappy bird like game can be made
+- [without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  shows how Spinach can be used without render loop. examples: sierpienski triangle, rendering svg and sepia filter 
+- [logarithmic spiral](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/logarithmic_spiral) shows how Spinach can be used to make a logarithmic spiral, it includes an imgui checkbox too  
+- [spirograph simulation with spn::rmgui](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/spirograph_with_rmgui)  shows how rmgui in Spinach can be used for controling a spirograph  
+- [game of life simulation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) shows how Spinach can be used for programming game of life. this involves using std::thread  
+- [mine sweeper clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/mine_sweeper) shows how a clone of mine sweeper game can be developed using Spinach  
+- [flappy bird clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/bird_flight) shows how a flappy bird like game can be made  
 - [snake clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/snake_clone) shows how a snake like game can be made  
-- [picture puzzle game](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/picture_puzzle) shows how a picture puzzle game can be made  
-- [image processing example with spn::rmgui](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui) shows how Spinach can be used for image processing  and how rmgui of Spinach can be used for that.
-- [raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raytracing_example) shows how Spinach can be used for raytracing 
-- [software rendering example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/wireframe_rendering) implementation of a wireframe renderer 
+- [picture puzzle game](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/picture_puzzle) shows how a picture puzzle game can be made    
+- [image processing example with spn::rmgui](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui) shows how Spinach can be used for image processing  and how rmgui of Spinach can be used for that.  
+- [raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raytracing_example) shows how Spinach can be used for raytracing  
+- [software rendering example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/wireframe_rendering) implementation of a wireframe renderer  
 
 ## Build / Project Generation
 
