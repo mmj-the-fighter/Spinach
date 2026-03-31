@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
 	rt->Init(sc.GetCanvas(), 1.0, 2.0, point3(0,0,0));
 	std::thread t1 { [&rt]() { rt->Render(); std::cout << "Rendering completed";} };
 	t1.detach();
+	sc.LockFps(true);
 	sc.MainLoop();
 	return 0;
 }

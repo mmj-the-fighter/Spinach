@@ -23,13 +23,62 @@ spn::rmgui::UiEvent uie;
 void UpdateAndRender(spn::Canvas* canvas) {
 	canvas->Clear();
 	canvas->SetPrimaryColor(128, 255, 4);
+	float w = canvas->GetWidth();
+	float h = canvas->GetHeight();
+	float hw = w * 0.5;
+	float hh = h * 0.5;
+	int graphInterval = 35;
+	canvas->DrawLine(hw, 0, hw, h - 1);
+	canvas->DrawLine(0, hh, w - 1, hh);
+	//+X
+	for (int i = hw; i < w; i+= graphInterval) {
+		char num[256];
+		int x = i - hw;
+		sprintf(num, "%d", x);
+		canvas->DrawCString(num, i, hh);
+	}
+	//-X
+	for (int i = hw- graphInterval; i >= 0; i -= graphInterval) {
+		char num[256];
+		int x = i - hw;
+		sprintf(num, "%d", x);
+		canvas->DrawCString(num, i, hh);
+	}
+
+	//-Y
+	for (int i = hh; i < h; i += graphInterval) {
+		char num[256];
+		int y = hh - i;
+		sprintf(num, "%d", y);
+		canvas->DrawCString(num, hw, i);
+	}
+
+	//+Y
+	for (int i = hh - graphInterval; i >= 0; i -= graphInterval) {
+		char num[256];
+		int y = hh - i;
+		sprintf(num, "%d", y);
+		canvas->DrawCString(num, hw, i);
+	}
+
+	canvas->SaveColors();
+	canvas->SetPrimaryColorUint(0xb0b0b0);
+	canvas->DrawRectangle(0, 0, w-1, h-1);
+	for (int i = 0; i < w; i += graphInterval) {
+		canvas->DrawLine(i, 0, i, h-1);
+	}
+
+	for (int i = 0; i < h; i += graphInterval) {
+		canvas->DrawLine(0, i, w - 1, i);
+	}
+	canvas->RestoreColors();
 	if (running) {
 		float radius = a * exp(b * theta);
 		float angularSpeed = 4.0f;
 		theta += angularSpeed * canvas->GetLastFrameTime();
 		Vector2 v;
-		v.x = canvas->GetWidth() / 2 + radius * cos(theta);
-		v.y = canvas->GetHeight() / 2 + radius * sin(theta);
+		v.x = hw + radius * cos(theta);
+		v.y = hh + radius * sin(theta);
 		if (canvas->IsOutsideBounds(v.x, v.y)) {
 			running = false;
 		}

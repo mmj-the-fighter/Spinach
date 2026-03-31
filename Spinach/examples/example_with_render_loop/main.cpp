@@ -26,9 +26,9 @@ void UpdateAndRender(spn::Canvas* canvas) {
 			pixBuffer[i + 3] = 255;
 		}
 	}
-	++k;
+	//++k;
 	k = k % 254;
-	canvas->DrawCString("the quick brown fox 1234567890", 245, 40);
+	canvas->DisplayFps(100, 100);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {

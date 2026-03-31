@@ -31,6 +31,7 @@ int main(int argc, char* argv[])
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.GetCanvas()->SetClearColor(0, 0, 0);
 	sc.SetTargetFramesPerSecond(30);
+	sc.LockFps(true);
 	sc.MainLoop();
 	return 0;
 }
