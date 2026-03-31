@@ -1,6 +1,7 @@
 #ifndef SPN_CANVAS_H
 #define SPN_CANVAS_H
 
+#include <cstdio>
 #include <string>
 #include "../common/spn_utils.h"
 
@@ -180,6 +181,12 @@ namespace spn
 			clearColorR = originalClearColorR;
 			clearColorG = originalClearColorG;
 			clearColorB = originalClearColorB;
+		}
+
+		inline void DisplayFps(int x, int y) {
+			char fpsCString[128];
+			sprintf(fpsCString, "%0.02f fps", 1.0 / GetLastFrameTime());
+			DrawCString(fpsCString, x, y);
 		}
 
 	private:

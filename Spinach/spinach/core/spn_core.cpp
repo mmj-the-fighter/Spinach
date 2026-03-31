@@ -21,7 +21,8 @@ namespace spn
 		window(nullptr),
 		renderer(nullptr),
 		texture(nullptr),
-		canvas(nullptr)
+		canvas(nullptr),
+		lockFps(false)
 	{
 		resourcesDirectory = resourcesDir;
 		SetTargetFramesPerSecond(DEFAULTFPS);
@@ -182,14 +183,15 @@ namespace spn
 			}
 			std::cout << frameProcTime << "\n";
 #endif
-
-			if (frameProcTime < targetMillisPerFrame) {
+			
+			if (lockFps && frameProcTime < targetMillisPerFrame) {
 				waitTime = targetMillisPerFrame - frameProcTime;
 				SDL_Delay(waitTime);
 			}
-			else{
+			else {
 				waitTime = 0;
 			}
+			
 		}
 	}
 

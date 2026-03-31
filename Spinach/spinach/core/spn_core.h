@@ -47,7 +47,11 @@ namespace spn
 			SDL_SetWindowTitle(window, text);
 		}
 		void SetTargetFramesPerSecond(unsigned int aFps);
+		inline void LockFps(bool flag) {
+			lockFps = flag;
+		};
 	private:
+		bool lockFps;
 		std::string resourcesDirectory;
 		SDL_Window* window;
 		SDL_Renderer* renderer;
