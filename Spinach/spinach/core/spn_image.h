@@ -14,9 +14,9 @@ namespace spn
 		Image(Canvas* aCanvas);
 		Image();
 		~Image();
-		void CreateSolidColorBlockImage(int width, int height,
+		bool CreateSolidColorBlockImage(int width, int height,
 			int colorR, int colorG, int colorB, float alpha);
-		void CreateCheckerImage(int width, int height, 
+		bool CreateCheckerImage(int width, int height, 
 			int tileSize, 
 			int color1R, int color1G, int color1B, 
 			int color2R, int color2G, int color2B);

@@ -59,9 +59,12 @@ namespace spn
 		return newImage;
 	}
 
-	void Image::CreateSolidColorBlockImage(int width, int height,
+	bool Image::CreateSolidColorBlockImage(int width, int height,
 		int colorR, int colorG, int colorB, float alpha)
 	{
+		if (nullptr != canvas) {
+			return false;
+		}
 		canvas = new Canvas(width, height);
 		unsigned char* pixels = canvas->GetPixelBuffer();
 		int pitch = canvas->GetPitch();
@@ -76,15 +79,18 @@ namespace spn
 
 			}
 		}
-
+		return true;
 	}
 
 	//AI is used for making this function
-	void Image::CreateCheckerImage(int width, int height, 
+	bool Image::CreateCheckerImage(int width, int height, 
 		int tileSize, 
 		int color1R, int color1G, int color1B, 
 		int color2R, int color2G, int color2B) 
 	{
+		if (nullptr != canvas) {
+			return false;
+		}
 		canvas = new Canvas(width, height);
 		unsigned char* pixels = canvas->GetPixelBuffer();
 		int pitch = canvas->GetPitch();
@@ -107,6 +113,7 @@ namespace spn
 				}
 			}
 		}
+		return true;
 	}
 
 	bool Image::CreateFromSvg(const std::string& fileName, float dpi)
