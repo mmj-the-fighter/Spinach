@@ -209,8 +209,11 @@ namespace spn
 		SDL_Event event;
 		int loop = 1;
 		while (loop) {
-			SDL_zero(event);
-			SDL_PollEvent(&event);
+			//SDL_zero(event);
+			//SDL_PollEvent(&event);
+			if (SDL_WaitEvent(&event) == 0) {
+				continue;
+			}
 			if (event.type == SDL_EVENT_KEY_UP ||
 				event.type == SDL_EVENT_QUIT ||
 				event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
