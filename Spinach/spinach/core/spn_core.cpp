@@ -27,8 +27,8 @@ namespace spn
 	{
 		resourcesDirectory = resourcesDir;
 		SetTargetFramesPerSecond(DEFAULTFPS);
-		SetUpdateAndRenderHandler(updateAndRenderFn);
-		SetInputHandler(inputFn);
+		updateAndRenderHandler = updateAndRenderFn;
+		inputHandler = inputFn;
 		initializationResult = Init(width, height);
 	}
 
