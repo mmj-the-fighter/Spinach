@@ -9,6 +9,7 @@ namespace spn
 	{
 	public:
 		RFont(const std::string& fontImageFileName, const std::string& fontCsvFileName);
+		~RFont();
 		inline bool IsInitSucceded(){
 			return isInitSuccess;
 		}

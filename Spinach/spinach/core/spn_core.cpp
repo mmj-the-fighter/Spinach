@@ -22,6 +22,7 @@ namespace spn
 		renderer(nullptr),
 		texture(nullptr),
 		canvas(nullptr),
+		font(nullptr),
 		lockFps(false)
 	{
 		resourcesDirectory = resourcesDir;
@@ -243,12 +244,24 @@ namespace spn
 
 	void SpinachCore::Destroy()
 	{
+
 		if (texture != nullptr) {
 			SDL_DestroyTexture(texture);
 		}
 
 		if (canvas != nullptr) {
 			delete canvas;
+			canvas = nullptr;
+		}
+
+		if (renderer != nullptr) {
+			SDL_DestroyRenderer(renderer);
+			renderer = nullptr;
+		}
+
+		if (window != nullptr) {
+			SDL_DestroyWindow(window);
+			window = nullptr;
 		}
 	}
 }

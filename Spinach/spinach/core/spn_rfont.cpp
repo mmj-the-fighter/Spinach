@@ -11,6 +11,11 @@ namespace spn
 	{
 		isInitSuccess = Create(fontImageFileName, fontCsvFileName);
 	}
+
+	RFont::~RFont() {
+		Destroy();
+	}
+
 	bool RFont::Create(const std::string& fontImageFileName, const std::string& fontCsvFileName)
 	{
 		image = new spn::Image();
@@ -96,12 +101,13 @@ namespace spn
 		return true;
 	}
 
-	void RFont::Destroy(){
+	void RFont::Destroy() {
 		if (image != nullptr) {
 			delete image;
+			image = nullptr;
 		}
 	}
-	RFont* RFont::Clone(){
+	RFont* RFont::Clone() {
 		Image* newImage = nullptr;
 		if (image != nullptr) {
 			newImage = image->Clone();
