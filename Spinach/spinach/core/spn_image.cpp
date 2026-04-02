@@ -243,11 +243,11 @@ namespace spn
 		unsigned char red, green, blue;
 		for (int i = 0; i < numPixels; ++i) {
 			file.read((char*)buffer, 3);
-			*dstloc = buffer[0];
+			*dstloc = buffer[2];
 			++dstloc;
 			*dstloc = buffer[1];
 			++dstloc;
-			*dstloc = buffer[2];
+			*dstloc = buffer[0];
 			++dstloc;
 			*dstloc = 255;
 			++dstloc;
