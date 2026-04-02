@@ -615,7 +615,7 @@ namespace spn
 		tw = ir.width;
 		th = ir.height;
 
-		bool fColorReplace = newColorR >= 0 && newColorG >= 0 && newColorR >= 0;
+		bool fColorReplace = newColorR >= 0 && newColorG >= 0 && newColorB >= 0;
 		bool fChromaKeyed = chromaR >= 0 && chromaG >= 0 && chromaB >= 0;
 
 		/*iterate through source rectangle * /
