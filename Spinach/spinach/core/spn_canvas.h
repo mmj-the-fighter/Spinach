@@ -184,8 +184,12 @@ namespace spn
 		}
 
 		inline void DisplayFps(int x, int y) {
+			float ft = GetLastFrameTime();
+			if (ft < 0.00001) {
+				return;
+			}
 			char fpsCString[128];
-			sprintf(fpsCString, "%0.02f fps", 1.0 / GetLastFrameTime());
+			sprintf(fpsCString, "%0.02f fps", 1.0 / ft);
 			DrawCString(fpsCString, x, y);
 		}
 

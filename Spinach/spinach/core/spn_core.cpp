@@ -39,8 +39,9 @@ namespace spn
 
 	void SpinachCore::SetTargetFramesPerSecond(unsigned int aFps)
 	{
-		targetFramesPerSecond = aFps;
-		targetMillisPerFrame = 1000.0f / static_cast<float>(aFps);
+		int fps = (aFps == 0) ? 1 : aFps;
+		targetFramesPerSecond = fps;
+		targetMillisPerFrame = 1000.0f / static_cast<float>(fps);
 	}
 
 
