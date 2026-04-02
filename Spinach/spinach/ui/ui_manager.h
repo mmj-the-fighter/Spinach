@@ -32,19 +32,19 @@ namespace spn::rmgui {
 
 		}
 
-		void Display2() {
-			int i = 0;
-			int focusIdx = -1;
-			int count = 0;
-			for (const auto& w : widgets) {
-				if (w->HasFocus()) {
-					focusIdx = i;
-					++count;
-				}
-				++i;
-			}
-			//std::cout << count;
-		}
+		//void Display2() {
+		//	int i = 0;
+		//	int focusIdx = -1;
+		//	int count = 0;
+		//	for (const auto& w : widgets) {
+		//		if (w->HasFocus()) {
+		//			focusIdx = i;
+		//			++count;
+		//		}
+		//		++i;
+		//	}
+		//	//std::cout << count;
+		//}
 
 		bool HandleUiEvent(UiEvent& uie) {
 			if (uie.eventType == UiEventType::None) {
