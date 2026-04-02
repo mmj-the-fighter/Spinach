@@ -64,7 +64,7 @@ namespace spn::rmgui {
 			return false;
 		}
 
-		bool UiManager::DispatchToWidget(Widget& w, UiEvent& e) {
+		bool DispatchToWidget(Widget& w, UiEvent& e) {
 			switch (e.eventType) {
 			case UiEventType::MouseDown:
 				return w.OnMouseDown(e.mouseButton, e.mouseX, e.mouseY);
