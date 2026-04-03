@@ -13,6 +13,7 @@ bool compareByLayer(const JigsawSprite* s1, const JigsawSprite* s2)
 
 JigsawSpriteManager::JigsawSpriteManager()
 {
+	curSelectionId = -1;
 	gameWorldStartX = 0;
 	gameWorldStartY = 0;
 	gameWorldEndX = 100;
