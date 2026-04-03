@@ -1,8 +1,7 @@
-#include "Game.h"
+#include "game.h"
 
 Game::Game()
 {
-	showPicDelay = 0;
 	spriteManager = std::make_unique<JigsawSpriteManager>();
 	gameWonImage.CreateFromPng("../examples/res_for_examples/congrats.png");
 	gameWonImageX = GAME_RESOLUTION_X / 2 - gameWonImage.GetCanvas()->GetWidth() / 2;
@@ -35,6 +34,10 @@ void Game::HandleInput(const SDL_Event* e)
         {
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
         case SDL_EVENT_MOUSE_BUTTON_UP:
+			if (gameState == SHOW_PIC) {
+				SetGameState(SHOW_GRID);
+				break;
+			}
             button_index = e->button.button;
             x = e->button.x;
             y = e->button.y;
@@ -77,8 +80,7 @@ void Game::Restart()
 void Game::SetGameState(GameState state)
 {
 	if (state == SHOW_PIC) {
-		startTime = clock();
-		showPicDelay = 4.0;
+		waitFrameCount = MAX_WAIT_FRAMES_COUNT;
 	}
 	gameState = state;
 }
@@ -88,9 +90,7 @@ void Game::Update()
 	switch (gameState)
 	{
 	case SHOW_PIC:
-		endTime = clock();
-		if ((static_cast<double>(endTime - startTime) / CLOCKS_PER_SEC)
-			> showPicDelay){
+		if (waitFrameCount-- <= 0) {
 			SetGameState(SHOW_GRID);
 		}
 		break;

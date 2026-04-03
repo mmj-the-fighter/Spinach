@@ -11,6 +11,7 @@
 
 #define GAME_RESOLUTION_X 800
 #define GAME_RESOLUTION_Y 600
+#define MAX_WAIT_FRAMES_COUNT 260
 
 typedef enum GameState { SHOW_PIC, SHOW_GRID, SHOW_GAME_WON_MESSAGE};
 
@@ -27,12 +28,12 @@ public:
 	void SetGameState(GameState state);
 public:
 	GameState gameState;
-	double showPicDelay;
+	int waitFrameCount;
 	spn::Image gameWonImage;
 	int gameWonImageX;
 	int gameWonImageY;
 	std::unique_ptr<JigsawSpriteManager> spriteManager;
-	clock_t startTime, endTime;
+	
 };
 
 #endif
