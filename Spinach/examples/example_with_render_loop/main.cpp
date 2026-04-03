@@ -26,7 +26,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 			pixBuffer[i + 3] = 255;
 		}
 	}
-	//++k;
+	++k;
 	k = k % 254;
 	canvas->DisplayFps(100, 100);
 }
@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
 	sc.SetWindowTitle("Spinach Demo");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.SetTargetFramesPerSecond(30);
+	sc.LockFps(true);
 	sc.MainLoop();
 	spn::Profiler::GetInstance().Print();
 	return 0;

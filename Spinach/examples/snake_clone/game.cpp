@@ -93,6 +93,8 @@ void Game::UpdateScoreStr() {
 void Game::Init(spn::SpinachCore* core) {
 	sc = core;
 	desiredFps = 5;
+	sc->SetTargetFramesPerSecond(desiredFps);
+	sc->LockFps(true);
 	srand(static_cast<unsigned int>(time(nullptr)));
 	spn::Canvas* canvas = core->GetCanvas();
 	canvas->SetClearColor(0, 0, 128);

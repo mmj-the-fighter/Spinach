@@ -7,6 +7,8 @@ Game::Game() {
 
 void Game::Init(spn::SpinachCore* sc) 
 {
+	sc->SetTargetFramesPerSecond(60);
+	sc->LockFps(true);
 	sc->GetCanvas()->SetPrimaryColor(255, 255, 255);
 	sc->GetCanvas()->SetClearColor(0, 0, 128);
 	ww = sc->GetCanvas()->GetWidth();

@@ -91,7 +91,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		canvas->DrawLine(spiralPoints[i - 1].x, spiralPoints[i - 1].y, 
 			spiralPoints[i].x, spiralPoints[i].y);
 	}
-	spn::imgui::Checkbox(canvas, uie, "running",100,100, running);
+	spn::imgui::Checkbox(canvas, uie, "running",90,100, running);
 }
 
 void HandleInput(const SDL_Event* e) {
@@ -100,7 +100,6 @@ void HandleInput(const SDL_Event* e) {
 
 int main(int argc, char* argv[])
 {
-
 	spn::SpinachCore sc(800, 600, "../res/", UpdateAndRender, HandleInput); //Note: 3rd argument is path rel. to build folder
 	if (sc.IsInitFailed()) {
 		std::cout << "initialization failed with error "
@@ -111,6 +110,7 @@ int main(int argc, char* argv[])
 	sc.SetWindowTitle("Spinach Demo");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.SetTargetFramesPerSecond(30);
+	sc.LockFps(true);
 	spiralPoints.reserve(maxPoints+2);
 	sc.MainLoop();
 	return 0;

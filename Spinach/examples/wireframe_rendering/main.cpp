@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 		std::bind(&WireframeRenderer::HandleInput,
 		&wr, std::placeholders::_1));
 	sc.SetTargetFramesPerSecond(60);
+	sc.LockFps(true);
 	sc.MainLoop();
 	return 0;
 }
