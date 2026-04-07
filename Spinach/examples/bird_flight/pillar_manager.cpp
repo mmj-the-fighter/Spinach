@@ -1,3 +1,4 @@
+#include <spn_collision_utils.h>
 #include "pillar_manager.h"
 #include "bird_flight_game.h"
 
@@ -6,11 +7,20 @@
 
 PillarManager::PillarManager(int worldWt, int worldHt):ww(worldWt), wh(worldHt)
 {
+	maskTopPillar = maskBottomPillar = nullptr;
 };
 
 PillarManager::~PillarManager(){
 	for (auto& pillar : pillars) {
 		delete pillar;
+	}
+	if (maskTopPillar != nullptr) {
+		delete[] maskTopPillar;
+		maskTopPillar = nullptr;
+	}
+	if (maskBottomPillar != nullptr) {
+		delete[] maskBottomPillar;
+		maskBottomPillar = nullptr;
 	}
 }
 
@@ -24,6 +34,7 @@ void PillarManager::Init(Bird* b)
 	chromaB = 0;
 	pillarTopImage.CreateFromPpmRaw("../examples/res_for_examples/pillar_top.ppm");
 	pillarBottomImage.CreateFromPpmRaw("../examples/res_for_examples/pillar_bottom.ppm");
+	CreateMasks();
 	GeneratePillars();
 }
 
@@ -37,6 +48,7 @@ void PillarManager::GeneratePillars()
 		pillar->SetChromaKey(chromaR, chromaG, chromaB);
 		pillar->SetBird(bird);
 		pillar->MakePillar();
+		pillar->SetMasks(maskTopPillar, maskBottomPillar);
 		pillar->velX = MAX_PILLAR_VELOCITY;
 		pillar->pillarTopX = 
 			pillar->pillarBottomX = 
@@ -87,8 +99,16 @@ void PillarManager::Display(spn::Canvas* canvas)
 	for (auto& pillar : pillars) {
 		if (!pillar->IsPillarOutOfScreen()) {
 			pillar->Display(canvas);
+			pillar->DrawCollider(canvas);
 		}
 	}
+}
+
+void PillarManager::CreateMasks() {
+	maskTopPillar =
+		spn::CreateCollisionMask(&pillarTopImage, chromaR, chromaG, chromaB, &hasMasks);
+	maskBottomPillar =
+		spn::CreateCollisionMask(&pillarBottomImage, chromaR, chromaG, chromaB, &hasMasks);
 }
 
 void PillarManager::CheckCollisionWithBird(CollisionState* collisionState) {

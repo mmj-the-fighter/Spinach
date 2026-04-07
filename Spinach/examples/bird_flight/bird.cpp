@@ -1,6 +1,17 @@
 #include <string>
+#include <spn_collision_utils.h>
 #include "bird.h"
 #include "bird_flight_game.h"
+
+Bird::Bird():mask(nullptr){
+}
+
+Bird::~Bird() {
+	if (mask != nullptr) {
+		delete[] mask;
+		mask = nullptr;
+	}
+}
 
 void Bird::OnJumpStarted()
 {
@@ -55,22 +66,12 @@ void Bird::Display(spn::Canvas* canvas)
 	//DrawCollider(canvas, x, y);
 }
 
-void Bird::DrawCollider(spn::Canvas* canvas, int x, int y) 
+void Bird::DrawCollider(spn::Canvas* canvas) 
 {
-	int left = x;
-	int top = y;
-	int right = x + width;
-	int bottom = y + height;
-	if (
-		(top < 0 || top >= wh || bottom < 0 || bottom >= wh) ||
-		(left < 0 || left >= ww || right < 0 || right >= ww)
-		) {
-		return;
-	}
-	canvas->DrawLine(x, y, x + width, y);
-	canvas->DrawLine(x + width, y, x + width, y + height);
-	canvas->DrawLine(x, y + height, x + width, y + height);
-	canvas->DrawLine(x, y + height, x, y);
+	canvas->DrawRectangle(
+		x, y,
+		x + width,
+		y + height);
 }
 
 
@@ -90,7 +91,9 @@ void Bird::Init(int worldWt, int worldHt)
 	image.CreateFromPpmRaw("../examples/res_for_examples/bird.ppm");
 	width = image.GetCanvas()->GetWidth();
 	height = image.GetCanvas()->GetHeight();
-	//CreateMask();
+	hasMask = false;
+	mask = nullptr;
+	CreateMask();
 }
 
 void Bird::Reset()
@@ -103,4 +106,6 @@ void Bird::Reset()
 	jumping = false;
 }
 
-
+void Bird::CreateMask() {
+	mask = spn::CreateCollisionMask(&image, chromaR, chromaG, chromaB, &hasMask);
+}

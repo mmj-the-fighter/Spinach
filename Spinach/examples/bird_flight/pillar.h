@@ -17,15 +17,19 @@ public:
 	void Display(spn::Canvas* canvas);
 	bool IsPillarOutOfScreen();
 	bool IsBirdNear();
+	void SetMasks(unsigned char* topMask, unsigned char* bottomMask);
 	
 
 	void SetBird(Bird* b);
 	void SetChromaKey(int red, int green, int blue);
 	void SetPillarImages(spn::Image* topImage, spn::Image* bottomImage);
+	void DrawCollider(spn::Canvas* canvas);
 	void CheckCollisionWithBird(CollisionState *collisionState);
 
 	spn::Image *pillarTopImage;
 	spn::Image *pillarBottomImage;
+	unsigned char* topMaskRef;
+	unsigned char* bottomMaskRef;
 	
 	int randomY;
 	int birdHeight;

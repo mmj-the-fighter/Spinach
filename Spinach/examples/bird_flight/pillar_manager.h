@@ -17,6 +17,7 @@ public:
 	void Reset();
 	void Move(spn::Canvas* canvas);
 	void Display(spn::Canvas* canvas);
+	void CreateMasks();
 	void CheckCollisionWithBird(CollisionState* collisionState);
 private:
 	void GeneratePillars();
@@ -33,6 +34,9 @@ private:
 	int chromaB;
 	int ww;
 	int wh;
+	unsigned char* maskTopPillar;
+	unsigned char* maskBottomPillar;
+	bool hasMasks;
 };
 
 #endif

@@ -11,12 +11,16 @@
 class Bird
 {
 public:
+	Bird();
+	~Bird();
 	void Move(spn::Canvas* canvas);
 	void Display(spn::Canvas* canvas);
 	void Init(int worldWt, int worldHt);
 	void Reset();
 	void OnLeftMouseButtonDown();
 	bool IsOutOfScreen();
+	void CreateMask();
+	void DrawCollider(spn::Canvas* canvas);
 
 private:
 	void OnJumpStarted();
@@ -26,7 +30,7 @@ private:
 	float jumpAccelY;
 	float velY;
 	float gravityY;
-	void DrawCollider(spn::Canvas* canvas, int x, int y);
+	
 public:
 	int ww, wh;
 	int x;
@@ -37,6 +41,8 @@ public:
 	int chromaR;
 	int chromaG;
 	int chromaB;
+	unsigned char *mask;
+	bool hasMask;
 };
 
 #endif

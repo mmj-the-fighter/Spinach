@@ -82,6 +82,7 @@ void Game::UpdateAndRender(spn::Canvas* canvas)
 	canvas->Clear();
 	pillarManager->Display(canvas);
 	bird->Display(canvas);
+	bird->DrawCollider(canvas);
 	canvas->SetPrimaryColor(255, 255, 255);
 	canvas->DrawCString(scoreBuffer, 50, 50);
 
