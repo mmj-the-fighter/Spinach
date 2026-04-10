@@ -6,7 +6,11 @@
 #include <functional>
 #include <string>
 #include <SDL3/SDL.h>
+
+#ifdef MSF_GIF_DEFINED
 #include "../external/msf_gif/msf_gif.h"
+#endif
+
 #include "spn_canvas.h"
 #include "spn_image.h"
 #include "spn_rfont.h"
