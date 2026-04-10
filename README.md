@@ -54,6 +54,8 @@ Two keys are handled in the engine:
 |-----|-----------|
 | `Esc` | Application closes |
 | `F12` | A screenshot is saved with the current timestamp |
+| `F8` | Screen recording starts; recording indication is shown in the screen |
+| `F10` | Screen recording ends; the gif is saved with the current time stamp |
 
 # Projects that use Spinach  
 - [Namaste3D Software rasterizer](https://github.com/mmj-the-fighter/Namaste3D)
