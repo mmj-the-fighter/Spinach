@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "../common/spn_utils.h"
 #define MSF_GIF_IMPL
 #include "spn_core.h"
@@ -118,7 +119,7 @@ namespace spn
 	void SpinachCore::MainLoop()
 	{
 #ifdef MSF_GIF_DEFINED
-		static int recordingToggler = 10;
+		static int recordingToggler = DEFAULTFPS / 2;
 #endif
 		SDL_Event event;
 		SDL_zero(event);
@@ -185,12 +186,21 @@ namespace spn
 				if (--recordingToggler > 0) {
 					canvas->DrawCString("Recording...", canvas->GetWidth() - 120, 10);
 				}
-				else if (--recordingToggler < -10) {
-					recordingToggler = 10;
+				else if (recordingToggler < -10) {
+					float frameTime = canvas->GetLastFrameTime();
+					if (frameTime < 0.0001) {
+						recordingToggler = DEFAULTFPS / 2;
+					}
+					else {
+						recordingToggler = std::min(
+							25, 
+							static_cast<int>(1.0 / frameTime)
+						);
+					}
+					
 				}
 			}
 #endif
-
 			unsigned char* destPixels;
 			int destPitch;
 			if (SDL_LockTexture(texture, NULL, (void**)&destPixels, &destPitch))
