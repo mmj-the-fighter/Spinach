@@ -17,7 +17,12 @@ int maxPoints = 5000;
 float a = 1.0;
 float b = 0.16;
 float theta=0.0;
+int buttonState = spn::imgui::BTN_RELEASE;
 bool running = false;
+bool canrun = true;
+char* buttonText = nullptr;
+char* runText = "Run";
+char* pauseText = "Pause";
 spn::rmgui::UiEvent uie;
 
 void UpdateAndRender(spn::Canvas* canvas) {
@@ -81,6 +86,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		v.y = hh + radius * sin(theta);
 		if (canvas->IsOutsideBounds(v.x, v.y)) {
 			running = false;
+			canrun = false;
 		}
 		else if (spiralPoints.size() < maxPoints) {
 			spiralPoints.push_back(v);
@@ -91,10 +97,23 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		canvas->DrawLine(spiralPoints[i - 1].x, spiralPoints[i - 1].y, 
 			spiralPoints[i].x, spiralPoints[i].y);
 	}
-	spn::imgui::Checkbox(canvas, uie, "running",90,100, running);
+	//spn::imgui::Checkbox(canvas, uie, "running",90,100, running);
+	if (spn::imgui::Button(canvas, uie, buttonText, 90, 100, 90, 30, buttonState)) {
+		if (canrun) {
+			running = !running;
+			if (running) {
+				buttonText = pauseText;
+			}
+			else {
+				buttonText = runText;
+			}
+
+		}
+	}
 }
 
 void HandleInput(const SDL_Event* e) {
+	
 	spn::rmgui::TranslateSdlEvent(e, uie);
 }
 
@@ -112,6 +131,12 @@ int main(int argc, char* argv[])
 	sc.SetTargetFramesPerSecond(30);
 	sc.LockFps(true);
 	spiralPoints.reserve(maxPoints+2);
+	if (running) {
+		buttonText = pauseText;
+	}
+	else {
+		buttonText = runText;
+	}
 	sc.MainLoop();
 	return 0;
 }
