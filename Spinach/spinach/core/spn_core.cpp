@@ -244,12 +244,13 @@ namespace spn
 		msf_gif_bgra_flag = true;
 		//msf_gif_alpha_threshold = 128;
 		msf_gif_begin(&msfGifState, canvas->GetWidth(), canvas->GetHeight());
-		msfGifCentiSecondsPerFrame = canvas->GetLastFrameTime() * 100;
 		std::cout << "Recording started...\n";
 		isRecording = true;
 	}
 
 	void SpinachCore::ProcessRecording() {
+		msfGifCentiSecondsPerFrame = canvas->GetLastFrameTime() * 100;
+		msfGifCentiSecondsPerFrame = std::max(2, msfGifCentiSecondsPerFrame);
 		msf_gif_frame(&msfGifState, canvas->GetPixelBuffer(),
 			msfGifCentiSecondsPerFrame, msfGifQuality,
 			canvas->GetWidth() * 4);
