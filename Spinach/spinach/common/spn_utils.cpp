@@ -48,5 +48,17 @@ namespace spn
 
 		return oss.str();
 	}
+
+	std::string GetTimeBasedScreenRecordingFileName()
+	{
+		auto now = std::chrono::system_clock::now();
+		std::time_t time_now = std::chrono::system_clock::to_time_t(now);
+		std::tm tm_now = *std::localtime(&time_now);
+
+		std::ostringstream oss;
+		oss << std::put_time(&tm_now, "%Y%m%d_%H%M%S.gif");
+
+		return oss.str();
+	}
 }
 

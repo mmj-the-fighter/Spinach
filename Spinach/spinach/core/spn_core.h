@@ -1,9 +1,12 @@
 #ifndef SPN_CORE_H
 #define SPN_CORE_H
 
+#define MSF_GIF_DEFINED
+
 #include <functional>
 #include <string>
 #include <SDL3/SDL.h>
+#include "../external/msf_gif/msf_gif.h"
 #include "spn_canvas.h"
 #include "spn_image.h"
 #include "spn_rfont.h"
@@ -68,6 +71,15 @@ namespace spn
 		int Init(unsigned int width, unsigned int height);
 
 		void Destroy();
+#ifdef MSF_GIF_DEFINED
+		bool isRecording;
+		MsfGifState msfGifState;
+		int msfGifCentiSecondsPerFrame;
+		int msfGifQuality;
+		void StartRecording();
+		void ProcessRecording();
+		void StopRecording();
+#endif
 	};
 }
 

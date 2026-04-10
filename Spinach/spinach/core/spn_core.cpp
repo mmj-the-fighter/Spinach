@@ -1,11 +1,13 @@
 #include <iostream>
 #include "../common/spn_utils.h"
+#define MSF_GIF_IMPL
 #include "spn_core.h"
 
 
 //#define SHOWFRAMESTATS
 #define SINGLEMEMCOPY
 #define DEFAULTFPS 64
+
 
 
 namespace spn
@@ -25,11 +27,16 @@ namespace spn
 		font(nullptr),
 		lockFps(false)
 	{
+		#ifdef MSF_GIF_DEFINED
+			isRecording = false;
+			msfGifQuality = 16; //values allowed 1-16
+		#endif
 		resourcesDirectory = resourcesDir;
 		SetTargetFramesPerSecond(DEFAULTFPS);
 		updateAndRenderHandler = updateAndRenderFn;
 		inputHandler = inputFn;
 		initializationResult = Init(width, height);
+		
 	}
 
 	SpinachCore::~SpinachCore()
@@ -110,6 +117,9 @@ namespace spn
 
 	void SpinachCore::MainLoop()
 	{
+#ifdef MSF_GIF_DEFINED
+		static int recordingToggler = 10;
+#endif
 		SDL_Event event;
 		SDL_zero(event);
 		Uint32 frameStartTime, frameProcTime = 0, waitTime = 0;
@@ -122,6 +132,7 @@ namespace spn
 		int bufferBytesLength = height * pitch;
 		unsigned char* pixels = canvas->GetPixelBuffer();
 		userWantsToQuit = 0;
+		
 		while (0 == userWantsToQuit)
 		{
 			frameStartTime = SDL_GetTicks();
@@ -142,11 +153,19 @@ namespace spn
 						userWantsToQuit = 1;
 						break;
 					case SDLK_F12:
-					{
-						std::string fileName = GetTimeBasedScreenShotFileName();
-						SaveScreenShot(fileName);
-					}
+						{
+							std::string fileName = GetTimeBasedScreenShotFileName();
+							SaveScreenShot(fileName);
+						}
 						break;
+#ifdef MSF_GIF_DEFINED
+					case SDLK_F8:
+						StartRecording();
+						break;
+					case SDLK_F10:
+						StopRecording();
+						break;
+#endif
 					}
 				default:
 					if (nullptr != inputHandler){
@@ -159,6 +178,18 @@ namespace spn
 			if (nullptr != updateAndRenderHandler) {
 				updateAndRenderHandler(canvas);
 			}
+
+#ifdef MSF_GIF_DEFINED
+			if (isRecording) {
+				ProcessRecording();
+				if (--recordingToggler > 0) {
+					canvas->DrawCString("Recording...", canvas->GetWidth() - 120, 10);
+				}
+				else if (--recordingToggler < -10) {
+					recordingToggler = 10;
+				}
+			}
+#endif
 
 			unsigned char* destPixels;
 			int destPitch;
@@ -196,6 +227,39 @@ namespace spn
 			
 		}
 	}
+
+#ifdef MSF_GIF_DEFINED
+	void SpinachCore::StartRecording() {
+		msfGifState = {};
+		msf_gif_bgra_flag = true;
+		//msf_gif_alpha_threshold = 128;
+		msf_gif_begin(&msfGifState, canvas->GetWidth(), canvas->GetHeight());
+		msfGifCentiSecondsPerFrame = canvas->GetLastFrameTime() * 100;
+		std::cout << "Recording started...\n";
+		isRecording = true;
+	}
+
+	void SpinachCore::ProcessRecording() {
+		msf_gif_frame(&msfGifState, canvas->GetPixelBuffer(),
+			msfGifCentiSecondsPerFrame, msfGifQuality,
+			canvas->GetWidth() * 4);
+	}
+
+	void SpinachCore::StopRecording() {
+		std::cout << "Recording ended\n";
+		MsfGifResult msfGifResult = msf_gif_end(&msfGifState);
+		if (msfGifResult.data) {
+			std::string fileName = GetTimeBasedScreenRecordingFileName();
+			FILE* fp = fopen(fileName.c_str(), "wb");
+			fwrite(msfGifResult.data, msfGifResult.dataSize, 1, fp);
+			fclose(fp);
+		}
+		msf_gif_free(msfGifResult);
+		isRecording = false;
+	}
+#endif
+
+
 
 	void SpinachCore::SaveScreenShot(const std::string& fileName)
 	{

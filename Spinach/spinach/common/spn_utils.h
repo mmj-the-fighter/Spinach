@@ -12,6 +12,7 @@ namespace spn
 	};
 	void FindRectToRectIntersection(const Rect& r1, const Rect& r2, Rect& ir);
 	std::string GetTimeBasedScreenShotFileName();
+	std::string GetTimeBasedScreenRecordingFileName();
 }
 
 #endif

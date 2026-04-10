@@ -67,6 +67,7 @@ file(GLOB_RECURSE SPINACH_H CONFIGURE_DEPENDS
 	spinach/ui/*.[h|hpp]
 	spinach/ui/imgui/*.[h|hpp]
     spinach/external/stb/*.h
+	spinach/external/msf_gif/*.h
 )
 
 # Collect headers for nanosvg
