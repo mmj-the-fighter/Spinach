@@ -12,6 +12,9 @@ Useful for:
 - Writing image processing routines
 - Games
 - and so on.
+
+## Known Issues
+- [Currently Screen recording / render to GIF is unoptimized and can be dangerous](https://github.com/mmj-the-fighter/Spinach/issues/1)
  
 ## Examples / Tutorials
 - [render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering rapidly changing pixels. use case for software rasterization and raytracing
@@ -48,7 +51,7 @@ This will generate the project files inside the `build` directory.
 
 ## Key Bindings
 
-Two keys are handled in the engine:
+Four keys are handled in the engine:
 
 | Key | Behaviour |
 |-----|-----------|
