@@ -2,7 +2,7 @@
 #define SPN_CORE_H
 
 #define MSF_GIF_DEFINED
-
+#define MAX_APP_NAME_LEN 255
 #include <functional>
 #include <string>
 #include <SDL3/SDL.h>
@@ -51,6 +51,7 @@ namespace spn
 			if (nullptr == window) {
 				return;
 			}
+			strcpy(appName, text);
 			SDL_SetWindowTitle(window, text);
 		}
 		void SetTargetFramesPerSecond(unsigned int aFps);
@@ -58,6 +59,7 @@ namespace spn
 			lockFps = flag;
 		};
 	private:
+		char appName[MAX_APP_NAME_LEN + 1];
 		bool lockFps;
 		std::string resourcesDirectory;
 		SDL_Window* window;

@@ -36,8 +36,8 @@ namespace spn
 		SetTargetFramesPerSecond(DEFAULTFPS);
 		updateAndRenderHandler = updateAndRenderFn;
 		inputHandler = inputFn;
+		strcpy(appName, " ");
 		initializationResult = Init(width, height);
-		
 	}
 
 	SpinachCore::~SpinachCore()
@@ -118,9 +118,6 @@ namespace spn
 
 	void SpinachCore::MainLoop()
 	{
-#ifdef MSF_GIF_DEFINED
-		static int recordingToggler = DEFAULTFPS / 2;
-#endif
 		SDL_Event event;
 		SDL_zero(event);
 		Uint32 frameStartTime, frameProcTime = 0, waitTime = 0;
@@ -183,22 +180,6 @@ namespace spn
 #ifdef MSF_GIF_DEFINED
 			if (isRecording) {
 				ProcessRecording();
-				if (--recordingToggler > 0) {
-					canvas->DrawCString("Recording...", canvas->GetWidth() - 120, 10);
-				}
-				else if (recordingToggler < -10) {
-					float frameTime = canvas->GetLastFrameTime();
-					if (frameTime < 0.0001) {
-						recordingToggler = DEFAULTFPS / 2;
-					}
-					else {
-						recordingToggler = std::min(
-							25, 
-							static_cast<int>(1.0 / frameTime)
-						);
-					}
-					
-				}
 			}
 #endif
 			unsigned char* destPixels;
@@ -249,6 +230,30 @@ namespace spn
 	}
 
 	void SpinachCore::ProcessRecording() {
+		static int frames = DEFAULTFPS / 2;
+		static int maxFrames = DEFAULTFPS / 2;
+		static const int framesCap = 25;
+		if (frames == maxFrames) {
+			SDL_SetWindowTitle(window, "Recording...");
+		}
+		else if (frames == -1) {
+			SDL_SetWindowTitle(window, " ");
+		}
+		--frames;
+		if (frames < -maxFrames) {
+			frames = maxFrames;
+		}
+		
+		float frameTime = canvas->GetLastFrameTime();
+		if (frameTime < 0.0001) {
+				frames = maxFrames;
+		}
+		else {
+			maxFrames = std::min(
+				static_cast<int>(1.0 / frameTime),
+				framesCap
+			);
+		}
 		msfGifCentiSecondsPerFrame = canvas->GetLastFrameTime() * 100;
 		msfGifCentiSecondsPerFrame = std::max(2, msfGifCentiSecondsPerFrame);
 		msf_gif_frame(&msfGifState, canvas->GetPixelBuffer(),
@@ -267,6 +272,7 @@ namespace spn
 		}
 		msf_gif_free(msfGifResult);
 		isRecording = false;
+		SDL_SetWindowTitle(window, appName);
 	}
 #endif
 
