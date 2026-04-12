@@ -18,12 +18,16 @@ float a = 1.0;
 float b = 0.16;
 float theta=0.0;
 int buttonState = spn::imgui::BTN_RELEASE;
+int okState = spn::imgui::BTN_RELEASE;
+int cancelState = spn::imgui::BTN_RELEASE;
+bool alertStatus = false;
 bool running = false;
 bool canrun = true;
 char* buttonText = nullptr;
 char* runText = "Run";
 char* pauseText = "Pause";
 spn::rmgui::UiEvent uie;
+spn::SpinachCore* pCore=nullptr;
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	canvas->Clear();
@@ -87,6 +91,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		if (canvas->IsOutsideBounds(v.x, v.y)) {
 			running = false;
 			canrun = false;
+			alertStatus = true;
 		}
 		else if (spiralPoints.size() < maxPoints) {
 			spiralPoints.push_back(v);
@@ -110,6 +115,28 @@ void UpdateAndRender(spn::Canvas* canvas) {
 
 		}
 	}
+	if (alertStatus) {
+		spn::imgui::AlertResult res = spn::imgui::Alert(
+			canvas,
+			uie,
+			"Want to quit?",
+			100, 100,
+			250, 200,
+			alertStatus,
+			okState, cancelState
+		);
+		if (res == spn::imgui::Ok)
+		{
+			std::cout << "Ok pressed\n";
+			if (pCore != nullptr) {
+				pCore->SetUserWantsToQuit(1);
+			}
+		}
+		else if (res == spn::imgui::Cancel) {
+			std::cout << "Cancel pressed\n";
+		}
+		
+	}
 }
 
 void HandleInput(const SDL_Event* e) {
@@ -126,6 +153,7 @@ int main(int argc, char* argv[])
 			<< std::endl;
 		return 1;
 	}
+	pCore = &sc;
 	sc.SetWindowTitle("Spinach Demo");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.SetTargetFramesPerSecond(30);
@@ -138,5 +166,6 @@ int main(int argc, char* argv[])
 		buttonText = runText;
 	}
 	sc.MainLoop();
+	pCore = nullptr;
 	return 0;
 }
