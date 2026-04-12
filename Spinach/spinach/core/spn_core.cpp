@@ -161,7 +161,10 @@ namespace spn
 						StartRecording();
 						break;
 					case SDLK_F10:
-						StopRecording();
+						StopRecording(true);
+						break;
+					case SDLK_F6:
+						StopRecording(false);
 						break;
 #endif
 					}
@@ -179,7 +182,12 @@ namespace spn
 
 #ifdef MSF_GIF_DEFINED
 			if (isRecording) {
-				ProcessRecording();
+				if (userWantsToQuit) {
+					StopRecording(false);
+				}
+				else {
+					ProcessRecording();
+				}
 			}
 #endif
 			unsigned char* destPixels;
@@ -261,14 +269,18 @@ namespace spn
 			canvas->GetWidth() * 4);
 	}
 
-	void SpinachCore::StopRecording() {
-		std::cout << "Recording ended\n";
+	void SpinachCore::StopRecording(bool saveData) {
+		
 		MsfGifResult msfGifResult = msf_gif_end(&msfGifState);
-		if (msfGifResult.data) {
+		if (msfGifResult.data != NULL && saveData==true) {
 			std::string fileName = GetTimeBasedScreenRecordingFileName();
 			FILE* fp = fopen(fileName.c_str(), "wb");
 			fwrite(msfGifResult.data, msfGifResult.dataSize, 1, fp);
 			fclose(fp);
+			std::cout << "Recording ended: session saved to " <<fileName << '\n';
+		}
+		else if (!saveData) {
+			std::cout << "Recording aborted." << '\n';
 		}
 		msf_gif_free(msfGifResult);
 		isRecording = false;

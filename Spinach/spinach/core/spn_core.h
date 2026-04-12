@@ -84,7 +84,7 @@ namespace spn
 		int msfGifQuality;
 		void StartRecording();
 		void ProcessRecording();
-		void StopRecording();
+		void StopRecording(bool saveData);
 #endif
 	};
 }
