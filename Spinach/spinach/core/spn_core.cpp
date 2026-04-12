@@ -158,13 +158,19 @@ namespace spn
 						break;
 #ifdef MSF_GIF_DEFINED
 					case SDLK_F8:
-						StartRecording();
+						if (!isRecording) {
+							StartRecording();
+						}
 						break;
 					case SDLK_F10:
-						StopRecording(true);
+						if (isRecording) {
+							StopRecording(true);
+						}
 						break;
 					case SDLK_F6:
-						StopRecording(false);
+						if (isRecording) {
+							StopRecording(false);
+						}
 						break;
 #endif
 					}
