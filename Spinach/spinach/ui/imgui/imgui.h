@@ -16,6 +16,12 @@ namespace spn::imgui {
 		BTN_HOVER
 	};
 
+	enum AlertResult {
+		None,
+		Ok,
+		Cancel
+	};
+
 
 	static bool IsMouseInsideSquare(int mx, int my, int x, int y, int sqSize) {
 		return (mx >= x) && (mx <= x + sqSize) && (my >= y) && (my <= y + sqSize);
@@ -134,9 +140,63 @@ namespace spn::imgui {
 			break;
 		}
 
-		
 		return rv;
 	}
+
+	static AlertResult Alert(
+		spn::Canvas* canvas, spn::rmgui::UiEvent& uie,
+		const char* alertText,
+		int x, int y, int w, int h,
+		bool& alertStatus,
+		int& okState, int& cancelState)
+	{
+		if (
+			uie.eventType == spn::rmgui::UiEventType::MouseUp &&
+			!IsMouseInsideRectangle(uie.mouseX, uie.mouseY, x, y, w, h)) {
+			alertStatus = false;
+			//clear event
+			uie = {};
+			return None;
+		}
+		int padding = 4;
+		canvas->SetPrimaryColorUint(0xffffff);
+		canvas->DrawFilledRectangle(x, y, x + w, y + h);
+		canvas->SetPrimaryColorUint(0x0);
+
+
+		int contentEndY = y + h - 40 - 2 * padding;
+		float textWidth = 0, textHeight = 0;
+		canvas->GetCStringDisplaySize(alertText, textWidth, textHeight);
+		int centerX = x + w / 2;
+		int centerY = y + (contentEndY - y) / 2;
+		int textX = centerX - textWidth / 2;
+		int textY = centerY - textHeight / 2;
+		canvas->DrawCString(alertText, textX, textY);
+
+		if (Button(canvas, uie, "Ok",
+			x + padding,
+			contentEndY + padding,
+			w / 2 - 2 * padding,
+			40,
+			okState)) {
+			alertStatus = false;
+			return Ok;
+		}
+		else if (Button(canvas,
+			uie,
+			"Cancel",
+			x + w / 2 + padding,
+			contentEndY + padding,
+			w / 2 - 2 * padding,
+			40,
+			cancelState)) {
+			alertStatus = false;
+			return Cancel;
+		}
+		return None;
+	}
+
+
 }
 
 
