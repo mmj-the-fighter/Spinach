@@ -129,7 +129,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		{
 			std::cout << "Ok pressed\n";
 			if (pCore != nullptr) {
-				pCore->SetUserWantsToQuit(1);
+				pCore->SetUserWantsToQuit(true);
 			}
 		}
 		else if (res == spn::imgui::Cancel) {

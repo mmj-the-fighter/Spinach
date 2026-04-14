@@ -44,7 +44,7 @@ namespace spn
 		inline Canvas* GetCanvas() {
 			return canvas;
 		}
-		inline void SetUserWantsToQuit(int flag) {
+		inline void SetUserWantsToQuit(bool flag) {
 			userWantsToQuit = flag;
 		}
 		inline void SetWindowTitle(const char* text) {
@@ -71,7 +71,7 @@ namespace spn
 		Canvas *canvas;
 		unsigned int targetFramesPerSecond;
 		unsigned int targetMillisPerFrame;
-		int userWantsToQuit;
+		bool userWantsToQuit;
 		std::function<void(Canvas* canvas)> updateAndRenderHandler;
 		std::function<void(const SDL_Event* sdlEvent)> inputHandler;
 		int Init(unsigned int width, unsigned int height);

@@ -55,7 +55,7 @@ namespace spn
 
 	int SpinachCore::Init(unsigned int width, unsigned int height)
 	{
-		userWantsToQuit = 0;
+		userWantsToQuit = false;
 
 		if (!SDL_Init(SDL_INIT_VIDEO))
 		{
@@ -129,9 +129,9 @@ namespace spn
 		int pitch = canvas->GetPitch();
 		int bufferBytesLength = height * pitch;
 		unsigned char* pixels = canvas->GetPixelBuffer();
-		userWantsToQuit = 0;
+		userWantsToQuit = false;
 		
-		while (0 == userWantsToQuit)
+		while (!userWantsToQuit)
 		{
 			frameStartTime = SDL_GetTicks();
 			canvas->SetLastFrameTime(static_cast<float>(frameProcTime + waitTime) / 1000.0f);
@@ -139,7 +139,7 @@ namespace spn
 			{
 				switch (event.type){
 				case SDL_EVENT_QUIT:
-					userWantsToQuit = 1;
+					userWantsToQuit = true;
 #ifdef SHOWFRAMESTATS
 					std::cout << "min: " << minFrameProcTime << "\tcur:" << frameProcTime << "\tmax:" << maxFrameProcTime << std::endl;
 #endif
@@ -150,7 +150,7 @@ namespace spn
 					case SDLK_ESCAPE:
 						SetTargetFramesPerSecond(1000);
 						LockFps(false);
-						userWantsToQuit = 1;
+						userWantsToQuit = true;
 						break;
 					case SDLK_F12:
 						{
