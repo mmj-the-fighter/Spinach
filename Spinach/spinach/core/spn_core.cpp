@@ -148,6 +148,8 @@ namespace spn
 					switch (event.key.key)
 					{
 					case SDLK_ESCAPE:
+						SetTargetFramesPerSecond(1000);
+						LockFps(false);
 						userWantsToQuit = 1;
 						break;
 					case SDLK_F12:
