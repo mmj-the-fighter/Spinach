@@ -44,14 +44,14 @@ Useful for:
 
 ```bash
 cd build
-cmake ../
+cmake ..
 ```
 
 This will generate the project files inside the `build` directory.  
 
 ## Key Bindings
 
-Four keys are handled in the engine:
+Five keys are handled in the engine:
 
 | Key | Behaviour |
 |-----|-----------|
@@ -59,6 +59,7 @@ Four keys are handled in the engine:
 | `F12` | A screenshot is saved with the current timestamp |
 | `F8` | Screen recording starts; recording indication is shown in the screen |
 | `F10` | Screen recording ends; the gif is saved with the current time stamp |
+| `F6` | Screen recording aborts; no file is saved |
 
 # Projects that use Spinach  
 - [Namaste3D Software rasterizer](https://github.com/mmj-the-fighter/Namaste3D)
