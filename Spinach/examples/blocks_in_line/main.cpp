@@ -23,23 +23,9 @@ void HandleInput(const SDL_Event* sdlEvent) {
 		case SDLK_RIGHT:
 			blocksGame.OnMoveRight();
 			break;
-		/*case SDLK_UP:
-		{
-			SDL_Keymod mod = SDL_GetModState();
-			if (mod & SDL_KMOD_SHIFT) {
-				blocksGame.OnRotateCW();
-			}
-			else {
-				blocksGame.OnRotateCCW();
-			}
-		}
-		break;*/
 		case SDLK_DOWN:
 			blocksGame.OnFallFast();
 			break;
-		//case SDLK_BACKSPACE:
-			//blocksGame.OnUndo();
-			//break;
 		case SDLK_SPACE:
 			SDL_Keymod mod = SDL_GetModState();
 			if (mod & SDL_KMOD_CTRL) {

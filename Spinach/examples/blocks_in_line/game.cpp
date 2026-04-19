@@ -7,8 +7,6 @@
 #include <spn_core.h>
 #include <spn_canvas.h>
 #include <game.h>
-#include <spn_profiler.h>
-#include <spn_logger.h>
 #include <spn_rng.h>
 #include <cq.h>
 
@@ -31,7 +29,6 @@ BlocksInLineGame::~BlocksInLineGame()
 }
 
 void BlocksInLineGame::Init(spn::SpinachCore* sc) {
-	spn::Logger::getInstance().init("app_log.txt");
 	spinachCore = sc;
 	srand(static_cast<unsigned int>(time(nullptr)));
 	spn::Canvas* canvas = sc->GetCanvas();
@@ -41,13 +38,24 @@ void BlocksInLineGame::Init(spn::SpinachCore* sc) {
 	//wh = sc->GetCanvas()->GetHeight();
 	sc->SetWindowTitle("STJILZO Blocks In Line");
 	FindAllPatterns();
+	float x, y;
+	float left = boardStartX;
+	float top = boardStartY;
+	float right = boardStartX + BOARDMAXCOLS * tileWidth;
+	float bottom = boardStartY + (BOARDMAXROWS-1) * tileHeight;
+	
+	CenterAlignTextPos(canvas, gameOverText, x, y, left, top, right, bottom);
+	gameOverTextX = static_cast<int>(x);
+	gameOverTextY = static_cast<int>(y);
 
-	previewX = 500;
-	previewY = 250;
+	CenterAlignTextPos(canvas, gamePausedText, x, y, left, top, right, bottom);
+	gamePausedTextX = static_cast<int>(x);
+	gamePausedTextY = static_cast<int>(y);
 	OnRestart();
 }
 
 void BlocksInLineGame::OnRestart() {
+	static int count = 0;
 	desiredFps = 1;
 	spinachCore->SetTargetFramesPerSecond(desiredFps);
 	spinachCore->LockFps(true);
@@ -64,6 +72,10 @@ void BlocksInLineGame::OnRestart() {
 	Spawn();
 	if (currentTile.isCollided) {
 		gameState = GAME_OVER;
+	}
+	if (count == 0) {
+		++count;
+		gameState = GAME_INTRO;
 	}
 }
 
@@ -300,6 +312,10 @@ void BlocksInLineGame::OnMoveRight()
 
 void BlocksInLineGame::OnRotateCCW()
 {
+	if (gameState == GAME_INTRO) {
+		OnRestart();
+		return;
+	}
 	if (gameState != GAME_RUNNING) {
 		return;
 	}
@@ -321,6 +337,10 @@ void BlocksInLineGame::OnRotateCCW()
 
 void BlocksInLineGame::OnRotateCW()
 {
+	if (gameState == GAME_INTRO) {
+		OnRestart();
+		return;
+	}
 	if (gameState != GAME_RUNNING) {
 		return;
 	}
@@ -340,10 +360,6 @@ void BlocksInLineGame::OnRotateCW()
 			}
 		}
 	}
-}
-
-void BlocksInLineGame::OnUndo()
-{
 }
 
 void BlocksInLineGame::OnPause()
@@ -492,6 +508,16 @@ void BlocksInLineGame::Update(float dt) {
 	}
 }
 
+void BlocksInLineGame::CenterAlignTextPos(spn::Canvas* canvas, const char* text, float& tx, float& ty, float left, float top, float right, float bottom)
+{
+	float txtwt, txtht;
+	canvas->GetCStringDisplaySize(text, txtwt, txtht);
+	float bw = right - left;
+	float bh = bottom - top;
+	tx = left + (bw - txtwt) * 0.5;
+	ty = top + (bh - txtht) * 0.5;
+}
+
 void BlocksInLineGame::PrepareScore() {
 	sprintf(scoreText,"Clearances: %d", score);
 }
@@ -499,6 +525,18 @@ void BlocksInLineGame::PrepareScore() {
 void BlocksInLineGame::UpdateAndRender(spn::Canvas* canvas) {
 	switch (gameState) 
 	{
+	case GAME_INTRO:
+		//Render(canvas);
+		canvas->Clear();
+		canvas->DrawCString("Controls:", 100, 50);
+		canvas->DrawCString("Move left - LEFT ARROW ", 100, 50+24);
+		canvas->DrawCString("Move right - RIGHT ARROW ", 100, 50+2*24);
+		canvas->DrawCString("Rotate clockwise - SPACE", 100, 50+3*24);
+		canvas->DrawCString("Rotate counter clockwise - CTRL+SPACE", 100, 50+4*24);
+		canvas->DrawCString("Restart - R", 100, 50+5*24);
+		canvas->DrawCString("Pause - P", 100, 50+6*24);
+		canvas->DrawCString("Press SPACE to start", 100, 50+9*24);
+		break;
 	case GAME_RUNNING:
 		Update(canvas->GetLastFrameTime());
 		Render(canvas);
@@ -508,13 +546,13 @@ void BlocksInLineGame::UpdateAndRender(spn::Canvas* canvas) {
 	case GAME_PAUSED:
 		Render(canvas);
 		canvas->SetPrimaryColorUint(textColor);
-		canvas->DrawCString(gamePausedText, 100, 200);
+		canvas->DrawCString(gamePausedText, gamePausedTextX, gamePausedTextY);
 		canvas->DrawCString(scoreText, 500, 40);
 		break;
 	case GAME_OVER:
 		Render(canvas);
 		canvas->SetPrimaryColorUint(textColor);
-		canvas->DrawCString(gameOverText, 100, 200);
+		canvas->DrawCString(gameOverText, gameOverTextX, gameOverTextY);
 		canvas->DrawCString(scoreText, 500, 40);
 		break;
 	}

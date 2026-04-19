@@ -26,6 +26,7 @@ struct TileSprite {
 };
 
 enum GameState {
+	GAME_INTRO,
 	GAME_PAUSED,
 	GAME_OVER,
 	GAME_RUNNING,
@@ -54,6 +55,7 @@ public:
 private:
 	void Render(spn::Canvas* canvas);
 	void Update(float dt);
+	void CenterAlignTextPos(spn::Canvas* canvas, const char* text, float& tx, float& ty, float left, float top, float right, float bottom);
 	bool Spawn();
 	void FindAllPatterns();
 	void PopulatePattern(unsigned int pattern, unsigned int patternGrid[PATTERNMAXROWS][PATTERNMAXCOLS]);
@@ -145,7 +147,10 @@ private:
 		0xCC3366, // warm magenta
 		0x993333  // deep brown-red
 	};
-
+	int gamePausedTextX;
+	int gamePausedTextY;
+	int gameOverTextX;
+	int gameOverTextY;
 	//unsigned int boardGridColor = 0x333333; // dark neutral gray
 	unsigned int textColor = 0xffffff; // warm olive gray
 	unsigned int boardGridColor = 0x666633; // warm olive gray
@@ -180,8 +185,6 @@ private:
 	unsigned int currentTilePattern[PATTERNMAXROWS][PATTERNMAXCOLS];
 	unsigned int nextTilePattern[PATTERNMAXROWS][PATTERNMAXCOLS];
 	unsigned int oneDownTilePattern[PATTERNMAXROWS][PATTERNMAXCOLS];
-	int previewX;
-	int previewY;
 	TileSprite nextTile;
 	TileSprite oneDownTile;
 	float lastFrameTime = 0;
