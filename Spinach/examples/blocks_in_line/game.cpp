@@ -1,0 +1,519 @@
+#include <iostream>
+
+#include <cstring>
+#include <cstdio>
+#include <algorithm>
+#include <cstdlib>
+#include <spn_core.h>
+#include <spn_canvas.h>
+#include <game.h>
+#include <spn_profiler.h>
+#include <spn_logger.h>
+#include <spn_rng.h>
+#include <cq.h>
+
+BlocksInLineGame::BlocksInLineGame()
+{
+	tileWidth = 32;
+	tileHeight = 32;
+	boardStartX = 32;
+	boardStartY = 32;
+	score = 0;
+	gravityMultiplier = 1;
+	queue = new CircularQueue<TileSprite>();
+}
+
+BlocksInLineGame::~BlocksInLineGame()
+{
+	if (queue) {
+		delete queue;
+	}
+}
+
+void BlocksInLineGame::Init(spn::SpinachCore* sc) {
+	spn::Logger::getInstance().init("app_log.txt");
+	spinachCore = sc;
+	srand(static_cast<unsigned int>(time(nullptr)));
+	spn::Canvas* canvas = sc->GetCanvas();
+	canvas->SetClearColor(0, 0, 128);
+
+	//ww = sc->GetCanvas()->GetWidth();
+	//wh = sc->GetCanvas()->GetHeight();
+	sc->SetWindowTitle("Blocks in Line - STJILZO");
+	FindAllPatterns();
+	queue->inQ(CreateNewTile());
+	queue->inQ(CreateNewTile());
+	queue->inQ(CreateNewTile());
+	previewX = 500;
+	previewY = 250;
+	OnRestart();
+}
+
+void BlocksInLineGame::OnRestart() {
+	desiredFps = 1;
+	spinachCore->SetTargetFramesPerSecond(desiredFps);
+	spinachCore->LockFps(true);
+	score = 0;
+	PrepareScore();
+	gameState = GAME_RUNNING;
+	gravity = tileHeight;
+	ClearBoard();
+	
+	Spawn();
+	if (currentTile.isCollided) {
+		gameState = GAME_OVER;
+	}
+}
+
+void BlocksInLineGame::SetDebugEnabled(bool flag) {
+	canDebug = flag;
+}
+TileSprite BlocksInLineGame::CreateNewTile(){
+	TileSprite t;
+	t.tetrominoeIndex = GetNextTetrominoIndex();
+	t.color = colors[t.tetrominoeIndex];
+
+	t.rotationIndex = spn::RandomGen::GetInstance().GenerateInRange(0, MAXROTATIONS - 1);
+	t.pattern = tetrominoes[t.tetrominoeIndex][t.rotationIndex];
+	//t.x = boardStartX + (BOARDMAXCOLS * tileWidth) / 2;
+	t.x = spn::RandomGen::GetInstance().GenerateInRange(boardStartX, ((BOARDMAXCOLS-1) * tileWidth));
+	t.x -= tileWidth;
+	t.y = boardStartY - tileHeight * PATTERNMAXROWS;
+	t.isCollided = false;
+	return t;
+}
+bool BlocksInLineGame::Spawn()
+{
+	queue->delQ(currentTile);
+	queue->front(nextTile);
+	queue->onedown(oneDownTile);
+	queue->inQ(CreateNewTile());
+	PopulatePattern(nextTile.pattern, nextTilePattern);;
+	PopulatePattern(oneDownTile.pattern, oneDownTilePattern);;
+	PopulatePattern(currentTile.pattern, currentTilePattern);
+	gravityMultiplier = 1;
+	currentTile.isCollided = !CanRenderPatternGridWithoutOverlap(currentTile.x, currentTile.y, currentTilePattern);
+	return currentTile.isCollided;
+}
+
+void BlocksInLineGame::PopulatePattern(unsigned int pattern, unsigned int patternGrid[PATTERNMAXROWS][PATTERNMAXCOLS])
+{
+	unsigned int pat = pattern;
+	unsigned int mask = 0b1000000000000000;
+	//inject current tile pattern to board based on the currentTilePosition
+	for (int k = 0; k < 16; ++k) {
+		int r = k / 4;
+		int c = k % 4;
+		if (pat & mask) {
+			patternGrid[r][c] = 1;
+		}
+		else {
+			patternGrid[r][c] = 0;
+		}
+		pat <<= 1;
+	}
+}
+
+void BlocksInLineGame::ClearBoard()
+{
+	for (int i = 0; i < BOARDMAXROWS; i++) {
+		for (int j = 0; j < BOARDMAXCOLS; j++) {
+			board[i][j] = cleanboard[i][j];
+		}
+	}
+}
+
+void BlocksInLineGame::RenderPatternGrid(spn::Canvas* canvas, int x, int y, unsigned int pat[PATTERNMAXROWS][PATTERNMAXCOLS]) {
+	int row = (y - boardStartY) / tileHeight;
+	int col = (x - boardStartX) / tileWidth;
+
+	for (int i = 0; i < PATTERNMAXROWS; i++) {
+		for (int j = 0; j < PATTERNMAXCOLS; j++) {
+			int p = pat[i][j];
+			if (p == 0) {//pattern cell is empty
+				continue;
+			}
+			int er = row + i;
+			int ec = col + j;
+			if (er >= 0 &&
+				er < BOARDMAXROWS &&
+				ec >= 0 &&
+				ec < BOARDMAXCOLS) 
+			{
+				int y = boardStartY + er * tileHeight;
+				int x = boardStartX + ec * tileWidth;
+				canvas->SetPrimaryColorUint(boardGridColor);
+				canvas->DrawRectangle(x, y, x + tileWidth, y + tileHeight);
+				canvas->SetPrimaryColorUint(currentTile.color);
+				canvas->DrawFilledRectangle(x + 4, y + 4, x + tileWidth - 4, y + tileHeight - 4);
+			}
+		}
+	}
+}
+void BlocksInLineGame::TransferPatternGridToBoard(int x, int y, unsigned int pat[PATTERNMAXROWS][PATTERNMAXCOLS])
+{
+	int row = (y - boardStartY) / tileHeight;
+	int col = (x - boardStartX) / tileWidth;
+	for (int i = 0; i < PATTERNMAXROWS; i++) {
+		for (int j = 0; j < PATTERNMAXCOLS; j++) {
+			int er = row + i;
+			int ec = col + j;
+			int p = pat[i][j];
+			if (p!=0 && er >= 0 && er < BOARDMAXROWS && ec >= 0 && ec < BOARDMAXCOLS) {
+				board[er][ec] = currentTile.color;
+			}
+		}
+	}
+}
+bool BlocksInLineGame::CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(int x, int y, unsigned int pat[PATTERNMAXROWS][PATTERNMAXCOLS]) {
+	int row = (y - boardStartY) / tileHeight;
+	int col = (x - boardStartX) / tileWidth;
+	
+	for (int i = 0; i < PATTERNMAXROWS; i++) {
+		for (int j = 0; j < PATTERNMAXCOLS; j++) {
+			int p = pat[i][j];
+			if (p == 0) {//pattern cell is empty
+				continue;
+			}
+			int er = row + i;
+			int ec = col + j;
+			if (er >= 0 &&
+				er < BOARDMAXROWS &&
+				ec >= 0 &&
+				ec < BOARDMAXCOLS) {
+				if (board[er][ec] != 0) {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void BlocksInLineGame::RenderPreviewBoard(
+	spn::Canvas* canvas,
+	const char* title, 
+	TileSprite tile, 
+	int startX, int startY, 
+	unsigned int pat[PATTERNMAXROWS][PATTERNMAXCOLS]) {
+	int th = 3*tileHeight / 4;
+	int tw = 3*tileWidth / 4;
+
+	for (int row = 0, col = 0, i = 0; i < PATTERNMAXROWS; i++) {
+		for (int j = 0; j < PATTERNMAXCOLS; j++) {
+			int p = pat[i][j];
+			int er = row + i;
+			int ec = col + j;
+			int y = startY + er * th;
+			int x = startX + ec * tw;
+
+			if (p != 0)
+			{
+				canvas->SetPrimaryColorUint(previewGridColor);
+				canvas->DrawRectangle(x, y, x + tw, y + th);
+				canvas->SetPrimaryColorUint(tile.color);
+				canvas->DrawFilledRectangle(x + 2, y + 2, x + tw - 2, y + th - 2);
+			}
+			else {
+				canvas->SetPrimaryColorUint(previewGridColor);
+				canvas->DrawRectangle(x, y, x + tw, y + th);
+			}
+		}
+	}
+	canvas->SetPrimaryColorUint(textColor);
+	char str[256] = "";
+	sprintf(str, "%s: %c", title, patternChar[tile.tetrominoeIndex]);
+	canvas->DrawCString(str, startX, startY - 24);
+}
+
+
+bool BlocksInLineGame::CanRenderPatternGridWithoutOverlap(int x, int y, unsigned int pat[PATTERNMAXROWS][PATTERNMAXCOLS])
+{
+	int row = (y - boardStartY) / tileHeight;
+	int col = (x - boardStartX) / tileWidth;
+
+	for (int i = 0; i < PATTERNMAXROWS; i++) {
+		for (int j = 0; j < PATTERNMAXCOLS; j++) {
+			int p = pat[i][j];
+			int er = row + i;
+			int ec = col + j;
+			if (p != 0 && er >= 0 &&
+				er < BOARDMAXROWS &&
+				ec >= 0 &&
+				ec < BOARDMAXCOLS) {
+				if (board[er][ec] != 0) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+void BlocksInLineGame::FindAllPatterns()
+{
+}
+
+int BlocksInLineGame::GetPatternUintFromPatternGrid(unsigned int patGrid[PATTERNMAXROWS][PATTERNMAXCOLS])
+{
+	int shiftamount = 12;
+	int pattern = 0;
+	for (int i = 0; i < PATTERNMAXROWS; ++i) {
+		unsigned int rowpattern = 0xF;
+		unsigned int rowmask = 0x1;
+		for (int j = PATTERNMAXCOLS - 1; j >= 0; --j) {
+			if (patGrid[i][j] == 0) {
+				rowpattern ^= rowmask;
+			}
+			rowmask <<= 1;
+		}
+		pattern |= rowpattern << shiftamount;
+		shiftamount -= 4;
+	}
+	return pattern;
+}
+
+void BlocksInLineGame::OnMoveLeft()
+{
+	if (gameState != GAME_RUNNING) {
+		return;
+	}
+	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x - tileWidth, currentTile.y, currentTilePattern)) {
+		currentTile.x -= tileWidth;
+	}
+}
+
+void BlocksInLineGame::OnMoveRight()
+{
+	if (gameState != GAME_RUNNING) {
+		return;
+	}
+	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x + tileWidth, currentTile.y, currentTilePattern)) {
+		currentTile.x += tileWidth;
+	}
+}
+
+void BlocksInLineGame::OnRotateCCW()
+{
+	if (gameState != GAME_RUNNING) {
+		return;
+	}
+	int trindex = currentTile.rotationIndex;
+
+	++trindex;
+	trindex %= MAXROTATIONS;
+	unsigned int tempPatternGrid[PATTERNMAXROWS][PATTERNMAXCOLS];
+	PopulatePattern(tetrominoes[currentTile.tetrominoeIndex][trindex], tempPatternGrid);
+	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x, currentTile.y, tempPatternGrid)) {
+		currentTile.rotationIndex = trindex;
+		for (int i = 0; i < PATTERNMAXROWS; i++) {
+			for (int j = 0; j < PATTERNMAXCOLS; j++) {
+				currentTilePattern[i][j] = tempPatternGrid[i][j];
+			}
+		}
+	}
+}
+
+void BlocksInLineGame::OnRotateCW()
+{
+	if (gameState != GAME_RUNNING) {
+		return;
+	}
+	int trindex = currentTile.rotationIndex;
+	--trindex;
+	if (trindex < 0) {
+		trindex = MAXROTATIONS - 1;
+	}
+	
+	unsigned int tempPatternGrid[PATTERNMAXROWS][PATTERNMAXCOLS];
+	PopulatePattern(tetrominoes[currentTile.tetrominoeIndex][trindex], tempPatternGrid);
+	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x, currentTile.y, tempPatternGrid)) {
+		currentTile.rotationIndex = trindex;
+		for (int i = 0; i < PATTERNMAXROWS; i++) {
+			for (int j = 0; j < PATTERNMAXCOLS; j++) {
+				currentTilePattern[i][j] = tempPatternGrid[i][j];
+			}
+		}
+	}
+}
+
+void BlocksInLineGame::OnUndo()
+{
+}
+
+void BlocksInLineGame::OnPause()
+{
+	if (gameState == GAME_RUNNING ) {
+		gameState = GAME_PAUSED;
+	}
+	else if (gameState == GAME_PAUSED) {
+		gameState = GAME_RUNNING;
+	}
+}
+
+void BlocksInLineGame::OnFallFast()
+{
+	if (gameState != GAME_RUNNING) {
+		return;
+	}
+	gravityMultiplier = 4;
+}
+
+
+//OpenAI Generated Code
+void BlocksInLineGame::RefillBag() {
+	for (int i = 0; i < 7; ++i)
+		bag[i] = i;
+
+	// Fisher-Yates shuffle
+	for (int i = 6; i > 0; --i) {
+		int j = spn::RandomGen::GetInstance().GenerateInRange(0, i);
+		std::swap(bag[i], bag[j]);
+	}
+
+	bagIndex = 0;
+}
+
+int BlocksInLineGame::GetNextTetrominoIndex() {
+	if (bagIndex >= 7)
+		RefillBag();
+
+	return bag[bagIndex++];
+}
+bool BlocksInLineGame::FallDown() {
+	int iterations = gravity* gravityMultiplier / gravity;
+	bool collided = false;
+	for(int i = 0; i < iterations; i++) {
+		if (CanRenderPatternGridWithoutOverlap(currentTile.x, currentTile.y + tileHeight, currentTilePattern)) {
+			currentTile.y += tileHeight;
+		}
+		else {
+			collided = true;
+			break;
+		}
+	}
+	currentTile.isCollided = collided;
+	return !collided;
+}
+
+void BlocksInLineGame::EliminateBoardRow(int rowIndex) {
+	for (int j = 0; j < BOARDMAXCOLS; ++j) {
+		for (int i = rowIndex; i >= 0; --i) {
+			if (i == 0)
+				board[i][j] = 0;
+			else
+				board[i][j] = board[i - 1][j];
+		}
+	}
+}
+
+bool BlocksInLineGame::ClearAllTilesInLine() {
+	int count = 0;
+	for (int k = BOARDMAXROWS - 2; k > 0; --k) {
+		int j=0;
+		while (board[k][j] != 0) {
+			++j;
+		}
+		if (j >= BOARDMAXCOLS) {
+			EliminateBoardRow(k);
+			++count;
+		}
+	}
+	score += count;
+	if (count > 0) {
+		PrepareScore();
+	}
+	return count > 0;
+}
+
+void BlocksInLineGame::Render(spn::Canvas* canvas) {
+	canvas->Clear();
+	canvas->SaveColors();
+	
+
+	for (int i = 0; i < BOARDMAXROWS-1; ++i) {
+		for (int j = 0; j < BOARDMAXCOLS; ++j) {
+			int y = boardStartY + i * tileHeight;
+			int x = boardStartX + j * tileWidth;
+			unsigned int color = board[i][j];
+			if (color != 0) {
+				canvas->SetPrimaryColorUint(boardGridColor);
+				canvas->DrawRectangle(x, y, x + tileWidth, y + tileHeight);
+				canvas->SetPrimaryColorUint(color);
+				canvas->DrawFilledRectangle(x + 4, y + 4, x + tileWidth - 4, y + tileHeight - 4);
+			}
+			else {
+				canvas->SetPrimaryColorUint(boardGridColor);
+				canvas->DrawRectangle(x, y, x + tileWidth, y + tileHeight);
+			}
+		}
+	}
+	
+	RenderPatternGrid(canvas, currentTile.x, currentTile.y, currentTilePattern);
+	int yy = tileHeight * 4;
+	int off = tileHeight * 4 + 20;
+	RenderPreviewBoard(canvas, "Running", currentTile, 500,yy, currentTilePattern);
+	RenderPreviewBoard(canvas, "Next", nextTile, 500,yy+off, nextTilePattern);
+	RenderPreviewBoard(canvas, "One-Down", oneDownTile, 500,yy+2*off, oneDownTilePattern);
+
+	canvas->RestoreColors();
+	canvas->DrawRectangle(
+		boardStartX,
+		boardStartY,
+		boardStartX + (BOARDMAXCOLS * tileWidth),
+		boardStartY + ((BOARDMAXROWS-1) * tileHeight)
+	);
+
+}
+
+void BlocksInLineGame::Update(float dt) {
+	FallDown();
+	if (currentTile.isCollided) {
+		TransferPatternGridToBoard(currentTile.x, currentTile.y, currentTilePattern);
+		while (ClearAllTilesInLine());
+		for (int i = 0; i < BOARDMAXCOLS; i++) {
+			if (board[0][i] != 0) {
+				gameState = GAME_OVER;
+				break;
+			}
+		}
+		if (gameState != GAME_OVER) {
+			Spawn();
+			if (currentTile.isCollided) {
+				gameState = GAME_OVER;
+			}
+		}
+	}
+}
+
+void BlocksInLineGame::PrepareScore() {
+	sprintf(scoreText,"Clearances: %d", score);
+}
+
+void BlocksInLineGame::UpdateAndRender(spn::Canvas* canvas) {
+	switch (gameState) 
+	{
+	case GAME_RUNNING:
+		Update(canvas->GetLastFrameTime());
+		Render(canvas);
+		canvas->SetPrimaryColorUint(textColor);
+		canvas->DrawCString(scoreText, 500, 40);
+		break;
+	case GAME_PAUSED:
+		Render(canvas);
+		canvas->SetPrimaryColorUint(textColor);
+		canvas->DrawCString(gamePausedText, 100, 200);
+		canvas->DrawCString(scoreText, 500, 40);
+		break;
+	case GAME_OVER:
+		Render(canvas);
+		canvas->SetPrimaryColorUint(textColor);
+		canvas->DrawCString(gameOverText, 100, 200);
+		canvas->DrawCString(scoreText, 500, 40);
+		break;
+	}
+	canvas->SetPrimaryColorUint(textColor);
+}

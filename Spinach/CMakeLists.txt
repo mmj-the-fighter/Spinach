@@ -19,6 +19,7 @@ set(RAYTRACING_EXAMPLE raytracing_example)
 set(PICTUREPUZZLE_EXAMPLE picture_puzzle)
 set(WIREFRAME_RENDERING_EXAMPLE wireframe_rendering)
 set(LOGARITHMIC_SPIRAL logarithmic_spiral)
+set(BLOCKS_IN_LINE blocks_in_line)
 
 
 # Platform-specific flags
@@ -412,7 +413,7 @@ target_include_directories(${PICTUREPUZZLE_EXAMPLE} PRIVATE
 target_link_libraries(${PICTUREPUZZLE_EXAMPLE} PRIVATE SDL3::SDL3)
 
 
-#10. wire frame rendering example
+#10. wireframe rendering example
 # Collect C++ source files
 file(GLOB_RECURSE WIREFRAME_RENDERING_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
 	examples/wireframe_rendering/*.cpp
@@ -478,3 +479,34 @@ target_include_directories(${LOGARITHMIC_SPIRAL} PRIVATE
 
 
 target_link_libraries(${LOGARITHMIC_SPIRAL} PRIVATE SDL3::SDL3)
+
+# 12. blocks in line
+# Collect C++ source files
+file(GLOB_RECURSE BLOCKS_IN_LINE_CPP_SRC CONFIGURE_DEPENDS
+    examples/blocks_in_line/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE BLOCKS_IN_LINE_CPP_H CONFIGURE_DEPENDS
+	examples/blocks_in_line/*.h
+)
+
+# Create the executable
+add_executable(	${BLOCKS_IN_LINE}
+	${BLOCKS_IN_LINE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${BLOCKS_IN_LINE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${BLOCKS_IN_LINE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/blocks_in_line
+)
+
+target_link_libraries(${BLOCKS_IN_LINE} PRIVATE SDL3::SDL3)
