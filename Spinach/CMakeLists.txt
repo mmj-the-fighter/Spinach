@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(EXAMPLE_WITH_RENDER_LOOP example_with_render_loop)
 set(EXAMPLE_WITHOUT_RENDER_LOOP example_without_render_loop)
 set(SPIROGRAPH_WITH_RMGUI spirograph_with_rmgui)
-set(MINE_SWEEPER mine_sweeper)
+set(MINE_SWEEPER_CLONE mine_sweeper_clone)
 set(IMAGE_PROCESSING_WITH_RMGUI image_processing_with_rmgui)
 set(GAME_OF_LIFE game_of_life)
 set(SNAKE_CLONE snake_clone)
@@ -181,38 +181,38 @@ target_include_directories(${SPIROGRAPH_WITH_RMGUI} PRIVATE
 target_link_libraries(${SPIROGRAPH_WITH_RMGUI} PRIVATE SDL3::SDL3)
 
 
-# 4. mine_sweeper
+# 4. mine_sweeper_clone
 # Collect C++ source files
-file(GLOB_RECURSE MINE_SWEEPER_CPP_SRC CONFIGURE_DEPENDS
-    examples/mine_sweeper/*.cpp
+file(GLOB_RECURSE MINE_SWEEPER_CLONE_CPP_SRC CONFIGURE_DEPENDS
+    examples/mine_sweeper_clone/*.cpp
 )
 
 # Collect headers 
-file(GLOB_RECURSE MINE_SWEEPER_CPP_H CONFIGURE_DEPENDS
-	examples/mine_sweeper/*.h
+file(GLOB_RECURSE MINE_SWEEPER_CLONE_CPP_H CONFIGURE_DEPENDS
+	examples/mine_sweeper_clone/*.h
 )
 
 # Create the executable
-add_executable(	${MINE_SWEEPER}
-	${MINE_SWEEPER_CPP_SRC}
+add_executable(	${MINE_SWEEPER_CLONE}
+	${MINE_SWEEPER_CLONE_CPP_SRC}
 	${SPINACH_CPP_SRC}
     ${SPINACH_C_SRC}
-    ${MINE_SWEEPER_CPP_H} 
+    ${MINE_SWEEPER_CLONE_CPP_H} 
 	${SPINACH_H}
 	${NANOSVG_H}
 )
-target_include_directories(${MINE_SWEEPER} PRIVATE
+target_include_directories(${MINE_SWEEPER_CLONE} PRIVATE
     spinach/common
     spinach/core
     spinach/ui
 	spinach/ui/imgui
     spinach/external/stb
 	spinach/external/nanosvg
-	examples/mine_sweeper
+	examples/mine_sweeper_clone
 )
 
 
-target_link_libraries(${MINE_SWEEPER} PRIVATE SDL3::SDL3)
+target_link_libraries(${MINE_SWEEPER_CLONE} PRIVATE SDL3::SDL3)
 
 
 # 5. image_processing_with_rmgui
