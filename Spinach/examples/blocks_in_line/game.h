@@ -69,10 +69,10 @@ private:
 	bool canDebug = false;
 	TileSprite currentTile;
 	bool scoreChanged = false;
-	CircularQueue<TileSprite>* queue;
+	CircularQueue<TileSprite>* tileQueue;
 	//unsigned int tetrominoes[MAXPATTERNS][MAXROTATIONS];
 
-	//patterns suggested by AI
+	//patterns suggested by chatgpt from openai
 	unsigned short tetrominoes[MAXPATTERNS][MAXROTATIONS] =
 	{
 		// O (square)
@@ -135,10 +135,7 @@ private:
 	spn::SpinachCore* spinachCore;
 	char patternChar[7] = { 'O','I','T','J','L','Z','S' };
 
-	//colors suggested by AI// ------------------------------------------------------------
-// OpenAI Generated Code - Free to use, modify, distribute
-// ------------------------------------------------------------
-
+	//colors suggested by chatgpt from openai
 	unsigned int colors[MAXPATTERNS] = {
 		0xCC3333, // warm red
 		0xFF6633, // orange

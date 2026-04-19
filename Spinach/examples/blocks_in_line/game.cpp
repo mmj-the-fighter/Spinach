@@ -20,13 +20,13 @@ BlocksInLineGame::BlocksInLineGame()
 	boardStartY = 32;
 	score = 0;
 	gravityMultiplier = 1;
-	queue = new CircularQueue<TileSprite>();
+	tileQueue = new CircularQueue<TileSprite>();
 }
 
 BlocksInLineGame::~BlocksInLineGame()
 {
-	if (queue) {
-		delete queue;
+	if (tileQueue) {
+		delete tileQueue;
 	}
 }
 
@@ -39,11 +39,9 @@ void BlocksInLineGame::Init(spn::SpinachCore* sc) {
 
 	//ww = sc->GetCanvas()->GetWidth();
 	//wh = sc->GetCanvas()->GetHeight();
-	sc->SetWindowTitle("Blocks in Line - STJILZO");
+	sc->SetWindowTitle("STJILZO Blocks In Line");
 	FindAllPatterns();
-	queue->inQ(CreateNewTile());
-	queue->inQ(CreateNewTile());
-	queue->inQ(CreateNewTile());
+
 	previewX = 500;
 	previewY = 250;
 	OnRestart();
@@ -58,6 +56,10 @@ void BlocksInLineGame::OnRestart() {
 	gameState = GAME_RUNNING;
 	gravity = tileHeight;
 	ClearBoard();
+	tileQueue->Clear();
+	tileQueue->InQ(CreateNewTile());
+	tileQueue->InQ(CreateNewTile());
+	tileQueue->InQ(CreateNewTile());
 	
 	Spawn();
 	if (currentTile.isCollided) {
@@ -84,10 +86,10 @@ TileSprite BlocksInLineGame::CreateNewTile(){
 }
 bool BlocksInLineGame::Spawn()
 {
-	queue->delQ(currentTile);
-	queue->front(nextTile);
-	queue->onedown(oneDownTile);
-	queue->inQ(CreateNewTile());
+	tileQueue->DelQ(currentTile);
+	tileQueue->First(nextTile);
+	tileQueue->Second(oneDownTile);
+	tileQueue->InQ(CreateNewTile());
 	PopulatePattern(nextTile.pattern, nextTilePattern);;
 	PopulatePattern(oneDownTile.pattern, oneDownTilePattern);;
 	PopulatePattern(currentTile.pattern, currentTilePattern);
@@ -305,13 +307,13 @@ void BlocksInLineGame::OnRotateCCW()
 
 	++trindex;
 	trindex %= MAXROTATIONS;
-	unsigned int tempPatternGrid[PATTERNMAXROWS][PATTERNMAXCOLS];
-	PopulatePattern(tetrominoes[currentTile.tetrominoeIndex][trindex], tempPatternGrid);
-	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x, currentTile.y, tempPatternGrid)) {
+	unsigned int temp[PATTERNMAXROWS][PATTERNMAXCOLS];
+	PopulatePattern(tetrominoes[currentTile.tetrominoeIndex][trindex], temp);
+	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x, currentTile.y, temp)) {
 		currentTile.rotationIndex = trindex;
 		for (int i = 0; i < PATTERNMAXROWS; i++) {
 			for (int j = 0; j < PATTERNMAXCOLS; j++) {
-				currentTilePattern[i][j] = tempPatternGrid[i][j];
+				currentTilePattern[i][j] = temp[i][j];
 			}
 		}
 	}
@@ -328,13 +330,13 @@ void BlocksInLineGame::OnRotateCW()
 		trindex = MAXROTATIONS - 1;
 	}
 	
-	unsigned int tempPatternGrid[PATTERNMAXROWS][PATTERNMAXCOLS];
-	PopulatePattern(tetrominoes[currentTile.tetrominoeIndex][trindex], tempPatternGrid);
-	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x, currentTile.y, tempPatternGrid)) {
+	unsigned int temp[PATTERNMAXROWS][PATTERNMAXCOLS];
+	PopulatePattern(tetrominoes[currentTile.tetrominoeIndex][trindex], temp);
+	if (CanRenderPatternGridWithoutOverlapAndGoingOutOfBounds(currentTile.x, currentTile.y, temp)) {
 		currentTile.rotationIndex = trindex;
 		for (int i = 0; i < PATTERNMAXROWS; i++) {
 			for (int j = 0; j < PATTERNMAXCOLS; j++) {
-				currentTilePattern[i][j] = tempPatternGrid[i][j];
+				currentTilePattern[i][j] = temp[i][j];
 			}
 		}
 	}

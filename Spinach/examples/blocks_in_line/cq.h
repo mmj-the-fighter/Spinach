@@ -10,32 +10,37 @@ public:
 		:r(-1),f(0),sz(0) {
 	}
 
-	bool isEmpty() const {
+	void Clear() {
+		r = -1;
+		f = 0;
+		sz = 0;
+	}
+	bool IsEmpty() const {
 		return (sz <= 0);
 	}
 
-	bool isFull() const {
+	bool IsFull() const {
 		return (sz >= QCAP);
 	}
 
-	bool inQ(const T& n) {
-		if (isFull()) return false;
+	bool InQ(const T& n) {
+		if (IsFull()) return false;
 		r = (r + 1) % QCAP;
 		arr[r] = n;
 		++sz;
 		return true;
 	}
 
-	bool inQ(T&& n) {
-		if (isFull()) return false;
+	bool InQ(T&& n) {
+		if (IsFull()) return false;
 		r = (r + 1) % QCAP;
 		arr[r] = std::move(n);
 		++sz;
 		return true;
 	}
 
-	bool delQ(T& out){
-		if(isEmpty()){
+	bool DelQ(T& out){
+		if(IsEmpty()){
 			return false;
 		}
 		out = arr[f];
@@ -44,16 +49,16 @@ public:
 		return true;
 	}
 
-	bool front(T& out) {
-		if (isEmpty()) {
+	bool First(T& out) {
+		if (IsEmpty()) {
 			return false;
 		}
 		out = arr[f];
 		return true;
 	}
 
-	bool onedown(T& out) {
-		if (isEmpty() || sz < 2) {
+	bool Second(T& out) {
+		if (IsEmpty() || sz < 2) {
 			return false;
 		}
 		out = arr[(f + 1) % QCAP];
