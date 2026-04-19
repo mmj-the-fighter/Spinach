@@ -1,9 +1,6 @@
 #ifndef BLOCKSGAME_H
 #define BLOCKSGAME_H
 
-#include <unordered_map>
-#include <string>
-
 #define MAXPATTERNS 7
 #define MAXROTATIONS 4
 #define PATTERNMAXROWS 4
@@ -196,8 +193,8 @@ private:
 	int boardStartX;
 	int boardStartY;
 	int desiredFps;
-	int gravity;
-	int gravityMultiplier;
+	float gravity;
+	float gravityMultiplier;
 	int score;
 	char scoreText[256];
 	char* previewName;

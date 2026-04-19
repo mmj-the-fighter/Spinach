@@ -359,7 +359,8 @@ void BlocksInLineGame::OnFallFast()
 	if (gameState != GAME_RUNNING) {
 		return;
 	}
-	gravityMultiplier = 4;
+	float dt = spinachCore->GetCanvas()->GetLastFrameTime();
+	gravityMultiplier += 0.075*tileHeight * dt;
 }
 
 
@@ -384,7 +385,7 @@ int BlocksInLineGame::GetNextTetrominoIndex() {
 	return bag[bagIndex++];
 }
 bool BlocksInLineGame::FallDown() {
-	int iterations = gravity* gravityMultiplier / gravity;
+	int iterations = gravityMultiplier;
 	bool collided = false;
 	for(int i = 0; i < iterations; i++) {
 		if (CanRenderPatternGridWithoutOverlap(currentTile.x, currentTile.y + tileHeight, currentTilePattern)) {
