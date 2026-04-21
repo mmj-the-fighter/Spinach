@@ -165,13 +165,13 @@ void Init(float maxwidth, float maxheight)
 	slider5->SetSensitivity(0.5);
 	slider5->SetCStringLabel("Freq 2");
 
-	dropdown = uim->CreateWidget<Dropdown>();
-	dropdown->SetPosition(16, 260);
-	dropdown->AddOption("abc");
-	dropdown->AddOption("dcd");
-	dropdown->AddOption("eds");
-	dropdown->SetSize(128, 32);
-	dropdown->SetId(100);
+	//dropdown = uim->CreateWidget<Dropdown>();
+	//dropdown->SetPosition(16, 260);
+	//dropdown->AddOption("abc");
+	//dropdown->AddOption("dcd");
+	//dropdown->AddOption("eds");
+	//dropdown->SetSize(128, 32);
+	//dropdown->SetId(100);
 
 	/*label = uim->CreateWidget<Label>();
 	label->SetString("Hello");
