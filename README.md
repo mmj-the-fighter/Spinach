@@ -20,7 +20,7 @@ Useful for:
 - [render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering rapidly changing pixels. use case for software rasterization and raytracing
 - [without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  shows how Spinach can be used without render loop. examples: sierpienski triangle, rendering svg and sepia filter 
 - [logarithmic spiral](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/logarithmic_spiral) shows how Spinach can be used to make a logarithmic spiral, it includes an imgui checkbox too  
-- [spirograph simulation with spn::rmgui](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/spirograph_with_rmgui)  shows how rmgui in Spinach can be used for controling a spirograph  
+- [locus generation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/parametric_locus_generator)  shows how spn::rmgui can be used for  controlling two indpendantly rotating links
 - [game of life simulation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) shows how Spinach can be used for programming game of life. this involves using std::thread  
 - [mine sweeper clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/mine_sweeper) shows how a clone of mine sweeper game can be developed using Spinach  
 - [flappy bird clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/bird_flight) shows how a flappy bird like game can be made  
