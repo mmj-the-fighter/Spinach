@@ -246,6 +246,10 @@ namespace spn
 	}
 
 	void SpinachCore::ProcessRecording() {
+		//////////////////////////////////
+		//This portion of the code does a ping pong of the value DEFAULTFPS/2
+		//between -DEFAULTFPS/2 to DEFAULTFPS/2
+		//for giving a flickering notification of recording
 		static int frames = DEFAULTFPS / 2;
 		static int maxFrames = DEFAULTFPS / 2;
 		static const int framesCap = 25;
@@ -259,7 +263,9 @@ namespace spn
 		if (frames < -maxFrames) {
 			frames = maxFrames;
 		}
-		
+		//////////////////////////////////////////////
+		//This portion of the code set the gif rendering speed and 
+		//records the frame
 		float frameTime = canvas->GetLastFrameTime();
 		if (frameTime < 0.0001) {
 				frames = maxFrames;
