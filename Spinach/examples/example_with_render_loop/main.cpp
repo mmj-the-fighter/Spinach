@@ -1,0 +1,57 @@
+#include <iostream>
+#include <spn_canvas.h>
+#include <spn_core.h>
+#include <spn_profiler.h>
+
+void UpdateAndRender(spn::Canvas* canvas) {
+	static int frameNum = 0;
+	++frameNum;
+	spn::ProfilerLimitedScope scope(frameNum, 10, 40);
+	static int k = 1;
+	std::string str = std::to_string(canvas->GetLastFrameTime() * 1000);
+	unsigned char *pixBuffer = canvas->GetPixelBuffer();
+	int bytes = canvas->GetPixelDataLength();
+	int half = bytes / 2;
+	for (int i = 0; i < bytes; i += 4) {
+		if (i < half){
+			pixBuffer[i] = 128 + k;
+			pixBuffer[i + 1] = 0;
+			pixBuffer[i + 2] = 0;
+			pixBuffer[i + 3] = 255;
+		}
+		else{
+			pixBuffer[i] = 0;
+			pixBuffer[i + 1] = 128 + k;
+			pixBuffer[i + 2] = 0;
+			pixBuffer[i + 3] = 255;
+		}
+	}
+	++k;
+	k = k % 254;
+	canvas->DisplayFps(100, 100);
+}
+
+void HandleInput(const SDL_Event* sdlEvent) {
+	//std::cout << "*";
+}
+
+
+int main(int argc, char* argv[])
+{
+	spn::SpinachCore sc(640, 480, "../res/", UpdateAndRender, HandleInput); //Note: 3rd argument is path rel. to build folder
+	if (sc.IsInitFailed()) {
+		std::cout << "initialization failed with error "
+			<< sc.GetInitializationResult()
+			<< std::endl;
+		return 1;
+	}
+	//sc.SetUpdateAndRenderHandler(UpdateAndRender);
+	//sc.SetInputHandler(HandleInput);	
+	sc.SetWindowTitle("Spinach Demo");
+	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
+	sc.SetTargetFramesPerSecond(30);
+	sc.LockFps(true);
+	sc.MainLoop();
+	spn::Profiler::GetInstance().Print();
+	return 0;
+}

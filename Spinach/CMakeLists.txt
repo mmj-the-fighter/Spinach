@@ -1,0 +1,480 @@
+cmake_minimum_required(VERSION 3.14)
+project(SpinachSolution)
+
+# C/C++ Standards
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+set(EXAMPLE_WITH_RENDER_LOOP example_with_render_loop)
+set(EXAMPLE_WITHOUT_RENDER_LOOP example_without_render_loop)
+set(PARAMETRIC_LOCUS_GENERATOR parametric_locus_generator)
+set(MINE_SWEEPER_CLONE mine_sweeper_clone)
+set(IMAGE_PROCESSING_WITH_RMGUI image_processing_with_rmgui)
+set(GAME_OF_LIFE game_of_life)
+set(SNAKE_CLONE snake_clone)
+set(BIRD_FLIGHT bird_flight)
+set(RAYTRACING_EXAMPLE raytracing_example)
+set(PICTUREPUZZLE_EXAMPLE picture_puzzle)
+set(WIREFRAME_RENDERING_EXAMPLE wireframe_rendering)
+set(LOGARITHMIC_SPIRAL logarithmic_spiral)
+
+
+# Platform-specific flags
+if(APPLE)
+    add_compile_options(-Wno-deprecated-declarations -O3 -Wall -Wextra)
+elseif(UNIX AND NOT APPLE)
+    add_compile_options(-O3 -Wall -Wextra -pthread)
+endif()
+
+# SDL3 - Try system, else fetch from source
+find_package(SDL3 QUIET)
+if(NOT SDL3_FOUND)
+    message(STATUS "SDL3 not found, downloading...")
+    include(FetchContent)
+    FetchContent_Declare(
+        SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG release-3.2.0
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(SDL3)
+    add_compile_definitions(SDL3_BUILT_FROM_SOURCE)
+else()
+    message(STATUS "Found system SDL3")
+endif()
+
+# Spinach
+# Collect C++ source files for spinach
+file(GLOB_RECURSE SPINACH_CPP_SRC CONFIGURE_DEPENDS
+    spinach/common/*.cpp
+    spinach/core/*.cpp
+	spinach/ui/*.cpp
+	spinach/ui/imgui/*.cpp
+)
+
+
+# Collect C sources for spinach
+file(GLOB_RECURSE SPINACH_C_SRC CONFIGURE_DEPENDS
+    spinach/external/stb/*.c
+)
+
+# Collect headers 
+file(GLOB_RECURSE SPINACH_H CONFIGURE_DEPENDS
+    spinach/common/*.[h|hpp]
+    spinach/core/*.[h|hpp]
+	spinach/ui/*.[h|hpp]
+	spinach/ui/imgui/*.[h|hpp]
+    spinach/external/stb/*.h
+	spinach/external/msf_gif/*.h
+)
+
+# Collect headers for nanosvg
+file(GLOB_RECURSE NANOSVG_H CONFIGURE_DEPENDS
+	spinach/external/nanosvg/*.h
+)
+
+# 1. example_with_render_loop
+# Collect C++ source files
+file(GLOB_RECURSE EXAMPLE_WITH_RENDER_LOOP_CPP_SRC CONFIGURE_DEPENDS
+    examples/example_with_render_loop/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE EXAMPLE_WITH_RENDER_LOOP_CPP_H CONFIGURE_DEPENDS
+	examples/example_with_render_loop/*.h
+)
+
+# Create the executable
+add_executable(	${EXAMPLE_WITH_RENDER_LOOP}
+	${EXAMPLE_WITH_RENDER_LOOP_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${EXAMPLE_WITH_RENDER_LOOP_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+
+target_include_directories(${EXAMPLE_WITH_RENDER_LOOP} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/ui/imgui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/example_with_render_loop
+)
+
+
+target_link_libraries(${EXAMPLE_WITH_RENDER_LOOP} PRIVATE SDL3::SDL3)
+
+
+# 2. example_without_render_loop
+# Collect C++ source files
+file(GLOB_RECURSE EXAMPLE_WITHOUT_RENDER_LOOP_CPP_SRC CONFIGURE_DEPENDS
+    examples/example_without_render_loop/*.cpp
+	examples/example_without_render_loop/imageproc/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE EXAMPLE_WITHOUT_RENDER_LOOP_CPP_H CONFIGURE_DEPENDS
+	examples/example_without_render_loop/*.h
+	examples/example_without_render_loop/imageproc/*.h
+)
+
+# Create the executable
+add_executable(	${EXAMPLE_WITHOUT_RENDER_LOOP}
+	${EXAMPLE_WITHOUT_RENDER_LOOP_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${EXAMPLE_WITHOUT_RENDER_LOOP_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${EXAMPLE_WITHOUT_RENDER_LOOP} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/ui/imgui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/example_without_render_loop
+	examples/example_without_render_loop/image_proc
+)
+
+
+target_link_libraries(${EXAMPLE_WITHOUT_RENDER_LOOP} PRIVATE SDL3::SDL3)
+
+
+# 3. parametric_locus_generator
+# Collect C++ source files
+file(GLOB_RECURSE PARAMETRIC_LOCUS_GENERATOR_CPP_SRC CONFIGURE_DEPENDS
+    examples/parametric_locus_generator/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE PARAMETRIC_LOCUS_GENERATOR_CPP_H CONFIGURE_DEPENDS
+	examples/parametric_locus_generator/*.h
+)
+
+# Create the executable
+add_executable(	${PARAMETRIC_LOCUS_GENERATOR}
+	${PARAMETRIC_LOCUS_GENERATOR_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${PARAMETRIC_LOCUS_GENERATOR_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${PARAMETRIC_LOCUS_GENERATOR} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/parametric_locus_generator
+)
+
+
+target_link_libraries(${PARAMETRIC_LOCUS_GENERATOR} PRIVATE SDL3::SDL3)
+
+
+# 4. mine_sweeper_clone
+# Collect C++ source files
+file(GLOB_RECURSE MINE_SWEEPER_CLONE_CPP_SRC CONFIGURE_DEPENDS
+    examples/mine_sweeper_clone/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE MINE_SWEEPER_CLONE_CPP_H CONFIGURE_DEPENDS
+	examples/mine_sweeper_clone/*.h
+)
+
+# Create the executable
+add_executable(	${MINE_SWEEPER_CLONE}
+	${MINE_SWEEPER_CLONE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${MINE_SWEEPER_CLONE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${MINE_SWEEPER_CLONE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+	spinach/ui/imgui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/mine_sweeper_clone
+)
+
+
+target_link_libraries(${MINE_SWEEPER_CLONE} PRIVATE SDL3::SDL3)
+
+
+# 5. image_processing_with_rmgui
+# Collect C++ source files
+file(GLOB_RECURSE IMAGE_PROCESSING_WITH_RMGUI_CPP_SRC CONFIGURE_DEPENDS
+    examples/image_processing_with_rmgui/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE IMAGE_PROCESSING_WITH_RMGUI_CPP_H CONFIGURE_DEPENDS
+	examples/image_processing_with_rmgui/*.h
+)
+
+# Create the executable
+add_executable(	${IMAGE_PROCESSING_WITH_RMGUI}
+	${IMAGE_PROCESSING_WITH_RMGUI_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${IMAGE_PROCESSING_WITH_RMGUI_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${IMAGE_PROCESSING_WITH_RMGUI} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/image_processing_with_rmgui
+)
+
+
+target_link_libraries(${IMAGE_PROCESSING_WITH_RMGUI} PRIVATE SDL3::SDL3)
+
+
+# 6. game_of_life
+# Collect C++ source files
+file(GLOB_RECURSE GAME_OF_LIFE_CPP_SRC CONFIGURE_DEPENDS
+    examples/game_of_life/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE GAME_OF_LIFE_CPP_H CONFIGURE_DEPENDS
+	examples/game_of_life/*.h
+)
+
+# Create the executable
+add_executable(	${GAME_OF_LIFE}
+	${GAME_OF_LIFE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${GAME_OF_LIFE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${GAME_OF_LIFE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/game_of_life
+)
+
+
+target_link_libraries(${GAME_OF_LIFE} PRIVATE SDL3::SDL3)
+
+
+# 7. snake_clone
+# Collect C++ source files
+file(GLOB_RECURSE SNAKE_CLONE_CPP_SRC CONFIGURE_DEPENDS
+    examples/snake_clone/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE SNAKE_CLONE_CPP_H CONFIGURE_DEPENDS
+	examples/snake_clone/*.h
+)
+
+# Create the executable
+add_executable(	${SNAKE_CLONE}
+	${SNAKE_CLONE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${SNAKE_CLONE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${SNAKE_CLONE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/snake_clone
+)
+
+
+target_link_libraries(${SNAKE_CLONE} PRIVATE SDL3::SDL3)
+
+#8. bird flight
+# Collect C++ source files
+file(GLOB_RECURSE BIRD_FLIGHT_CPP_SRC CONFIGURE_DEPENDS
+    examples/bird_flight/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE BIRD_FLIGHT_CPP_H CONFIGURE_DEPENDS
+	examples/bird_flight/*.h
+)
+
+# Create the executable
+add_executable(	${BIRD_FLIGHT}
+	${BIRD_FLIGHT_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${BIRD_FLIGHT_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${BIRD_FLIGHT} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/bird_flight
+)
+
+
+target_link_libraries(${BIRD_FLIGHT} PRIVATE SDL3::SDL3)
+
+
+#8. ray tracing example
+# Collect C++ source files
+file(GLOB_RECURSE RAYTRACING_CPP_SRC CONFIGURE_DEPENDS
+    examples/raytracing_example/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE RAYTRACING_CPP_H CONFIGURE_DEPENDS
+	examples/raytracing_example/*.h
+	examples/raytracing_example/rt_in_one_weekend/*.h
+)
+
+# Create the executable
+add_executable(	${RAYTRACING_EXAMPLE}
+	${RAYTRACING_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${RAYTRACING_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${RAYTRACING_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/raytracing_example
+	examples/raytracing_example/rt_in_one_weekend
+)
+
+
+target_link_libraries(${RAYTRACING_EXAMPLE} PRIVATE SDL3::SDL3)
+
+
+#9. picture puzzle example
+# Collect C++ source files
+file(GLOB_RECURSE PICTUREPUZZLE_CPP_SRC CONFIGURE_DEPENDS
+    examples/picture_puzzle/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE PICTUREPUZZLE_CPP_H CONFIGURE_DEPENDS
+	examples/picture_puzzle/*.h
+)
+
+# Create the executable
+add_executable(	${PICTUREPUZZLE_EXAMPLE}
+	${PICTUREPUZZLE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${PICTUREPUZZLE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${PICTUREPUZZLE_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/picture_puzzle
+)
+
+target_link_libraries(${PICTUREPUZZLE_EXAMPLE} PRIVATE SDL3::SDL3)
+
+
+#10. wireframe rendering example
+# Collect C++ source files
+file(GLOB_RECURSE WIREFRAME_RENDERING_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
+	examples/wireframe_rendering/*.cpp
+	examples/wireframe_rendering/n3d/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE WIREFRAME_RENDERING_EXAMPLE_CPP_H CONFIGURE_DEPENDS
+	examples/wireframe_rendering/*.h
+	examples/wireframe_rendering/n3d/*.h
+)
+
+# Create the executable
+add_executable(	${WIREFRAME_RENDERING_EXAMPLE}
+	${WIREFRAME_RENDERING_EXAMPLE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${WIREFRAME_RENDERING_EXAMPLE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${WIREFRAME_RENDERING_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/wireframe_rendering/
+	examples/wireframe_rendering/n3d/
+)
+
+target_link_libraries(${WIREFRAME_RENDERING_EXAMPLE} PRIVATE SDL3::SDL3)
+
+
+# 11. logarithmic spiral
+# Collect C++ source files
+file(GLOB_RECURSE LOGARITHMIC_SPIRAL_CPP_SRC CONFIGURE_DEPENDS
+    examples/logarithmic_spiral/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE LOGARITHMIC_SPIRAL_CPP_H CONFIGURE_DEPENDS
+	examples/logarithmic_spiral/*.h
+)
+
+# Create the executable
+add_executable(	${LOGARITHMIC_SPIRAL}
+	${LOGARITHMIC_SPIRAL_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${LOGARITHMIC_SPIRAL_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${LOGARITHMIC_SPIRAL} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/logarithmic_spiral
+)
+
+
+target_link_libraries(${LOGARITHMIC_SPIRAL} PRIVATE SDL3::SDL3)

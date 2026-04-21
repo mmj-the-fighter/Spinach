@@ -1,0 +1,122 @@
+//image processing example
+#include <iostream>
+#include <cstdlib>
+
+#include <spn_canvas.h>
+#include <spn_core.h>
+#include <spn_image.h>
+#include <spn_profiler.h>
+#include "imageproc/imageproc.h"
+
+
+struct vec2
+{
+	float x;
+	float y;
+};
+
+void Sierpinski(spn::Canvas* canvas, vec2 points[3], int iterations) {
+	spn::ProfilerScope scope(1003);
+	vec2 p;
+	vec2 q;
+	vec2 u, v;
+	u.x = points[1].x - points[0].x;
+	u.y = points[1].y - points[0].y;
+	v.x = points[2].x - points[0].x;
+	v.y = points[2].y - points[0].y;
+	p.x = points[0].x + 0.5 * (u.x + v.x);
+	p.y = points[0].y + 0.5 * (u.y + v.y);
+
+	int count = iterations;
+	while (--count > 0) {
+		int r = rand() % 3;
+		q.x = p.x + (points[r].x - p.x) * 0.5;
+		q.y = p.y + (points[r].y - p.y) * 0.5;
+		canvas->SetPixel(q.x, q.y, 255, 0 , 0);
+		p = q;
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	spn::Image img;
+
+
+	img.CreateFromPng("../examples/res_for_examples/road.png"); //path relative to the build folder
+	spn::Image* sepiaImage = img.Clone();
+	
+
+	//Begin, End Paradigm
+	auto& profiler = spn::Profiler::GetInstance();
+	profiler.SetMillisAsTimeUnit();
+	profiler.Begin(1001);   // tag = 1001
+	ApplySepiaFilter(sepiaImage);
+	profiler.End();
+	
+
+	
+	profiler.Begin(1002);
+	spn::Image svgImg;
+	svgImg.CreateFromSvg("../examples/res_for_examples/NAND_ANSI.svg", 100); 
+	profiler.End();
+
+	spn::SpinachCore sc(640, 480,"../res/"); //Note: 3rd argument is path rel. to build folder
+	
+	
+
+	if (sc.IsInitFailed()) {
+		return 1;
+	}
+	
+	spn::Canvas* canvas = sc.GetCanvas();
+
+	float minx = 30;
+	float miny = 30;
+	float maxx = canvas->GetWidth() / 2 - 30;
+	float maxy = maxx;
+	vec2 points[3];
+	points[0].x = minx;
+	points[0].y = maxy;
+	points[1].x = maxx;
+	points[1].y = maxy;
+	points[2].x = (minx + maxy) / 2;
+	points[2].y = miny;
+	canvas->Clear();
+	canvas->EnableAlphaBlending(false);
+	canvas->SetClearColor(0, 0, 0);
+	
+	Sierpinski(canvas, points, 4000);
+
+	canvas->DrawCString("Click for next", 100, 100);
+	sc.RenderCanvas();
+	sc.WaitForEvents();
+
+	canvas->SetClearColor(255, 255, 255);
+	canvas->Clear();
+	canvas->SetPrimaryColor(0, 0, 128);
+	canvas->EnableAlphaBlending(true);//needed for rendering images with transparency whether loaded from png or svg.
+	canvas->DrawImage(&svgImg, 10, 10);
+	canvas->DrawCString("NAN gate rendered from svg", 100, 150);
+	canvas->DrawCString("Click for next", 100, 100);
+	sc.RenderCanvas();
+	sc.WaitForEvents();
+	
+	canvas->EnableAlphaBlending(false);
+	canvas->Clear();
+	canvas->SetPrimaryColor(0, 255, 0);
+	canvas->DrawImage(&img,0,0);
+	canvas->DrawCString("base image", 100, 400);
+	canvas->DrawCString("Click for next", 100, 400-40);
+	sc.RenderCanvas();
+	sc.WaitForEvents();
+	
+	canvas->DrawImage(sepiaImage,0,0);
+	canvas->DrawCString("after applying sepia filter", 100, 400);
+	canvas->DrawCString("Click to exit", 100, 400-40);
+	sc.RenderCanvas();
+	sc.WaitForEvents();
+
+	delete sepiaImage;
+	profiler.Print();
+	return 0;
+}

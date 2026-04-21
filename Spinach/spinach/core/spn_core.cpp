@@ -1,0 +1,372 @@
+#include <iostream>
+#include <algorithm>
+#include "../common/spn_utils.h"
+#define MSF_GIF_IMPL
+#include "spn_core.h"
+
+
+//#define SHOWFRAMESTATS
+#define SINGLEMEMCOPY
+#define DEFAULTFPS 64
+
+
+
+namespace spn
+{
+	void SetUpdateAndRenderHandler(std::function<void(Canvas* canvas)>);
+	void SetInputHandler(std::function<void(const SDL_Event* sdlEvent)>);
+
+	SpinachCore::SpinachCore(unsigned int width, unsigned int height,
+		std::string resourcesDir,
+		std::function<void(Canvas* canvas)> updateAndRenderFn,
+		std::function<void(const SDL_Event* sdlEvent)> inputFn
+	) :
+		window(nullptr),
+		renderer(nullptr),
+		texture(nullptr),
+		canvas(nullptr),
+		font(nullptr),
+		lockFps(false)
+	{
+		#ifdef MSF_GIF_DEFINED
+			isRecording = false;
+			msfGifQuality = 16; //values allowed 1-16
+		#endif
+		resourcesDirectory = resourcesDir;
+		SetTargetFramesPerSecond(DEFAULTFPS);
+		updateAndRenderHandler = updateAndRenderFn;
+		inputHandler = inputFn;
+		strcpy(appName, " ");
+		initializationResult = Init(width, height);
+	}
+
+	SpinachCore::~SpinachCore()
+	{
+		Destroy();
+	}
+
+	void SpinachCore::SetTargetFramesPerSecond(unsigned int aFps)
+	{
+		int fps = (aFps == 0) ? 1 : aFps;
+		targetFramesPerSecond = fps;
+		targetMillisPerFrame = 1000.0f / static_cast<float>(fps);
+	}
+
+
+	int SpinachCore::Init(unsigned int width, unsigned int height)
+	{
+		userWantsToQuit = false;
+
+		if (!SDL_Init(SDL_INIT_VIDEO))
+		{
+			std::cout << "Couldn't initialize SDL:" << SDL_GetError() << std::endl;
+			return 1;
+		}
+
+		if (!SDL_CreateWindowAndRenderer(
+			"Spinach App",
+			width,
+			height,
+			0,
+			&window,
+			&renderer))
+		{
+			std::cout << "Couldn't create window or renderer:" << SDL_GetError() << std::endl;
+			return 2;
+		}
+
+		if (!SDL_TextInputActive(window))
+		{
+			SDL_StartTextInput(window);
+		}
+
+		texture = SDL_CreateTexture(renderer,
+			SDL_PIXELFORMAT_ARGB8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			width,
+			height);
+		if (!texture)
+		{
+			std::cout << "Couldn't create streaming texture: " << SDL_GetError() << std::endl;
+			return 3;
+		}
+		
+		std::string atlasName = resourcesDirectory;
+		atlasName.append("TrueNoFontAtlas.ppm");
+		std::string csvName = resourcesDirectory;
+		csvName.append("TrueNoFontData.csv");
+
+		//std::string atlasName{ "res/TrueNoFontAtlas.ppm" };
+		//std::string csvName{ "res/TrueNoFontData.csv" };
+		font = new RFont(atlasName, csvName);
+		if (!font->IsInitSucceded()){
+			return 4;
+		}
+		canvas = new Canvas(width, height);
+		canvas->SetFont(font);
+		return 0;
+	}
+
+	void SpinachCore::SetUpdateAndRenderHandler(std::function<void(Canvas*)> aUpdateAndRenderHandler)
+	{
+		updateAndRenderHandler = aUpdateAndRenderHandler;
+	}
+
+	void SpinachCore::SetInputHandler(std::function<void(const SDL_Event* sdlEvent)> aInputHandler){
+		inputHandler = aInputHandler;
+	}
+
+	void SpinachCore::MainLoop()
+	{
+		SDL_Event event;
+		SDL_zero(event);
+		Uint32 frameStartTime, frameProcTime = 0, waitTime = 0;
+#ifdef SHOWFRAMESTATS
+		Uint32 minFrameProcTime = 1000000;
+		Uint32 maxFrameProcTime = 0;
+#endif
+		int height = canvas->GetHeight();
+		int pitch = canvas->GetPitch();
+		int bufferBytesLength = height * pitch;
+		unsigned char* pixels = canvas->GetPixelBuffer();
+		userWantsToQuit = false;
+		
+		while (!userWantsToQuit)
+		{
+			frameStartTime = SDL_GetTicks();
+			canvas->SetLastFrameTime(static_cast<float>(frameProcTime + waitTime) / 1000.0f);
+			while (SDL_PollEvent(&event))
+			{
+				switch (event.type){
+				case SDL_EVENT_QUIT:
+					userWantsToQuit = true;
+#ifdef SHOWFRAMESTATS
+					std::cout << "min: " << minFrameProcTime << "\tcur:" << frameProcTime << "\tmax:" << maxFrameProcTime << std::endl;
+#endif
+					break;
+				case SDL_EVENT_KEY_DOWN:
+					switch (event.key.key)
+					{
+					case SDLK_ESCAPE:
+						SetTargetFramesPerSecond(1000);
+						LockFps(false);
+						userWantsToQuit = true;
+						break;
+					case SDLK_F12:
+						{
+							std::string fileName = GetTimeBasedScreenShotFileName();
+							SaveScreenShot(fileName);
+						}
+						break;
+#ifdef MSF_GIF_DEFINED
+					case SDLK_F8:
+						if (!isRecording) {
+							StartRecording();
+						}
+						break;
+					case SDLK_F10:
+						if (isRecording) {
+							StopRecording(true);
+						}
+						break;
+					case SDLK_F6:
+						if (isRecording) {
+							StopRecording(false);
+						}
+						break;
+#endif
+					}
+				default:
+					if (nullptr != inputHandler){
+						inputHandler(&event);
+					}
+					break;
+				}
+			}
+
+			if (nullptr != updateAndRenderHandler) {
+				updateAndRenderHandler(canvas);
+			}
+
+#ifdef MSF_GIF_DEFINED
+			if (isRecording) {
+				if (userWantsToQuit) {
+					StopRecording(false);
+				}
+				else {
+					ProcessRecording();
+				}
+			}
+#endif
+			unsigned char* destPixels;
+			int destPitch;
+			if (SDL_LockTexture(texture, NULL, (void**)&destPixels, &destPitch))
+			{
+#ifdef SINGLEMEMCOPY
+				memcpy(destPixels, pixels, bufferBytesLength);
+#else
+				for (int y = 0; y < height; ++y) {
+					memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
+				}
+#endif
+				SDL_UnlockTexture(texture);
+			}
+			SDL_RenderTexture(renderer, texture, NULL, NULL);
+			SDL_RenderPresent(renderer);
+			frameProcTime = (SDL_GetTicks() - frameStartTime);
+#ifdef SHOWFRAMESTATS
+			if (frameProcTime < minFrameProcTime){
+				minFrameProcTime = frameProcTime;
+			}
+			else if (frameProcTime > maxFrameProcTime){
+				maxFrameProcTime = frameProcTime;
+			}
+			std::cout << frameProcTime << "\n";
+#endif
+			
+			if (lockFps && frameProcTime < targetMillisPerFrame) {
+				waitTime = targetMillisPerFrame - frameProcTime;
+				SDL_Delay(waitTime);
+			}
+			else {
+				waitTime = 0;
+			}
+			
+		}
+	}
+
+#ifdef MSF_GIF_DEFINED
+	void SpinachCore::StartRecording() {
+		msfGifState = {};
+		msf_gif_bgra_flag = true;
+		//msf_gif_alpha_threshold = 128;
+		msf_gif_begin(&msfGifState, canvas->GetWidth(), canvas->GetHeight());
+		std::cout << "Recording started...\n";
+		isRecording = true;
+	}
+
+	void SpinachCore::ProcessRecording() {
+		static int frames = DEFAULTFPS / 2;
+		static int maxFrames = DEFAULTFPS / 2;
+		static const int framesCap = 25;
+		if (frames == maxFrames) {
+			SDL_SetWindowTitle(window, "Recording...");
+		}
+		else if (frames == -1) {
+			SDL_SetWindowTitle(window, " ");
+		}
+		--frames;
+		if (frames < -maxFrames) {
+			frames = maxFrames;
+		}
+		
+		float frameTime = canvas->GetLastFrameTime();
+		if (frameTime < 0.0001) {
+				frames = maxFrames;
+		}
+		else {
+			maxFrames = std::min(
+				static_cast<int>(1.0 / frameTime),
+				framesCap
+			);
+		}
+		msfGifCentiSecondsPerFrame = canvas->GetLastFrameTime() * 100;
+		msfGifCentiSecondsPerFrame = std::max(2, msfGifCentiSecondsPerFrame);
+		msf_gif_frame(&msfGifState, canvas->GetPixelBuffer(),
+			msfGifCentiSecondsPerFrame, msfGifQuality,
+			canvas->GetWidth() * 4);
+	}
+
+	void SpinachCore::StopRecording(bool saveData) {
+		
+		MsfGifResult msfGifResult = msf_gif_end(&msfGifState);
+		if (msfGifResult.data != NULL && saveData==true) {
+			std::string fileName = GetTimeBasedScreenRecordingFileName();
+			FILE* fp = fopen(fileName.c_str(), "wb");
+			fwrite(msfGifResult.data, msfGifResult.dataSize, 1, fp);
+			fclose(fp);
+			std::cout << "Recording ended: session saved to " <<fileName << '\n';
+		}
+		else if (!saveData) {
+			std::cout << "Recording aborted." << '\n';
+		}
+		msf_gif_free(msfGifResult);
+		isRecording = false;
+		SDL_SetWindowTitle(window, appName);
+	}
+#endif
+
+
+
+	void SpinachCore::SaveScreenShot(const std::string& fileName)
+	{
+		image.SetCanvas(canvas);
+		image.SaveAsPng(fileName);
+		image.SetCanvas(nullptr);
+	}
+
+	void SpinachCore::WaitForEvents()
+	{
+		SDL_Event event;
+		int loop = 1;
+		while (loop) {
+			//SDL_zero(event);
+			//SDL_PollEvent(&event);
+			if (SDL_WaitEvent(&event) == 0) {
+				continue;
+			}
+			if (event.type == SDL_EVENT_KEY_UP ||
+				event.type == SDL_EVENT_QUIT ||
+				event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
+				loop = 0;
+			}
+
+		}
+	}
+
+	void SpinachCore::RenderCanvas()
+	{
+		int height = canvas->GetHeight();
+		int pitch = canvas->GetPitch();
+		int bufferBytesLength = height * pitch;
+		unsigned char* pixels = canvas->GetPixelBuffer();
+		unsigned char* destPixels;
+		int destPitch;
+		if (SDL_LockTexture(texture, NULL, (void**)&destPixels, &destPitch))
+		{
+#ifdef SINGLEMEMCOPY
+			memcpy(destPixels, pixels, bufferBytesLength);
+#else
+			for (int y = 0; y < height; ++y) {
+				memcpy(destPixels + y * destPitch, pixels + y * pitch, pitch);
+			}
+#endif
+			SDL_UnlockTexture(texture);
+		}
+		SDL_RenderTexture(renderer, texture, NULL, NULL);
+		SDL_RenderPresent(renderer);
+	}
+
+	void SpinachCore::Destroy()
+	{
+
+		if (texture != nullptr) {
+			SDL_DestroyTexture(texture);
+		}
+
+		if (canvas != nullptr) {
+			delete canvas;
+			canvas = nullptr;
+		}
+
+		if (renderer != nullptr) {
+			SDL_DestroyRenderer(renderer);
+			renderer = nullptr;
+		}
+
+		if (window != nullptr) {
+			SDL_DestroyWindow(window);
+			window = nullptr;
+		}
+	}
+}

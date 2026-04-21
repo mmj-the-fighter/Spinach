@@ -1,0 +1,9 @@
+NAND_ANSI.svg
+By jjbeard - Own Drawing, made in Inkscape 0.43, 
+Public Domain, https://commons.wikimedia.org/w/index.php?curid=830762
+
+road.png: (copyright Manoj M J)
+
+danger.png (ai generated image)(chatgpt)
+
+flag.png (ai generated image)(chatgpt)
