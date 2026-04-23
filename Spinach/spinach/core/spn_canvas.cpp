@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstring>
+#include <cstdio>
 #include <algorithm>
 #include "spn_canvas.h"
 #include "spn_image.h"
@@ -46,6 +47,17 @@ namespace spn
 			newCanvas->SetFont(newFont);
 		}
 		return newCanvas;
+	}
+
+
+	void Canvas::DisplayFps(int x, int y) {
+		float ft = GetLastFrameTime();
+		if (ft < 0.00001) {
+			return;
+		}
+		char fpsCString[128];
+		std::sprintf(fpsCString, "%0.02f fps", 1.0 / ft);
+		DrawCString(fpsCString, x, y);
 	}
 
 	//For debugging 

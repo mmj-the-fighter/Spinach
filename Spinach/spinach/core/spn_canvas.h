@@ -1,13 +1,10 @@
 #ifndef SPN_CANVAS_H
 #define SPN_CANVAS_H
 
-#include <cstdio>
-#include "../common/spn_utils.h"
+#include "../common/spn_common_defs.h"
 
 namespace spn 
 {
-	struct Vec2 { float x, y; Vec2() {} Vec2(float X, float Y) :x(X), y(Y) {} };
-
 	class Image;
 	class RFont;
 
@@ -180,16 +177,8 @@ namespace spn
 			clearColorG = originalClearColorG;
 			clearColorB = originalClearColorB;
 		}
+		void DisplayFps(int x, int y);
 
-		inline void DisplayFps(int x, int y) {
-			float ft = GetLastFrameTime();
-			if (ft < 0.00001) {
-				return;
-			}
-			char fpsCString[128];
-			sprintf(fpsCString, "%0.02f fps", 1.0 / ft);
-			DrawCString(fpsCString, x, y);
-		}
 
 	private:
 		Rect clipRect;

@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <sstream>
 #include "spn_utils.h"
+#include "spn_common_defs.h"
 
 
 namespace spn
