@@ -6,7 +6,7 @@
 
 namespace spn
 {
-	RFont::RFont(const std::string& fontImageFileName, const std::string& fontCsvFileName)
+	RFont::RFont(const char* fontImageFileName, const char* fontCsvFileName)
 		:isInitSuccess(false)
 	{
 		isInitSuccess = Create(fontImageFileName, fontCsvFileName);
@@ -16,7 +16,7 @@ namespace spn
 		Destroy();
 	}
 
-	bool RFont::Create(const std::string& fontImageFileName, const std::string& fontCsvFileName)
+	bool RFont::Create(const char* fontImageFileName, const char* fontCsvFileName)
 	{
 		image = new spn::Image();
 		bool  rv = image->CreateFromPpmRaw(fontImageFileName);

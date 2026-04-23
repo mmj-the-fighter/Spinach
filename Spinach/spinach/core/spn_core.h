@@ -30,7 +30,7 @@ namespace spn
 		void SetInputHandler(std::function<void(const SDL_Event* sdlEvent)>);
 		void MainLoop();
 		void RenderCanvas();
-		void SaveScreenShot(const std::string& fileName);
+		void SaveScreenShot(const char* fileName);
 		void WaitForEvents();
 		inline bool IsInitSucceded(){
 			return initializationResult == 0;

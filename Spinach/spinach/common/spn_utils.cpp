@@ -37,29 +37,10 @@ namespace spn
 		ir.height = std::abs(p5y - p6y);
 	}
 
-	//This function was developed with the help of ChatGPT AI agent
-	std::string GetTimeBasedScreenShotFileName()
-	{
-		auto now = std::chrono::system_clock::now();
-		std::time_t time_now = std::chrono::system_clock::to_time_t(now);
-		std::tm tm_now = *std::localtime(&time_now);
-
-		std::ostringstream oss;
-		oss << std::put_time(&tm_now, "%Y%m%d_%H%M%S.png");
-
-		return oss.str();
-	}
-
-	std::string GetTimeBasedScreenRecordingFileName()
-	{
-		auto now = std::chrono::system_clock::now();
-		std::time_t time_now = std::chrono::system_clock::to_time_t(now);
-		std::tm tm_now = *std::localtime(&time_now);
-
-		std::ostringstream oss;
-		oss << std::put_time(&tm_now, "%Y%m%d_%H%M%S.gif");
-
-		return oss.str();
+	//This code is AI generated using Google Gemini
+	void GetFilenameFromCurrentTime(char* buffer, const char* prefix, const char* extension) {
+		time_t seconds = time(NULL);
+		sprintf(buffer, "%s_%lld%s", prefix, (long long)seconds, extension);
 	}
 }
 

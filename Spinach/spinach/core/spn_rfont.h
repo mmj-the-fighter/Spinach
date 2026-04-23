@@ -8,7 +8,7 @@ namespace spn
 	class RFont
 	{
 	public:
-		RFont(const std::string& fontImageFileName, const std::string& fontCsvFileName);
+		RFont(const char* fontImageFileName, const char* fontCsvFileName);
 		~RFont();
 		inline bool IsInitSucceded(){
 			return isInitSuccess;
@@ -41,7 +41,7 @@ namespace spn
 		int fontHeight;
 		int fontWidth[256];
 		bool isInitSuccess;
-		bool Create(const std::string& fontImageFileName, const std::string& fontCsvFileName);
+		bool Create(const char* fontImageFileName, const char* fontCsvFileName);
 		void Destroy();
 	};
 }

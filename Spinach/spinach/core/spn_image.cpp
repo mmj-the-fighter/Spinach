@@ -116,7 +116,7 @@ namespace spn
 		return true;
 	}
 
-	bool Image::CreateFromSvg(const std::string& fileName, float dpi)
+	bool Image::CreateFromSvg(const char* fileName, float dpi)
 	{
 		if (nullptr != canvas) {
 			return false;
@@ -128,7 +128,7 @@ namespace spn
 		int w, h, bpp;
 		int num_of_pixels;
 		int i;
-		image = nsvgParseFromFile(fileName.c_str(), "px", dpi);
+		image = nsvgParseFromFile(fileName, "px", dpi);
 		if (image == NULL) {
 			std::cout<<"nanosvg: Cannot open: "<<fileName<<"\n";
 			return false;
@@ -171,7 +171,7 @@ namespace spn
 		return true;
 	}
 
-	bool Image::CreateFromPng(const std::string& fileName)
+	bool Image::CreateFromPng(const char* fileName)
 	{
 		if (nullptr != canvas) {
 			return false;
@@ -180,7 +180,7 @@ namespace spn
 		int num_of_pixels;
 		int i;
 		unsigned char *srcloc, *dstloc;
-		unsigned char* imgdata_stb = stbi_load(fileName.c_str(), &w, &h, &bpp, STBI_rgb_alpha);
+		unsigned char* imgdata_stb = stbi_load(fileName, &w, &h, &bpp, STBI_rgb_alpha);
 		if (nullptr == imgdata_stb) {
 			return false;
 		}
@@ -204,7 +204,7 @@ namespace spn
 		return true;
 	}
 
-	bool Image::CreateFromPpmRaw(const std::string& fileName)
+	bool Image::CreateFromPpmRaw(const char* fileName)
 	{
 		unsigned char buffer[3];
 		int width = 0, height = 0, colorDepth = 0;
@@ -255,12 +255,12 @@ namespace spn
 		return true;
 	}
 
-	bool Image::CreateFromPpmAscii(const std::string& fileName)
+	bool Image::CreateFromPpmAscii(const char* fileName)
 	{
 		return false;
 	}
 
-	bool Image::SaveAsPng(const std::string& fileName)
+	bool Image::SaveAsPng(const char* fileName)
 	{
 		Canvas* canvas = GetCanvas();
 		int pitch = canvas->GetPitch();
@@ -288,7 +288,7 @@ namespace spn
 				i += 4;
 			}
 		}
-		stbi_write_png(fileName.c_str(), width, height, 4, png_data, pitch);
+		stbi_write_png(fileName, width, height, 4, png_data, pitch);
 		delete[] png_data;
 		return true;
 	}

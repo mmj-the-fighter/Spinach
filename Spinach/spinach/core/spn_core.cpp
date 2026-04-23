@@ -98,7 +98,7 @@ namespace spn
 
 		//std::string atlasName{ "res/TrueNoFontAtlas.ppm" };
 		//std::string csvName{ "res/TrueNoFontData.csv" };
-		font = new RFont(atlasName, csvName);
+		font = new RFont(atlasName.c_str(), csvName.c_str());
 		if (!font->IsInitSucceded()){
 			return 4;
 		}
@@ -154,7 +154,8 @@ namespace spn
 						break;
 					case SDLK_F12:
 						{
-							std::string fileName = GetTimeBasedScreenShotFileName();
+							char fileName[256];
+							GetFilenameFromCurrentTime(fileName, "PIC_SECONDS", ".png");
 							SaveScreenShot(fileName);
 						}
 						break;
@@ -287,8 +288,9 @@ namespace spn
 		
 		MsfGifResult msfGifResult = msf_gif_end(&msfGifState);
 		if (msfGifResult.data != NULL && saveData==true) {
-			std::string fileName = GetTimeBasedScreenRecordingFileName();
-			FILE* fp = fopen(fileName.c_str(), "wb");
+			char fileName[256];
+			GetFilenameFromCurrentTime(fileName, "REC_SECONDS", ".gif");
+			FILE* fp = fopen(fileName, "wb");
 			fwrite(msfGifResult.data, msfGifResult.dataSize, 1, fp);
 			fclose(fp);
 			std::cout << "Recording ended: session saved to " <<fileName << '\n';
@@ -304,7 +306,7 @@ namespace spn
 
 
 
-	void SpinachCore::SaveScreenShot(const std::string& fileName)
+	void SpinachCore::SaveScreenShot(const char* fileName)
 	{
 		image.SetCanvas(canvas);
 		image.SaveAsPng(fileName);

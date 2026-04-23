@@ -1,8 +1,6 @@
 #ifndef SPN_IMAGE_H
 #define SPN_IMAGE_H
 
-#include <string>
-
 namespace spn
 {
 	class Canvas;
@@ -20,11 +18,11 @@ namespace spn
 			int tileSize, 
 			int color1R, int color1G, int color1B, 
 			int color2R, int color2G, int color2B);
-		bool CreateFromSvg(const std::string& fileName, float dpi);
-		bool CreateFromPng(const std::string& fileName);
-		bool CreateFromPpmRaw(const std::string& fileName);
-		bool CreateFromPpmAscii(const std::string& fileName);
-		bool SaveAsPng(const std::string& fileName);
+		bool CreateFromSvg(const char* fileName, float dpi);
+		bool CreateFromPng(const char* fileName);
+		bool CreateFromPpmRaw(const char* fileName);
+		bool CreateFromPpmAscii(const char* fileName);
+		bool SaveAsPng(const char* fileName);
 		inline Canvas* GetCanvas() {
 			return canvas;
 		}
