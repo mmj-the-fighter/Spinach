@@ -199,14 +199,14 @@ namespace spn::rmgui {
 			canvas->SetPrimaryColorUint(
 				UiScheme::GetInstance().sliderTextColor);
 			float tw = 0, th = 0;
-			canvas->GetStringDisplaySize(text, tw, th);
+			canvas->GetCStringDisplaySize(text.c_str(), tw, th);
 
 			canvas->SetPrimaryColorUint(
 				UiScheme::GetInstance()
 				.textColor
 			);
-			canvas->DrawString(text, x + (w - tw) / 2, y + (h - th) / 2);
-			canvas->DrawString(labelText, x + w + 4, y + (h - th) / 2);
+			canvas->DrawCString(text.c_str(), x + (w - tw) / 2, y + (h - th) / 2);
+			canvas->DrawCString(labelText.c_str(), x + w + 4, y + (h - th) / 2);
 		}
 
 		void SetSensitivity(float s) {

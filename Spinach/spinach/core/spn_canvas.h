@@ -2,7 +2,6 @@
 #define SPN_CANVAS_H
 
 #include <cstdio>
-#include <string>
 #include "../common/spn_utils.h"
 
 namespace spn 
@@ -57,13 +56,12 @@ namespace spn
 			int tileWidth, int tileHeight,
 			int chromaR, int chromaG, int chromaB
 		);
+		void DrawChar(char c, int x, int y);
+		void GetCharDisplaySize(char c, float& w, float& h);
 		void DrawCString(const char* text, int x, int y);
 		void DrawCStringInRange(const char* text, int startIndex, int endIndex, int x, int y);
-		void DrawString(const std::string& text, int x, int y);
-		void GetCharDisplaySize(char c, float& w, float& h);
 		void GetCStringDisplaySize(const char* text, float& w, float& h);
-		void GetStringDisplaySize(const std::string& text, float& w, float& h);
-		void GetStringDisplaySizeInRange(const std::string& text, int start, int end, float& w, float& h);
+		void GetCStringDisplaySizeInRange(const char* text, int start, int end, float& w, float& h);
 
 		void FlipHorizontally();
 		void FlipVertically();

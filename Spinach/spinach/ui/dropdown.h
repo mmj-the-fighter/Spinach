@@ -128,7 +128,7 @@ namespace spn::rmgui {
 					UiScheme::GetInstance()
 					.textColor
 				);
-				canvas->DrawString(options[selectedIndex], x + 12, y + 1);
+				canvas->DrawCString(options[selectedIndex].c_str(), x + 12, y + 1);
 				int i = 1;
 				for (const auto& opt : options) {
 					if (i - 1 == hoveredIndex) {
@@ -142,7 +142,7 @@ namespace spn::rmgui {
 							UiScheme::GetInstance()
 							.textColor
 						);
-						canvas->DrawString(options[hoveredIndex], x + 12, y + (i * ch) + 1);
+						canvas->DrawCString(options[hoveredIndex].c_str(), x + 12, y + (i * ch) + 1);
 					}
 					else {
 						canvas->SetPrimaryColorUint(
@@ -155,7 +155,7 @@ namespace spn::rmgui {
 							UiScheme::GetInstance()
 							.textColor
 						);
-						canvas->DrawString(options[i - 1], x + 12, y + (i * ch) + 1);
+						canvas->DrawCString(options[i - 1].c_str(), x + 12, y + (i * ch) + 1);
 					}
 					++i;
 				}

@@ -205,8 +205,8 @@ namespace spn::rmgui {
 					if (caretPosition > 0) {
 						//canvas->GetStringDisplaySizeInRange(text, 0, caretPosition-1, tw, th);
 						if (caretPosition > scrollOffset) {
-							canvas->GetStringDisplaySizeInRange(
-								text,
+							canvas->GetCStringDisplaySizeInRange(
+								text.c_str(),
 								scrollOffset,
 								caretPosition - 1,
 								tw,

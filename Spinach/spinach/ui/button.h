@@ -104,7 +104,7 @@ namespace spn::rmgui {
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 				canvas->SetPrimaryColorUint(
 					UiScheme::GetInstance().textColor);
-				canvas->DrawString(text, x + 12, y + 1);
+				canvas->DrawCString(text.c_str(), x + 12, y + 1);
 				break;
 			case BTN_HOVER:
 				canvas->SetPrimaryColorUint(
@@ -113,7 +113,7 @@ namespace spn::rmgui {
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 				canvas->SetPrimaryColorUint(
 					UiScheme::GetInstance().textColor);
-				canvas->DrawString(text, x + 8, y + 2);
+				canvas->DrawCString(text.c_str(), x + 8, y + 2);
 				break;
 			case BTN_RELEASE:
 				canvas->SetPrimaryColorUint(
@@ -122,7 +122,7 @@ namespace spn::rmgui {
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 				canvas->SetPrimaryColorUint(
 					UiScheme::GetInstance().textColor);
-				canvas->DrawString(text, x + 8, y + 2);
+				canvas->DrawCString(text.c_str(), x + 8, y + 2);
 				break;
 			}
 			//canvas->RestoreColors();

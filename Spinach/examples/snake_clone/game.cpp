@@ -75,7 +75,7 @@ void Game::UpdateAndRender(spn::Canvas* canvas) {
 	canvas->SetPrimaryColor(255, 255, 255);
 	snake->Render(canvas);
 	canvas->SetPrimaryColor(0, 255, 0);
-	canvas->DrawString(scoreStr, 10, 10);
+	canvas->DrawCString(scoreStr.c_str(), 10, 10);
 }
 
 void Game::UpdateScoreStr() {

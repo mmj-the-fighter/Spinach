@@ -75,12 +75,12 @@ namespace spn::rmgui {
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + sqSize - 2, y + sqSize - 2);
 			}
 			float tw = 0, th = 0;
-			canvas->GetStringDisplaySize(labelText, tw, th);
+			canvas->GetCStringDisplaySize(labelText.c_str(), tw, th);
 			canvas->SetPrimaryColorUint(
 				UiScheme::GetInstance()
 				.textColor
 			);
-			canvas->DrawString(labelText, x + sqSize + 4, y + (sqSize - th) / 2);
+			canvas->DrawCString(labelText.c_str(), x + sqSize + 4, y + (sqSize - th) / 2);
 
 		}
 

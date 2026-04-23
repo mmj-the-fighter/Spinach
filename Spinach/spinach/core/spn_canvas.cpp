@@ -320,6 +320,36 @@ namespace spn
 
 	}
 
+	void Canvas::DrawChar(char ch, int x, int y) {
+		if (ch == ' ' || font == nullptr) {
+			return;
+		}
+		int atlasWidth = font->GetCanvas()->GetWidth();
+		int atlasHeight = font->GetCanvas()->GetHeight();
+		int cellWidth = font->GetCellWidth();
+		int cellHeight = font->GetCellHeight();
+		int maxCols = atlasWidth / cellWidth;
+		unsigned char baseChar = font->GetBaseChar();
+		unsigned char* srcPixels = font->GetCanvas()->GetPixelBuffer();
+		if (srcPixels == nullptr) {
+			return;
+		}
+		int xpos = x;
+		int i = 0;
+		unsigned char c = ch;
+		unsigned char charDiff = c - baseChar;
+		int row = charDiff / maxCols;
+		int col = charDiff - (row * maxCols);
+		int atlasX = col * cellWidth;
+		int atlasY = row * cellHeight;
+		//draw a region of atlas at xpos
+		BitBlockTransfer(srcPixels, atlasWidth, atlasHeight,
+				xpos, y, atlasX, atlasY, cellWidth,
+				cellHeight, 0, 0, 0, primaryColorR,
+				primaryColorG, primaryColorB);
+
+	}
+
 	void Canvas::DrawCString(const char* text, int x, int y)
 	{
 		if (font == nullptr) {
@@ -417,54 +447,54 @@ namespace spn
 
 	}
 
-	void Canvas::DrawString(const std::string& str, int x, int y)
-	{
-		if (font == nullptr) {
-			return;
-		}
-		int atlasWidth = font->GetCanvas()->GetWidth();
-		int atlasHeight = font->GetCanvas()->GetHeight();
-		int cellWidth = font->GetCellWidth();
-		int cellHeight = font->GetCellHeight();
-		int maxCols = atlasWidth / cellWidth;
-		unsigned char baseChar = font->GetBaseChar();
-		unsigned char* srcPixels = font->GetCanvas()->GetPixelBuffer();
-		if (srcPixels == nullptr){
-			return;
-		}
+	//void Canvas::DrawString(const std::string& str, int x, int y)
+	//{
+	//	if (font == nullptr) {
+	//		return;
+	//	}
+	//	int atlasWidth = font->GetCanvas()->GetWidth();
+	//	int atlasHeight = font->GetCanvas()->GetHeight();
+	//	int cellWidth = font->GetCellWidth();
+	//	int cellHeight = font->GetCellHeight();
+	//	int maxCols = atlasWidth / cellWidth;
+	//	unsigned char baseChar = font->GetBaseChar();
+	//	unsigned char* srcPixels = font->GetCanvas()->GetPixelBuffer();
+	//	if (srcPixels == nullptr){
+	//		return;
+	//	}
 
 
-		int xpos = x;
-		for (int i = 0; i < str.size(); ++i) {
-			unsigned char c = str.at(i);
-			if (c != ' ') {
-				unsigned char charDiff = c - baseChar;
-				int row = charDiff / maxCols;
-				int col = charDiff - (row*maxCols);
-				int atlasX = col * cellWidth;
-				int atlasY = row * cellHeight;
-				//draw a region of atlas at xpos
+	//	int xpos = x;
+	//	for (int i = 0; i < str.size(); ++i) {
+	//		unsigned char c = str.at(i);
+	//		if (c != ' ') {
+	//			unsigned char charDiff = c - baseChar;
+	//			int row = charDiff / maxCols;
+	//			int col = charDiff - (row*maxCols);
+	//			int atlasX = col * cellWidth;
+	//			int atlasY = row * cellHeight;
+	//			//draw a region of atlas at xpos
 
-				BitBlockTransfer(srcPixels, atlasWidth, atlasHeight,
-					xpos, y, atlasX, atlasY, cellWidth,
-					cellHeight, 0, 0, 0, primaryColorR,
-					primaryColorG, primaryColorB);
+	//			BitBlockTransfer(srcPixels, atlasWidth, atlasHeight,
+	//				xpos, y, atlasX, atlasY, cellWidth,
+	//				cellHeight, 0, 0, 0, primaryColorR,
+	//				primaryColorG, primaryColorB);
 
-				//CopyPixels(atlasX, atlasY, cellWidth, cellHeight,
-				//	atlasWidth, atlasHeight, srcPixels, xpos, y,
-				//	0, 0, 0,
-				//	primaryColorR,
-				//	primaryColorG,
-				//	primaryColorB
-				//	);
-
-
-			}
-			xpos += font->GetCharWidth(c);
-		}
+	//			//CopyPixels(atlasX, atlasY, cellWidth, cellHeight,
+	//			//	atlasWidth, atlasHeight, srcPixels, xpos, y,
+	//			//	0, 0, 0,
+	//			//	primaryColorR,
+	//			//	primaryColorG,
+	//			//	primaryColorB
+	//			//	);
 
 
-	}
+	//		}
+	//		xpos += font->GetCharWidth(c);
+	//	}
+
+
+	//}
 
 	void Canvas::GetCharDisplaySize(char c, float& w, float& h) {
 		if (font == nullptr) {
@@ -493,7 +523,7 @@ namespace spn
 		h = textHeight;
 	}
 
-	void Canvas::GetStringDisplaySize(const std::string& text, float& w, float& h) {
+	/*void Canvas::GetStringDisplaySize(const std::string& text, float& w, float& h) {
 		if (font == nullptr) {
 			w = 0;
 			h = 0;
@@ -506,9 +536,26 @@ namespace spn
 		}
 		w = textWidth;
 		h = textHeight;
-	}
+	}*/
 
-	void Canvas::GetStringDisplaySizeInRange(const std::string& text, int start, int end, float& w, float& h) {
+	//void Canvas::GetStringDisplaySizeInRange(const std::string& text, int start, int end, float& w, float& h) {
+	//	if (font == nullptr) {
+	//		w = 0;
+	//		h = 0;
+	//	}
+	//	int textHeight = font->GetCharHeight();
+	//	unsigned char c;
+	//	int textWidth = 0;
+	//	for (int i = start; i <= end && (c = text[i]) != '\0'; i++) {
+	//		textWidth += font->GetCharWidth(c);
+	//	}
+	//	w = textWidth;
+	//	h = textHeight;
+	//}
+
+
+	void Canvas::GetCStringDisplaySizeInRange(const char* text, int start, int end, float& w, float& h)
+	{
 		if (font == nullptr) {
 			w = 0;
 			h = 0;

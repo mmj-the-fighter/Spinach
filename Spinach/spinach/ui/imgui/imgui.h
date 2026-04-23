@@ -64,9 +64,9 @@ namespace spn::imgui {
 		}
 
 		float tw = 0, th = 0;
-		canvas->GetStringDisplaySize(labelText, tw, th);
+		canvas->GetCStringDisplaySize(labelText, tw, th);
 		canvas->SetPrimaryColorUint(textColor);
-		canvas->DrawString(labelText, x + sqSize + 4, y + (sqSize - th) / 2);
+		canvas->DrawCString(labelText, x + sqSize + 4, y + (sqSize - th) / 2);
 		canvas->RestoreColors();
 		return (lastStatus != isChecked);
 	}
@@ -89,7 +89,7 @@ namespace spn::imgui {
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			canvas->SetPrimaryColorUint(
 				spn::rmgui::UiScheme::GetInstance().textColor);
-			canvas->DrawString(buttonText, x + 12, y + 1);
+			canvas->DrawCString(buttonText, x + 12, y + 1);
 			break;
 		case spn::imgui::BTN_HOVER:
 			canvas->SetPrimaryColorUint(
@@ -98,7 +98,7 @@ namespace spn::imgui {
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			canvas->SetPrimaryColorUint(
 				spn::rmgui::UiScheme::GetInstance().textColor);
-			canvas->DrawString(buttonText, x + 8, y + 2);
+			canvas->DrawCString(buttonText, x + 8, y + 2);
 			break;
 		case spn::imgui::BTN_RELEASE:
 			canvas->SetPrimaryColorUint(
@@ -107,7 +107,7 @@ namespace spn::imgui {
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			canvas->SetPrimaryColorUint(
 				spn::rmgui::UiScheme::GetInstance().textColor);
-			canvas->DrawString(buttonText, x + 8, y + 2);
+			canvas->DrawCString(buttonText, x + 8, y + 2);
 			break;
 		}
 

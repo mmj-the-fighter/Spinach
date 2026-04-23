@@ -35,7 +35,7 @@ namespace spn::rmgui {
 				UiScheme::GetInstance()
 				.textColor
 			);
-			canvas->DrawString(text, x, y);
+			canvas->DrawCString(text.c_str(), x, y);
 		}
 	private:
 		std::string text;
