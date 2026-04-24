@@ -73,32 +73,30 @@ Five keys are handled in the engine:
 #include <spn_core.h>
 
 void UpdateAndRender(spn::Canvas* canvas) {
-    // Use the canvas to draw something
+	//Draw something with the canvas
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
-    // Process input events
+	//std::cout << "*";
 }
+
 
 int main(int argc, char* argv[])
 {
-    spn::SpinachCore sc(640, 480, "../res/");
-
-    if (sc.IsInitFailed()) {
-        std::cout << "Initialization failed with error "
-                  << sc.GetInitializationResult()
-                  << std::endl;
-        return 1;
-    }
-
-    sc.SetUpdateAndRenderHandler(UpdateAndRender);
-    sc.SetInputHandler(HandleInput);
-    sc.SetWindowTitle("Spinach App");
-	sc.GetCanvas()->SetPrimaryColorUint(0x0000ff);
-    sc.GetCanvas()->SetClearColorUint(0x0);
-    sc.SetTargetFramesPerSecond(30);
-    sc.MainLoop();
-
-    return 0;
+	spn::SpinachCore sc;
+	if (!sc.Init(640, 480, "../res/")) {
+		std::cout << "initialization failed with error "
+			<< sc.GetInitializationResult()
+			<< std::endl;
+		return 1;
+	}
+	sc.SetUpdateAndRenderHandler(UpdateAndRender);
+	sc.SetInputHandler(HandleInput);	
+	sc.SetWindowTitle("Spinach Demo");
+	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
+	sc.SetTargetFramesPerSecond(30);
+	sc.LockFps(true);
+	sc.MainLoop();
+	return 0;
 }
 ```
