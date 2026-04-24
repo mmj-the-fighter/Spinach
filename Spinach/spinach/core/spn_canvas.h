@@ -225,57 +225,6 @@ namespace spn
 			int newColorG = -1,
 			int newColorB = -1
 		);
-
-	//	void CopyAllPixels(
-	//		int srcWidth,
-	//		int srcHeight,
-	//		unsigned char * srcPixels,
-	//		int dstXStart,
-	//		int dstYStart);
-
-	//	void CopyPixels(
-	//		int srcXStart,
-	//		int srcYStart,
-	//		int srcWidth,
-	//		int srcHeight,
-	//		int srcTotalWidth,
-	//		int srcTotalHeight,
-	//		unsigned char * srcPixels,
-	//		int dstXStart, 
-	//		int dstYStart);
-
-	//	void CopyPixels(
-	//		int srcXStart,
-	//		int srcYStart,
-	//		int srcWidth,
-	//		int srcHeight,
-	//		int srcTotalWidth,
-	//		int srcTotalHeight,
-	//		unsigned char * srcPixels,
-	//		int dstXStart,
-	//		int dstYStart,
-	//		int chroma_r,
-	//		int chroma_g,
-	//		int chroma_b
-	//		);
-
-	//	void CopyPixels(
-	//		int srcXStart,
-	//		int srcYStart,
-	//		int srcWidth,
-	//		int srcHeight,
-	//		int srcTotalWidth,
-	//		int srcTotalHeight,
-	//		unsigned char * srcPixels,
-	//		int dstXStart,
-	//		int dstYStart,
-	//		int chroma_r,
-	//		int chroma_g,
-	//		int chroma_b,
-	//		int textcolor_r,
-	//		int textcolor_g,
-	//		int textcolor_b
-	//		);
 	};
 }
 

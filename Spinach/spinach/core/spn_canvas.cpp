@@ -245,10 +245,6 @@ namespace spn
 			imCanvas->GetWidth(),
 			imCanvas->GetHeight(),
 			x, y);
-		//CopyAllPixels(imCanvas->GetWidth(),
-		//	imCanvas->GetHeight(),
-		//	imCanvas->GetPixelBuffer(),
-		//	x, y);
 	}
 
 	void Canvas::DrawSubImage(Image* image, int x, int y,
@@ -284,21 +280,6 @@ namespace spn
 			imCanvas->GetWidth(),
 			imCanvas->GetHeight(), x, y, 0, 0, -1, -1, 
 			chromaR, chromaG, chromaB);
-		//CopyPixels(
-		//	0,
-		//	0,
-		//	imCanvas->GetWidth(),
-		//	imCanvas->GetHeight(),
-		//	imCanvas->GetWidth(),
-		//	imCanvas->GetHeight(),
-		//	imCanvas->GetPixelBuffer(),
-		//	x,
-		//	y,
-		//	chromaR,
-		//	chromaG,
-		//	chromaB
-		//	);
-
 	}
 
 	void Canvas::DrawSubImageChromaKeyed(Image* image,
@@ -314,21 +295,6 @@ namespace spn
 			imCanvas->GetHeight(),
 			x, y, tileStartX, tileStartY, tileWidth, tileHeight,
 			chromaR, chromaG, chromaB);
-
-		//CopyPixels(
-		//	tileStartX,
-		//	tileStartY,
-		//	tileWidth,
-		//	tileHeight,
-		//	imCanvas->GetWidth(),
-		//	imCanvas->GetHeight(),
-		//	imCanvas->GetPixelBuffer(),
-		//	x,
-		//	y,
-		//	chromaR,
-		//	chromaG,
-		//	chromaB
-		//);
 
 	}
 
@@ -394,15 +360,6 @@ namespace spn
 					xpos, y, atlasX, atlasY, cellWidth,
 					cellHeight, 0, 0, 0, primaryColorR,
 					primaryColorG, primaryColorB);
-
-				//CopyPixels(atlasX, atlasY, cellWidth, cellHeight,
-				//	atlasWidth, atlasHeight, srcPixels, xpos, y,
-				//	0, 0, 0,
-				//	primaryColorR,
-				//	primaryColorG,
-				//	primaryColorB
-				//	);
-
 			}
 			xpos += font->GetCharWidth(c);
 			++i;
@@ -443,70 +400,12 @@ namespace spn
 					xpos, y, atlasX, atlasY, cellWidth,
 					cellHeight, 0, 0, 0, primaryColorR,
 					primaryColorG, primaryColorB);
-
-				//CopyPixels(atlasX, atlasY, cellWidth, cellHeight,
-				//	atlasWidth, atlasHeight, srcPixels, xpos, y,
-				//	0, 0, 0,
-				//	primaryColorR,
-				//	primaryColorG,
-				//	primaryColorB
-				//	);
-
 			}
 			xpos += font->GetCharWidth(c);
 		}
 
 
 	}
-
-	//void Canvas::DrawString(const std::string& str, int x, int y)
-	//{
-	//	if (font == nullptr) {
-	//		return;
-	//	}
-	//	int atlasWidth = font->GetCanvas()->GetWidth();
-	//	int atlasHeight = font->GetCanvas()->GetHeight();
-	//	int cellWidth = font->GetCellWidth();
-	//	int cellHeight = font->GetCellHeight();
-	//	int maxCols = atlasWidth / cellWidth;
-	//	unsigned char baseChar = font->GetBaseChar();
-	//	unsigned char* srcPixels = font->GetCanvas()->GetPixelBuffer();
-	//	if (srcPixels == nullptr){
-	//		return;
-	//	}
-
-
-	//	int xpos = x;
-	//	for (int i = 0; i < str.size(); ++i) {
-	//		unsigned char c = str.at(i);
-	//		if (c != ' ') {
-	//			unsigned char charDiff = c - baseChar;
-	//			int row = charDiff / maxCols;
-	//			int col = charDiff - (row*maxCols);
-	//			int atlasX = col * cellWidth;
-	//			int atlasY = row * cellHeight;
-	//			//draw a region of atlas at xpos
-
-	//			BitBlockTransfer(srcPixels, atlasWidth, atlasHeight,
-	//				xpos, y, atlasX, atlasY, cellWidth,
-	//				cellHeight, 0, 0, 0, primaryColorR,
-	//				primaryColorG, primaryColorB);
-
-	//			//CopyPixels(atlasX, atlasY, cellWidth, cellHeight,
-	//			//	atlasWidth, atlasHeight, srcPixels, xpos, y,
-	//			//	0, 0, 0,
-	//			//	primaryColorR,
-	//			//	primaryColorG,
-	//			//	primaryColorB
-	//			//	);
-
-
-	//		}
-	//		xpos += font->GetCharWidth(c);
-	//	}
-
-
-	//}
 
 	void Canvas::GetCharDisplaySize(char c, float& w, float& h) {
 		if (font == nullptr) {
@@ -534,37 +433,6 @@ namespace spn
 		w = textWidth;
 		h = textHeight;
 	}
-
-	/*void Canvas::GetStringDisplaySize(const std::string& text, float& w, float& h) {
-		if (font == nullptr) {
-			w = 0;
-			h = 0;
-		}
-		int textHeight = font->GetCharHeight();
-		unsigned char c;
-		int textWidth = 0;
-		for (int i = 0; (c = text[i]) != '\0'; i++) {
-			textWidth += font->GetCharWidth(c);
-		}
-		w = textWidth;
-		h = textHeight;
-	}*/
-
-	//void Canvas::GetStringDisplaySizeInRange(const std::string& text, int start, int end, float& w, float& h) {
-	//	if (font == nullptr) {
-	//		w = 0;
-	//		h = 0;
-	//	}
-	//	int textHeight = font->GetCharHeight();
-	//	unsigned char c;
-	//	int textWidth = 0;
-	//	for (int i = start; i <= end && (c = text[i]) != '\0'; i++) {
-	//		textWidth += font->GetCharWidth(c);
-	//	}
-	//	w = textWidth;
-	//	h = textHeight;
-	//}
-
 
 	void Canvas::GetCStringDisplaySizeInRange(const char* text, int start, int end, float& w, float& h)
 	{
@@ -722,329 +590,4 @@ namespace spn
 		}
 #undef ONEOVER255
 	}
-
-
-	//void Canvas::CopyAllPixels(
-	//	int srcWidth, int srcHeight,
-	//	unsigned char * srcPixels,
-	//	int dstXStart, int dstYStart)
-	//{
-	//	Rect r1, r2, ir;
-	//	int sx, sy, tw, th;
-	//	int srcX, srcY;
-	//	int dstX, dstY;
-	//	int numOfChannels = channels;
-	//	unsigned char *dstPixels = pixBuffer;
-	//	unsigned char *dstLoc, *srcLoc;
-	//	int srcPitch = srcWidth * numOfChannels;
-	//	int dstWidth = width;
-	//	int dstHeight = height;
-	//	int dstPitch = pitch;
-	//	int x, y;
-	//	double oneOver255 = 1.0 / 255.0;
-	//	unsigned char srcAlphaUchar;
-
-
-
-	//	/* culling */
-	//	if (
-	//		(dstXStart + srcWidth < 0 || dstXStart >= dstWidth) ||
-	//		(dstYStart + srcHeight < 0 || dstYStart >= dstHeight)
-	//		)
-	//	{
-	//		return;
-	//	}
-
-	//	/*compute intersection*/
-	//	r1.left = dstXStart;
-	//	r1.top = dstYStart;
-	//	r1.width = srcWidth;
-	//	r1.height = srcHeight;
-
-	//	r2.left = 0;
-	//	r2.top = 0;
-	//	r2.width = dstWidth;
-	//	r2.height = dstHeight;
-
-	//	IntersctRectRect(r1, r2, ir);
-
-
-	//	/*clip new */
-	//	sx = ir.left - r1.left;
-	//	sy = ir.top - r1.top;
-
-	//	//correction
-	//	tw = ir.width;
-	//	th = ir.height;
-
-
-	//	/*iterate through source rectangle * /
-	//	/* copy to destination */
-	//	for (srcY = sy, y = 0; srcY < (sy + th); ++srcY, ++y)
-	//	{
-	//		for (srcX = sx, x = 0; srcX < (sx + tw); ++srcX, ++x)
-	//		{
-	//			dstX = ir.left + x;
-	//			dstY = ir.top + y;
-	//			srcLoc = srcPixels + srcPitch * srcY + srcX * numOfChannels;
-	//			dstLoc = dstPixels + dstPitch * dstY + dstX * numOfChannels;
-	//			*dstLoc++ = *srcLoc++;
-	//			*dstLoc++ = *srcLoc++;
-	//			*dstLoc++ = *srcLoc++;
-	//			*dstLoc = *srcLoc;
-	//		}
-	//	}
-
-	//}
-
-	//void Canvas::CopyPixels(
-	//	int srcXStart,
-	//	int srcYStart,
-	//	int srcWidth,
-	//	int srcHeight,
-	//	int srcTotalWidth,
-	//	int srcTotalHeight,
-	//	unsigned char * srcPixels,
-	//	int dstXStart,
-	//	int dstYStart)
-	//{
-	//	Rect r1, r2, ir;
-	//	int sx, sy, tw, th;
-	//	int srcX, srcY;
-	//	int dstX, dstY;
-	//	int numOfChannels = channels;
-	//	unsigned char *dstPixels = pixBuffer;
-	//	unsigned char *dstLoc, *srcLoc;
-	//	int srcPitch = srcTotalWidth * numOfChannels;
-	//	int dstWidth = width;
-	//	int dstHeight = height;
-	//	int dstPitch = pitch;
-	//	int x, y;
-
-
-	//	/* culling */
-	//	if (
-	//		(dstXStart + srcWidth < 0 || dstXStart >= dstWidth) ||
-	//		(dstYStart + srcHeight < 0 || dstYStart >= dstHeight)
-	//		)
-	//	{
-	//		return;
-	//	}
-
-	//	/*compute intersection*/
-	//	r1.left = dstXStart;
-	//	r1.top = dstYStart;
-	//	r1.width = srcWidth;
-	//	r1.height = srcHeight;
-
-	//	r2.left = 0;
-	//	r2.top = 0;
-	//	r2.width = dstWidth;
-	//	r2.height = dstHeight;
-
-	//	IntersctRectRect(r1, r2, ir);
-
-
-	//	/*clip new */
-	//	sx = ir.left - r1.left;
-	//	sy = ir.top - r1.top;
-
-	//	//correction
-	//	tw = ir.width;
-	//	th = ir.height;
-
-
-	//	/*iterate through source rectangle * /
-	//	/* copy to destination */
-	//	for (srcY = srcYStart + sy, y = 0; srcY < (srcYStart+sy + th); ++srcY, ++y)
-	//	{
-	//		for (srcX = srcXStart + sx, x = 0; srcX < (srcXStart+sx + tw); ++srcX, ++x)
-	//		{
-	//			dstX = ir.left + x;
-	//			dstY = ir.top + y;
-	//			srcLoc = srcPixels + srcPitch * srcY + srcX * numOfChannels;
-	//			dstLoc = dstPixels + dstPitch * dstY + dstX * numOfChannels;
-	//			*dstLoc++ = *srcLoc++;
-	//			*dstLoc++ = *srcLoc++;
-	//			*dstLoc++ = *srcLoc++;
-	//			*dstLoc = *srcLoc;
-	//		}
-	//	}
-	//}
-
-
-	//void Canvas::CopyPixels(
-	//	int srcXStart,
-	//	int srcYStart,
-	//	int srcWidth,
-	//	int srcHeight,
-	//	int srcTotalWidth,
-	//	int srcTotalHeight,
-	//	unsigned char * srcPixels,
-	//	int dstXStart,
-	//	int dstYStart,
-	//	int chromaR,
-	//	int chromaG,
-	//	int chromaB
-	//	)
-	//{
-	//	Rect r1, r2, ir;
-	//	int sx, sy, tw, th;
-	//	int srcX, srcY;
-	//	int dstX, dstY;
-	//	int numOfChannels = channels;
-	//	unsigned char *dstPixels = pixBuffer;
-	//	unsigned char *dstLoc, *srcLoc;
-	//	int srcPitch = srcTotalWidth * numOfChannels;
-	//	int dstWidth = width;
-	//	int dstHeight = height;
-	//	int dstPitch = pitch;
-	//	int x, y;
-
-
-
-	//	/* culling */
-	//	if (
-	//		(dstXStart + srcWidth < 0 || dstXStart >= dstWidth) ||
-	//		(dstYStart + srcHeight < 0 || dstYStart >= dstHeight)
-	//		)
-	//	{
-	//		return;
-	//	}
-
-	//	/*compute intersection*/
-	//	r1.left = dstXStart;
-	//	r1.top = dstYStart;
-	//	r1.width = srcWidth;
-	//	r1.height = srcHeight;
-
-	//	r2.left = 0;
-	//	r2.top = 0;
-	//	r2.width = dstWidth;
-	//	r2.height = dstHeight;
-
-	//	IntersctRectRect(r1, r2, ir);
-
-
-	//	/*clip new */
-	//	sx = ir.left - r1.left;
-	//	sy = ir.top - r1.top;
-
-	//	//correction
-	//	tw = ir.width;
-	//	th = ir.height;
-
-
-	//	/*iterate through source rectangle * /
-	//	/* copy to destination */
-	//	for (srcY = srcYStart + sy, y = 0; srcY < (srcYStart + sy + th); ++srcY, ++y)
-	//	{
-	//		for (srcX = srcXStart + sx, x = 0; srcX < (srcXStart + sx + tw); ++srcX, ++x)
-	//		{
-	//			dstX = ir.left + x;
-	//			dstY = ir.top + y;
-	//			srcLoc = srcPixels + srcPitch * srcY + srcX * numOfChannels;
-	//			dstLoc = dstPixels + dstPitch * dstY + dstX * numOfChannels;
-	//			if (chromaB != *srcLoc ||
-	//				chromaG != *(srcLoc + 1) ||
-	//				chromaR != *(srcLoc + 2)
-	//				)
-	//			{
-	//				*dstLoc++ = *srcLoc++;
-	//				*dstLoc++ = *srcLoc++;
-	//				*dstLoc++ = *srcLoc++;
-	//				*dstLoc = *srcLoc;
-	//			}
-	//		}
-	//	}
-	//}
-
-	//void Canvas::CopyPixels(
-	//	int srcXStart,
-	//	int srcYStart,
-	//	int srcWidth,
-	//	int srcHeight,
-	//	int srcTotalWidth,
-	//	int srcTotalHeight,
-	//	unsigned char * srcPixels,
-	//	int dstXStart,
-	//	int dstYStart,
-	//	int chromaR,
-	//	int chromaG,
-	//	int chromaB,
-	//	int textColorR,
-	//	int textColorG,
-	//	int textColorB
-	//	)
-	//{
-	//	Rect r1, r2, ir;
-	//	int sx, sy, tw, th;
-	//	int srcX, srcY;
-	//	int dstX, dstY;
-	//	int numOfChannels = channels;
-	//	unsigned char *dstPixels = pixBuffer;
-	//	unsigned char *dstLoc, *srcLoc;
-	//	int srcPitch = srcTotalWidth * numOfChannels;
-	//	int dstWidth = width;
-	//	int dstHeight = height;
-	//	int dstPitch = pitch;
-	//	int x, y;
-
-
-
-	//	/* culling */
-	//	if (
-	//		(dstXStart + srcWidth < 0 || dstXStart >= dstWidth) ||
-	//		(dstYStart + srcHeight < 0 || dstYStart >= dstHeight)
-	//		)
-	//	{
-	//		return;
-	//	}
-
-	//	/*compute intersection*/
-	//	r1.left = dstXStart;
-	//	r1.top = dstYStart;
-	//	r1.width = srcWidth;
-	//	r1.height = srcHeight;
-
-	//	r2.left = 0;
-	//	r2.top = 0;
-	//	r2.width = dstWidth;
-	//	r2.height = dstHeight;
-
-	//	IntersctRectRect(r1, r2, ir);
-
-
-	//	/*clip new */
-	//	sx = ir.left - r1.left;
-	//	sy = ir.top - r1.top;
-
-	//	//correction
-	//	tw = ir.width;
-	//	th = ir.height;
-
-
-	//	/*iterate through source rectangle * /
-	//	/* copy to destination */
-	//	for (srcY = srcYStart + sy, y = 0; srcY < (srcYStart + sy + th); ++srcY, ++y)
-	//	{
-	//		for (srcX = srcXStart + sx, x = 0; srcX < (srcXStart + sx + tw); ++srcX, ++x)
-	//		{
-	//			dstX = ir.left + x;
-	//			dstY = ir.top + y;
-	//			srcLoc = srcPixels + srcPitch * srcY + srcX * numOfChannels;
-	//			dstLoc = dstPixels + dstPitch * dstY + dstX * numOfChannels;
-	//			if (chromaB != *srcLoc ||
-	//				chromaG != *(srcLoc + 1) ||
-	//				chromaR != *(srcLoc + 2)
-	//				)
-	//			{
-	//				*dstLoc++ = textColorB;
-	//				*dstLoc++ = textColorG;
-	//				*dstLoc++ = textColorR;
-	//				*dstLoc = 255;
-	//			}
-	//		}
-	//	}
-	//}
 }
