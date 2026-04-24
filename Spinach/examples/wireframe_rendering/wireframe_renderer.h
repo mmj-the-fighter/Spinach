@@ -3,7 +3,7 @@
 
 #include <spn_canvas.h>
 #include <spn_core.h>
-#include <ui_event.h>
+#include <spn_ui_event.h>
 #include "n3d/rasterizer.h"
 
 
@@ -15,7 +15,7 @@ public:
 	void HandleInput(const SDL_Event* sdlEvent);
 	void LoadModel();
 private:
-	spn::rmgui::UiEvent uie;
+	spn::ui::UiEvent uie;
 	spn::SpinachCore* spinachCore;
 	n3d::Rasterizer  rasterizer;
 	n3d::Mesh mesh;

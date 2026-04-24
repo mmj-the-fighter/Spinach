@@ -1,13 +1,13 @@
-#ifndef IMGUI_CHECKBOX_H
-#define IMGUI_CHECKBOX_H
+#ifndef SPN_IMGUI_IMGUI_H
+#define SPN_IMGUI_IMGUI_H
 
 #include <iostream>
 #include <functional>
 
 #include <spn_canvas.h>
 #include <spn_image.h>
-#include <ui_scheme.h>
-#include <ui_event.h>
+#include <spn_ui_scheme.h>
+#include <spn_ui_event.h>
 		
 namespace spn::imgui {
 	enum {
@@ -36,11 +36,11 @@ namespace spn::imgui {
 
 	static bool Checkbox(
 		spn::Canvas* canvas,
-		spn::rmgui::UiEvent& uie,
+		spn::ui::UiEvent& uie,
 		const char* labelText,
 		int x, int y,
 		bool& isChecked) {
-		using namespace spn::rmgui;
+		using namespace spn::ui;
 		int sqSize = UiScheme::GetInstance().checkboxSize;
 		unsigned int cbColor = UiScheme::GetInstance().checkboxColor;
 		unsigned int cbFillColor = UiScheme::GetInstance().checkboxFillColor;
@@ -73,7 +73,7 @@ namespace spn::imgui {
 
 
 	static bool Button(
-		spn::Canvas* canvas, spn::rmgui::UiEvent& uie,
+		spn::Canvas* canvas, spn::ui::UiEvent& uie,
 		const char* buttonText,
 		int x, int y, int w, int h,
 		int& state)
@@ -84,36 +84,36 @@ namespace spn::imgui {
 		{
 		case spn::imgui::BTN_PRESS:
 			canvas->SetPrimaryColorUint(
-				spn::rmgui::UiScheme::GetInstance().buttonPressColor);
+				spn::ui::UiScheme::GetInstance().buttonPressColor);
 			canvas->DrawRectangle(x, y, x + w, y + h);
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			canvas->SetPrimaryColorUint(
-				spn::rmgui::UiScheme::GetInstance().textColor);
+				spn::ui::UiScheme::GetInstance().textColor);
 			canvas->DrawCString(buttonText, x + 12, y + 1);
 			break;
 		case spn::imgui::BTN_HOVER:
 			canvas->SetPrimaryColorUint(
-				spn::rmgui::UiScheme::GetInstance().buttonHoverColor);
+				spn::ui::UiScheme::GetInstance().buttonHoverColor);
 			canvas->DrawRectangle(x, y, x + w, y + h);
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			canvas->SetPrimaryColorUint(
-				spn::rmgui::UiScheme::GetInstance().textColor);
+				spn::ui::UiScheme::GetInstance().textColor);
 			canvas->DrawCString(buttonText, x + 8, y + 2);
 			break;
 		case spn::imgui::BTN_RELEASE:
 			canvas->SetPrimaryColorUint(
-				spn::rmgui::UiScheme::GetInstance().buttonReleaseColor);
+				spn::ui::UiScheme::GetInstance().buttonReleaseColor);
 			canvas->DrawRectangle(x, y, x + w, y + h);
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			canvas->SetPrimaryColorUint(
-				spn::rmgui::UiScheme::GetInstance().textColor);
+				spn::ui::UiScheme::GetInstance().textColor);
 			canvas->DrawCString(buttonText, x + 8, y + 2);
 			break;
 		}
 
 		switch (uie.eventType) {
-		case spn::rmgui::UiEventType::MouseUp:
-			if (uie.mouseButton == spn::rmgui::MouseButton::Left) {
+		case spn::ui::UiEventType::MouseUp:
+			if (uie.mouseButton == spn::ui::MouseButton::Left) {
 				//leftbutton is up
 				if (IsMouseInsideRectangle(uie.mouseX, uie.mouseY, x, y, w, h)) {
 					rv = true;
@@ -123,14 +123,14 @@ namespace spn::imgui {
 				}
 			}
 			break;
-		case spn::rmgui::UiEventType::MouseDown:
-			if (uie.mouseButton == spn::rmgui::MouseButton::Left) {
+		case spn::ui::UiEventType::MouseDown:
+			if (uie.mouseButton == spn::ui::MouseButton::Left) {
 				if (IsMouseInsideRectangle(uie.mouseX, uie.mouseY, x, y, w, h)) {
 					state = spn::imgui::BTN_PRESS;
 				}
 			}
 			break;
-		case spn::rmgui::UiEventType::MouseMove:
+		case spn::ui::UiEventType::MouseMove:
 			if (IsMouseInsideRectangle(uie.mouseX, uie.mouseY, x, y, w, h)) {
 				state = spn::imgui::BTN_HOVER;
 			}
@@ -144,14 +144,14 @@ namespace spn::imgui {
 	}
 
 	static AlertResult Alert(
-		spn::Canvas* canvas, spn::rmgui::UiEvent& uie,
+		spn::Canvas* canvas, spn::ui::UiEvent& uie,
 		const char* alertText,
 		int x, int y, int w, int h,
 		bool& alertStatus,
 		int& okState, int& cancelState)
 	{
 		if (
-			uie.eventType == spn::rmgui::UiEventType::MouseUp &&
+			uie.eventType == spn::ui::UiEventType::MouseUp &&
 			!IsMouseInsideRectangle(uie.mouseX, uie.mouseY, x, y, w, h)) {
 			alertStatus = false;
 			//clear event

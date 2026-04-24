@@ -3,9 +3,9 @@
 #include <cmath>
 #include <spn_canvas.h>
 #include <spn_core.h>
-#include <ui_event.h>
-#include <ui_event_translator.h>
-#include <imgui/imgui.h>
+#include <spn_ui_event.h>
+#include <spn_ui_event_translator.h>
+#include <imgui/spn_imgui_imgui.h>
 
 struct Vector2 {
 	float x;
@@ -26,7 +26,7 @@ bool canrun = true;
 char* buttonText = nullptr;
 char* runText = "Run";
 char* pauseText = "Pause";
-spn::rmgui::UiEvent uie;
+spn::ui::UiEvent uie;
 spn::SpinachCore* pCore=nullptr;
 
 void UpdateAndRender(spn::Canvas* canvas) {
@@ -141,7 +141,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 
 void HandleInput(const SDL_Event* e) {
 	
-	spn::rmgui::TranslateSdlEvent(e, uie);
+	spn::ui::TranslateSdlEvent(e, uie);
 }
 
 int main(int argc, char* argv[])

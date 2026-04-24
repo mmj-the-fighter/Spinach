@@ -1,7 +1,7 @@
-#ifndef _UI_EVENT_H_
-#define _UI_EVENT_H_
+#ifndef SPN_UI_EVENT_H
+#define SPN_UI_EVENT_H
 
-namespace spn::rmgui {
+namespace spn::ui {
 	enum class UiEventType : uint32_t
 	{
 		None = 0,

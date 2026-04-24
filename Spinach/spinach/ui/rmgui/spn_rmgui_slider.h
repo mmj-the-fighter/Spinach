@@ -1,5 +1,5 @@
-#ifndef _SLIDER_H_
-#define _SLIDER_H_
+#ifndef SPN_RMGUI_SLIDER_H
+#define SPN_RMGUI_SLIDER_H
 
 #include <iostream>
 #include <sstream>
@@ -10,8 +10,8 @@
 #include <spn_canvas.h>
 #include <spn_image.h>
 #include <spn_utils.h>
-#include <ui_scheme.h>
-#include <widget.h>
+#include <spn_ui_scheme.h>
+#include <rmgui/spn_rmgui_widget.h>
 
 namespace spn::rmgui {
 
@@ -28,10 +28,10 @@ namespace spn::rmgui {
 	{
 	public:
 		Slider() {
-			Subscribe(UiEventType::MouseDown);
-			Subscribe(UiEventType::MouseUp);
-			Subscribe(UiEventType::MouseMove);
-			Subscribe(UiEventType::MouseDrag);
+			Subscribe(spn::ui::UiEventType::MouseDown);
+			Subscribe(spn::ui::UiEventType::MouseUp);
+			Subscribe(spn::ui::UiEventType::MouseMove);
+			Subscribe(spn::ui::UiEventType::MouseDrag);
 		}
 		void SetCallback(std::function<void(int id, float value)> onValueChangedCallback = nullptr) {
 			onValueChangedFn = onValueChangedCallback;
@@ -72,15 +72,15 @@ namespace spn::rmgui {
 		}
 
 
-		bool OnMouseDown(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseDown(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbDown(x, y);
 			}
 			return false;
 		}
 
-		bool OnMouseUp(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseUp(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbUp(x, y);
 			}
 			return false;
@@ -176,33 +176,33 @@ namespace spn::rmgui {
 		}
 		void Display(spn::Canvas* canvas) {
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance().sliderTrackColor);
+				spn::ui::UiScheme::GetInstance().sliderTrackColor);
 			canvas->DrawRectangle(x, y, x + w, y + h);
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			if (isHover) {
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().sliderKnobColor);
+					spn::ui::UiScheme::GetInstance().sliderKnobColor);
 				canvas->DrawRectangle(knobx, knoby, knobx + knobw, knoby + h);
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().sliderKnobHoverColor);
+					spn::ui::UiScheme::GetInstance().sliderKnobHoverColor);
 				canvas->DrawFilledRectangle(
 					knobx + 2, knoby + 2, knobx + knobw - 2, knoby + knobh - 2);
 			}
 			else {
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().sliderKnobColor);
+					spn::ui::UiScheme::GetInstance().sliderKnobColor);
 				canvas->DrawFilledRectangle(knobx, knoby, knobx + knobw, knoby + h);
 			}
 
 
 
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance().sliderTextColor);
+				spn::ui::UiScheme::GetInstance().sliderTextColor);
 			float tw = 0, th = 0;
 			canvas->GetCStringDisplaySize(text.c_str(), tw, th);
 
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance()
+				spn::ui::UiScheme::GetInstance()
 				.textColor
 			);
 			canvas->DrawCString(text.c_str(), x + (w - tw) / 2, y + (h - th) / 2);

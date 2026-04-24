@@ -1,5 +1,5 @@
-#ifndef _DROPDOWN_H_
-#define _DROPDOWN_H_
+#ifndef SPN_RMGUI_DROPDOWN_H
+#define SPN_RMGUI_DROPDOWN_H
 
 #include <iostream>
 #include <functional>
@@ -8,8 +8,8 @@
 
 #include <spn_canvas.h>
 #include <spn_image.h>
-#include <ui_scheme.h>
-#include <widget.h>
+#include <spn_ui_scheme.h>
+#include <rmgui/spn_rmgui_widget.h>
 
 namespace spn::rmgui {
 	enum {
@@ -28,8 +28,8 @@ namespace spn::rmgui {
 	{
 	public:
 		Dropdown() {
-			Subscribe(UiEventType::MouseDown);
-			Subscribe(UiEventType::MouseMove);
+			Subscribe(spn::ui::UiEventType::MouseDown);
+			Subscribe(spn::ui::UiEventType::MouseMove);
 		}
 		void AddOption(std::string&& str) {
 			options.push_back(str);
@@ -57,8 +57,8 @@ namespace spn::rmgui {
 			y = ay;
 		}
 
-		bool OnMouseDown(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseDown(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbDown(x, y);
 			}
 			return false;
@@ -120,12 +120,12 @@ namespace spn::rmgui {
 			case DD_EXPANDED:
 			{
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().buttonReleaseColor
+					spn::ui::UiScheme::GetInstance().buttonReleaseColor
 				);
 				canvas->DrawRectangle(x, y, x + w, y + ch);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + ch - 2);
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance()
+					spn::ui::UiScheme::GetInstance()
 					.textColor
 				);
 				canvas->DrawCString(options[selectedIndex].c_str(), x + 12, y + 1);
@@ -133,26 +133,26 @@ namespace spn::rmgui {
 				for (const auto& opt : options) {
 					if (i - 1 == hoveredIndex) {
 						canvas->SetPrimaryColorUint(
-							UiScheme::GetInstance()
+							spn::ui::UiScheme::GetInstance()
 							.buttonHoverColor
 						);
 						canvas->DrawRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
 						canvas->DrawFilledRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
 						canvas->SetPrimaryColorUint(
-							UiScheme::GetInstance()
+							spn::ui::UiScheme::GetInstance()
 							.textColor
 						);
 						canvas->DrawCString(options[hoveredIndex].c_str(), x + 12, y + (i * ch) + 1);
 					}
 					else {
 						canvas->SetPrimaryColorUint(
-							UiScheme::GetInstance()
+							spn::ui::UiScheme::GetInstance()
 							.buttonReleaseColor
 						);
 						canvas->DrawRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
 						canvas->DrawFilledRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
 						canvas->SetPrimaryColorUint(
-							UiScheme::GetInstance()
+							spn::ui::UiScheme::GetInstance()
 							.textColor
 						);
 						canvas->DrawCString(options[i - 1].c_str(), x + 12, y + (i * ch) + 1);
@@ -163,13 +163,13 @@ namespace spn::rmgui {
 			break;
 			case DD_NORMALSIZE:
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance()
+					spn::ui::UiScheme::GetInstance()
 					.buttonReleaseColor
 				);
 				canvas->DrawRectangle(x, y, x + w, y + ch);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + ch - 2);
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance()
+					spn::ui::UiScheme::GetInstance()
 					.textColor
 				);
 				canvas->DrawCString(options[selectedIndex].c_str(), x + 12, y + 1);
@@ -177,7 +177,7 @@ namespace spn::rmgui {
 			}
 			//nook
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance()
+				spn::ui::UiScheme::GetInstance()
 				.textColor
 			);
 			canvas->DrawLine(x + w - ch + 2, y + ch / 3, x + w - ch / 2, y + ch / 2);

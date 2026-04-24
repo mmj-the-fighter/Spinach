@@ -1,5 +1,5 @@
-#ifndef TEXTBOX_H
-#define TEXTBOX_H
+#ifndef SPN_RMGUI_TEXTBOX_H
+#define SPN_RMGUI_TEXTBOX_H
 
 #include <iostream>
 #include <sstream>
@@ -10,8 +10,8 @@
 #include <spn_canvas.h>
 #include <spn_image.h>
 #include <spn_utils.h>
-#include <ui_scheme.h>
-#include <widget.h>
+#include <spn_ui_scheme.h>
+#include <rmgui/spn_rmgui_widget.h>
 
 namespace spn::rmgui {
 	class Textbox : public Widget
@@ -20,9 +20,9 @@ namespace spn::rmgui {
 
 		Textbox() {
 			text = "";
-			Subscribe(UiEventType::CharInput);
-			Subscribe(UiEventType::ActionKeyDown);
-			Subscribe(UiEventType::MouseDown);
+			Subscribe(spn::ui::UiEventType::CharInput);
+			Subscribe(spn::ui::UiEventType::ActionKeyDown);
+			Subscribe(spn::ui::UiEventType::MouseDown);
 		}
 
 		/*void SetCallback(std::function<void(int id, std::string& str)> onTextChangedCallback = nullptr) {
@@ -39,8 +39,8 @@ namespace spn::rmgui {
 			y = ay;
 		}
 
-		bool OnMouseDown(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseDown(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbDown(x, y);
 			}
 			return false;
@@ -60,13 +60,13 @@ namespace spn::rmgui {
 			return false;
 		}
 
-		bool OnActionKeyDown(KeyCode kc) {
+		bool OnActionKeyDown(spn::ui::KeyCode kc) {
 			switch (kc) {
-			case KeyCode::Left:
+			case spn::ui::KeyCode::Left:
 				return OnLeftArrowKey();
-			case KeyCode::Right:
+			case spn::ui::KeyCode::Right:
 				return OnRightArrowKey();
-			case KeyCode::Backspace:
+			case spn::ui::KeyCode::Backspace:
 				return OnBackSpaceKey();
 			}
 			return false;
@@ -195,7 +195,7 @@ namespace spn::rmgui {
 			int cheight = canvas->GetHeight();
 			canvas->SetClippingRectangle(x, y, w, h);
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance().textColor);
+				spn::ui::UiScheme::GetInstance().textColor);
 
 			canvas->DrawCStringInRange(text.c_str(), scrollOffset, text.size(), x + 4, y);
 
@@ -231,12 +231,12 @@ namespace spn::rmgui {
 					caretHideFrames = 30;
 				}
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().buttonHoverColor);
+					spn::ui::UiScheme::GetInstance().buttonHoverColor);
 
 			}
 			else {
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().buttonReleaseColor);
+					spn::ui::UiScheme::GetInstance().buttonReleaseColor);
 			}
 			canvas->DrawRectangle(x, y, x + w, y + h);
 			canvas->SetClippingRectangle(0, 0, cwidth, cheight);

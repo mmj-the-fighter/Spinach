@@ -1,6 +1,5 @@
-#include <imgui/imgui.h>
-
-#include <ui_event_translator.h>
+#include <imgui/spn_imgui_imgui.h>
+#include <spn_ui_event_translator.h>
 #include "wireframe_renderer.h"
 
 
@@ -102,7 +101,7 @@ void WireframeRenderer::HandleInput(const SDL_Event* sdlEvent) {
 			return;
 		}
 	}
-	spn::rmgui::TranslateSdlEvent(sdlEvent, uie);
+	spn::ui::TranslateSdlEvent(sdlEvent, uie);
 }
 
 void WireframeRenderer::LoadModel() {

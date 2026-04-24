@@ -3,20 +3,20 @@
 #include <vector>
 //#define _USE_MATH_DEFINES
 #include <cmath>
-#include <ui_event.h>
-#include <ui_event_translator.h>
-#include <ui_manager.h>
-#include <slider.h>
-#include <dropdown.h>
-#include <label.h>
-#include <button.h>
-#include <checkbox.h>
-#include <textbox.h>
+#include <spn_ui_event.h>
+#include <spn_ui_event_translator.h>
+#include <rmgui/spn_rmgui_ui_manager.h>
+#include <rmgui/spn_rmgui_slider.h>
+#include <rmgui/spn_rmgui_dropdown.h>
+#include <rmgui/spn_rmgui_label.h>
+#include <rmgui/spn_rmgui_button.h>
+#include <rmgui/spn_rmgui_checkbox.h>
+#include <rmgui/spn_rmgui_textbox.h>
 
 
 #include <spn_canvas.h>
 #include <spn_core.h>
-#include <imgui/imgui.h>
+#include <imgui/spn_imgui_imgui.h>
 
 constexpr double M_PI_VALUE = 3.14159265358979323846;
 
@@ -58,7 +58,7 @@ spn::rmgui::Textbox* textbox;
 spn::rmgui::Textbox* textbox2;
 
 spn::rmgui::UiManager* uim;
-spn::rmgui::UiEvent uie = {};
+spn::ui::UiEvent uie = {};
 
 
 void OnSliderValueChanged(int id, float value) {
@@ -108,7 +108,7 @@ void Init(float maxwidth, float maxheight)
 		knots[i].y = knots[i-1].y + knots[i].radius * sin(knots[i].theta);
 		knots[i].x = knots[i-1].x + knots[i].radius * cos(knots[i].theta);
 	}
-	UiScheme::GetInstance().LoadSchemeFile("../res/ui.scheme");
+	spn::ui::UiScheme::GetInstance().LoadSchemeFile("../res/ui.scheme");
 	uim = &UiManager::GetInstance();
 	slider = uim->CreateWidget<Slider>();
 	slider->SetId(100);
@@ -313,7 +313,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 
 void HandleInput(const SDL_Event* e)
 {
-	using namespace spn::rmgui;
+	using namespace spn::ui;
 	float x, y, dx, dy;
 	static float prvX = 0, prvY = 0;
 	int c1 = -1, c2 = -1, n1 = -1, n2 = -1;

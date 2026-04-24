@@ -1,5 +1,5 @@
-#ifndef _LABEL_H_
-#define _LABEL_H_
+#ifndef SPN_RMGUI_LABEL_H
+#define SPN_RMGUI_LABEL_H
 
 #include <iostream>
 #include <functional>
@@ -7,8 +7,8 @@
 
 #include <spn_canvas.h>
 #include <spn_image.h>
-#include <ui_scheme.h>
-#include <widget.h>
+#include <spn_ui_scheme.h>
+#include <rmgui/spn_rmgui_widget.h>
 
 namespace spn::rmgui {
 	class Label : public Widget
@@ -32,7 +32,7 @@ namespace spn::rmgui {
 		}
 		void Display(spn::Canvas* canvas) {
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance()
+				spn::ui::UiScheme::GetInstance()
 				.textColor
 			);
 			canvas->DrawCString(text.c_str(), x, y);

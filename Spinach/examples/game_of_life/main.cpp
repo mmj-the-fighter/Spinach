@@ -5,10 +5,10 @@
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
-#include <ui_event.h>
-#include <ui_event_translator.h>
-#include <ui_manager.h>
-#include <button.h>
+#include <spn_ui_event.h>
+#include <spn_ui_event_translator.h>
+#include <rmgui/spn_rmgui_ui_manager.h>
+#include <rmgui/spn_rmgui_button.h>
 
 
 constexpr int startx = 50;
@@ -203,20 +203,20 @@ void MarkBoard(int x, int y, bool occupy) {
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
-	spn::rmgui::UiEvent uie;
-	spn::rmgui::TranslateSdlEvent(sdlEvent, uie);
+	spn::ui::UiEvent uie;
+	spn::ui::TranslateSdlEvent(sdlEvent, uie);
 	uim->HandleUiEvent(uie);
 
 	using namespace spn::rmgui;
 	switch (uie.eventType) {
-	case UiEventType::MouseUp:
-		MarkBoard(uie.mouseX, uie.mouseY, (uie.mouseButton == MouseButton::Left));
+	case spn::ui::UiEventType::MouseUp:
+		MarkBoard(uie.mouseX, uie.mouseY, (uie.mouseButton == spn::ui::MouseButton::Left));
 		break;
-	case UiEventType::MouseDrag:
+	case spn::ui::UiEventType::MouseDrag:
 		MarkBoard(uie.mouseX, uie.mouseY, true);
 		break;
-	case UiEventType::MouseMove:
-		if (uie.mouseButton == MouseButton::Right) {
+	case spn::ui::UiEventType::MouseMove:
+		if (uie.mouseButton == spn::ui::MouseButton::Right) {
 			MarkBoard(uie.mouseX, uie.mouseY, false);
 		}
 		break;

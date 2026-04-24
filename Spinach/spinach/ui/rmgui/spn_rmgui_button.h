@@ -1,5 +1,5 @@
-#ifndef _BUTTON_H_
-#define _BUTTON_H_
+#ifndef SPN_RMGUI_BUTTON_H
+#define SPN_RMGUI_BUTTON_H
 
 #include <iostream>
 #include <functional>
@@ -7,8 +7,8 @@
 
 #include <spn_canvas.h>
 #include <spn_image.h>
-#include <ui_scheme.h>
-#include <widget.h>
+#include <spn_ui_scheme.h>
+#include <rmgui/spn_rmgui_widget.h>
 
 namespace spn::rmgui {
 	enum {
@@ -21,9 +21,9 @@ namespace spn::rmgui {
 	{
 	public:
 		Button() {
-			Subscribe(UiEventType::MouseDown);
-			Subscribe(UiEventType::MouseUp);
-			Subscribe(UiEventType::MouseMove);
+			Subscribe(spn::ui::UiEventType::MouseDown);
+			Subscribe(spn::ui::UiEventType::MouseUp);
+			Subscribe(spn::ui::UiEventType::MouseMove);
 		}
 		void SetCallback(std::function<void(int id)> onClickCallback = nullptr) {
 			onClickFn = onClickCallback;
@@ -43,15 +43,15 @@ namespace spn::rmgui {
 			text = s;
 		}
 
-		bool OnMouseDown(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseDown(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbDown(x, y);
 			}
 			return false;
 		}
 
-		bool OnMouseUp(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseUp(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbUp(x, y);
 			}
 			return false;
@@ -99,29 +99,29 @@ namespace spn::rmgui {
 			{
 			case BTN_PRESS:
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().buttonPressColor);
+					spn::ui::UiScheme::GetInstance().buttonPressColor);
 				canvas->DrawRectangle(x, y, x + w, y + h);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().textColor);
+					spn::ui::UiScheme::GetInstance().textColor);
 				canvas->DrawCString(text.c_str(), x + 12, y + 1);
 				break;
 			case BTN_HOVER:
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().buttonHoverColor);
+					spn::ui::UiScheme::GetInstance().buttonHoverColor);
 				canvas->DrawRectangle(x, y, x + w, y + h);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().textColor);
+					spn::ui::UiScheme::GetInstance().textColor);
 				canvas->DrawCString(text.c_str(), x + 8, y + 2);
 				break;
 			case BTN_RELEASE:
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().buttonReleaseColor);
+					spn::ui::UiScheme::GetInstance().buttonReleaseColor);
 				canvas->DrawRectangle(x, y, x + w, y + h);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance().textColor);
+					spn::ui::UiScheme::GetInstance().textColor);
 				canvas->DrawCString(text.c_str(), x + 8, y + 2);
 				break;
 			}

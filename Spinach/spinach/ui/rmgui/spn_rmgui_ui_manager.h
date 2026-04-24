@@ -1,10 +1,10 @@
-#ifndef UI_MANAGER_H
-#define UI_MANAGER_H
+#ifndef SPN_RMGUI_UI_MANAGER_H
+#define SPN_RMGUI_UI_MANAGER_H
 #include <memory>
 #include <vector>
 #include "../core/spn_canvas.h"
-#include "ui_event.h"
-#include "widget.h"
+#include "../spn_ui_event.h"
+#include "spn_rmgui_widget.h"
 
 namespace spn::rmgui {
 	class UiManager {
@@ -46,13 +46,13 @@ namespace spn::rmgui {
 		//	//std::cout << count;
 		//}
 
-		bool HandleUiEvent(UiEvent& uie) {
-			if (uie.eventType == UiEventType::None) {
+		bool HandleUiEvent(spn::ui::UiEvent& uie) {
+			if (uie.eventType == spn::ui::UiEventType::None) {
 				return false;
 			}
 
 			for (auto it = widgets.rbegin(); it != widgets.rend(); ++it) {
-				Widget* w = it->get();
+				spn::rmgui::Widget* w = it->get();
 				if (!w->IsSubscribed(uie.eventType)) {
 					continue;
 				}
@@ -64,25 +64,25 @@ namespace spn::rmgui {
 			return false;
 		}
 
-		bool DispatchToWidget(Widget& w, UiEvent& e) {
+		bool DispatchToWidget(spn::rmgui::Widget& w, spn::ui::UiEvent& e) {
 			switch (e.eventType) {
-			case UiEventType::MouseDown:
+			case spn::ui::UiEventType::MouseDown:
 				return w.OnMouseDown(e.mouseButton, e.mouseX, e.mouseY);
 
-			case UiEventType::MouseUp:
+			case spn::ui::UiEventType::MouseUp:
 				return w.OnMouseUp(e.mouseButton, e.mouseX, e.mouseY);
 
-			case UiEventType::MouseMove:
+			case spn::ui::UiEventType::MouseMove:
 				return w.OnMouseMove(e.mouseX, e.mouseY);
 
-			case UiEventType::MouseDrag:
+			case spn::ui::UiEventType::MouseDrag:
 				return w.OnMouseDrag(e.mouseX, e.mouseY);
 
-			case UiEventType::CharInput:
+			case spn::ui::UiEventType::CharInput:
 				return w.OnCharInput(e.character);
-			case UiEventType::ActionKeyDown:
+			case spn::ui::UiEventType::ActionKeyDown:
 				return w.OnActionKeyDown(e.keyCode);
-			case UiEventType::ActionKeyUp:
+			case spn::ui::UiEventType::ActionKeyUp:
 				return w.OnActionKeyUp(e.keyCode);
 			}
 

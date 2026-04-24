@@ -4,12 +4,12 @@
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
-#include <ui_event.h>
-#include <ui_event_translator.h>
-#include <ui_manager.h>
-#include <textbox.h>
-#include <button.h>
-#include <slider.h>
+#include <spn_ui_event.h>
+#include <spn_ui_event_translator.h>
+#include <rmgui/spn_rmgui_ui_manager.h>
+#include <rmgui/spn_rmgui_textbox.h>
+#include <rmgui/spn_rmgui_button.h>
+#include <rmgui/spn_rmgui_slider.h>
 
 
 #define MAXRESX 800
@@ -291,8 +291,8 @@ void HandleInput(const SDL_Event* sdlEvent) {
 		return;
 	}
 
-	spn::rmgui::UiEvent uie;
-	spn::rmgui::TranslateSdlEvent(sdlEvent, uie);
+	spn::ui::UiEvent uie;
+	spn::ui::TranslateSdlEvent(sdlEvent, uie);
 	uim->HandleUiEvent(uie);
 }
 

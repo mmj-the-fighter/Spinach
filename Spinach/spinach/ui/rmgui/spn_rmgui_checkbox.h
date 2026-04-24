@@ -1,21 +1,21 @@
-#ifndef _CHECKBOX_H_
-#define _CHECKBOX_H_
+#ifndef SPN_RMGUI_CHECKBOX_H
+#define SPN_RMGUI_CHECKBOX_H
 
 #include <iostream>
 #include <functional>
 
 #include <spn_canvas.h>
 #include <spn_image.h>
-#include <ui_scheme.h>
-#include <widget.h>
+#include <spn_ui_scheme.h>
+#include <rmgui/spn_rmgui_widget.h>
 
 namespace spn::rmgui {
 	class Checkbox : public Widget
 	{
 	public:
 		Checkbox() {
-			Subscribe(UiEventType::MouseDown);
-			Subscribe(UiEventType::MouseUp);
+			Subscribe(spn::ui::UiEventType::MouseDown);
+			Subscribe(spn::ui::UiEventType::MouseUp);
 		}
 		void SetCallback(std::function<void(int id, bool isChecked)> onCheckboxChangedCallback = nullptr) {
 			onCheckboxChangedFn = onCheckboxChangedCallback;
@@ -30,15 +30,15 @@ namespace spn::rmgui {
 		bool GetChecked() {
 			return isChecked;
 		}
-		bool OnMouseDown(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseDown(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbDown(x, y);
 			}
 			return false;
 		}
 
-		bool OnMouseUp(MouseButton button, int x, int y) {
-			if (button == MouseButton::Left) {
+		bool OnMouseUp(spn::ui::MouseButton button, int x, int y) {
+			if (button == spn::ui::MouseButton::Left) {
 				return OnLmbUp(x, y);
 			}
 			return false;
@@ -63,13 +63,13 @@ namespace spn::rmgui {
 		}
 		void Display(spn::Canvas* canvas) {
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance()
+				spn::ui::UiScheme::GetInstance()
 				.checkboxColor
 			);
 			canvas->DrawRectangle(x, y, x + sqSize, y + sqSize);
 			if (isChecked) {
 				canvas->SetPrimaryColorUint(
-					UiScheme::GetInstance()
+					spn::ui::UiScheme::GetInstance()
 					.checkboxFillColor
 				);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + sqSize - 2, y + sqSize - 2);
@@ -77,7 +77,7 @@ namespace spn::rmgui {
 			float tw = 0, th = 0;
 			canvas->GetCStringDisplaySize(labelText.c_str(), tw, th);
 			canvas->SetPrimaryColorUint(
-				UiScheme::GetInstance()
+				spn::ui::UiScheme::GetInstance()
 				.textColor
 			);
 			canvas->DrawCString(labelText.c_str(), x + sqSize + 4, y + (sqSize - th) / 2);
@@ -93,7 +93,7 @@ namespace spn::rmgui {
 		}
 	private:
 		bool IsPointInsideCb(int mx, int my) {
-			sqSize = UiScheme::GetInstance().checkboxSize;
+			sqSize = spn::ui::UiScheme::GetInstance().checkboxSize;
 			return (mx >= x) &&
 				(mx <= x + sqSize) &&
 				(my >= y) &&

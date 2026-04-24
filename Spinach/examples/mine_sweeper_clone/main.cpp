@@ -5,10 +5,10 @@
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
-#include <ui_event.h>
-#include <ui_event_translator.h>
-#include <ui_manager.h>
-#include <button.h>
+#include <spn_ui_event.h>
+#include <spn_ui_event_translator.h>
+#include <rmgui/spn_rmgui_ui_manager.h>
+#include <rmgui/spn_rmgui_button.h>
 #include <spn_rng.h>
 
 
@@ -438,13 +438,13 @@ void UpdateAndRender(spn::Canvas* canvas) {
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
-	using namespace spn::rmgui;
+	using namespace spn::ui;
 	if (lockInput) {
 		return;
 	}
 
 	UiEvent uie;
-	TranslateSdlEvent(sdlEvent, uie);
+	spn::ui::TranslateSdlEvent(sdlEvent, uie);
 	bool hasUiConsumedEvent = uim->HandleUiEvent(uie);
 	if (hasUiConsumedEvent) {
 		return;
