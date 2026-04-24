@@ -13,32 +13,6 @@
 
 namespace spn
 {
-	void SetUpdateAndRenderHandler(std::function<void(Canvas* canvas)>);
-	void SetInputHandler(std::function<void(const SDL_Event* sdlEvent)>);
-
-	SpinachCore::SpinachCore(unsigned int width, unsigned int height,
-		const char* resourcesDir,
-		std::function<void(Canvas* canvas)> updateAndRenderFn,
-		std::function<void(const SDL_Event* sdlEvent)> inputFn
-	) :
-		window(nullptr),
-		renderer(nullptr),
-		texture(nullptr),
-		canvas(nullptr),
-		font(nullptr),
-		lockFps(false)
-	{
-		#ifdef MSF_GIF_DEFINED
-			isRecording = false;
-			msfGifQuality = 16; //values allowed 1-16
-		#endif
-		SetTargetFramesPerSecond(DEFAULTFPS);
-		updateAndRenderHandler = updateAndRenderFn;
-		inputHandler = inputFn;
-		strcpy(appName, " ");
-		initializationResult = Init(width, height, resourcesDir);
-	}
-
 	SpinachCore::~SpinachCore()
 	{
 		Destroy();
@@ -52,14 +26,16 @@ namespace spn
 	}
 
 
-	int SpinachCore::Init(unsigned int width, unsigned int height, const char* resDir)
+	bool SpinachCore::Init(unsigned int width, unsigned int height, const char* fontDir)
 	{
-		userWantsToQuit = false;
+		SetTargetFramesPerSecond(DEFAULTFPS);
+		strcpy(appName, " ");
 
 		if (!SDL_Init(SDL_INIT_VIDEO))
 		{
-			std::cout << "Couldn't initialize SDL:" << SDL_GetError() << std::endl;
-			return 1;
+			std::cout << "Couldn't initialize SDL:" << SDL_GetError() << '\n';
+			initializationResult = 1;
+			return false;
 		}
 
 		if (!SDL_CreateWindowAndRenderer(
@@ -70,8 +46,9 @@ namespace spn
 			&window,
 			&renderer))
 		{
-			std::cout << "Couldn't create window or renderer:" << SDL_GetError() << std::endl;
-			return 2;
+			std::cout << "Couldn't create window or renderer:" << SDL_GetError() << '\n';
+			initializationResult = 2;
+			return false;
 		}
 
 		if (!SDL_TextInputActive(window))
@@ -86,23 +63,24 @@ namespace spn
 			height);
 		if (!texture)
 		{
-			std::cout << "Couldn't create streaming texture: " << SDL_GetError() << std::endl;
-			return 3;
+			std::cout << "Couldn't create streaming texture: " << SDL_GetError() << '\n';
+			initializationResult = 3;
+			return false;
 		}
-		std::string atlasName = resDir;
+		std::string atlasName = fontDir;
 		atlasName.append("TrueNoFontAtlas.ppm");
-		std::string csvName = resDir;
+		std::string csvName = fontDir;
 		csvName.append("TrueNoFontData.csv");
-
-		//std::string atlasName{ "res/TrueNoFontAtlas.ppm" };
-		//std::string csvName{ "res/TrueNoFontData.csv" };
 		font = new RFont(atlasName.c_str(), csvName.c_str());
 		if (!font->IsInitSucceded()){
-			return 4;
+			initializationResult = 4;
+			std::cout << "Couldn't create font from " << fontDir << '\n';
+			return false;
 		}
 		canvas = new Canvas(width, height);
 		canvas->SetFont(font);
-		return 0;
+		initializationResult = 0;
+		return true;
 	}
 
 	void SpinachCore::SetUpdateAndRenderHandler(std::function<void(Canvas*)> aUpdateAndRenderHandler)

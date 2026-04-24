@@ -6,8 +6,8 @@
 int main(int argc, char* argv[])
 {
 	Game game;
-	spn::SpinachCore sc(640, 480, "../res/");
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(640, 480, "../res/")) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;

@@ -60,11 +60,8 @@ int main(int argc, char* argv[])
 	svgImg.CreateFromSvg("../examples/res_for_examples/NAND_ANSI.svg", 100); 
 	profiler.End();
 
-	spn::SpinachCore sc(640, 480,"../res/"); //Note: 3rd argument is path rel. to build folder
-	
-	
-
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(640, 480, "../res/")) {
 		return 1;
 	}
 	

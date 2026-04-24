@@ -479,8 +479,8 @@ void HandleInput(const SDL_Event* sdlEvent) {
 
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(GAMERESOLUTIONX, GAMERESOLUTIONY, "../res/"); //Note: 3rd argument is path rel. to build folder
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(GAMERESOLUTIONX, GAMERESOLUTIONY, "../res/")) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;

@@ -108,7 +108,7 @@ void Init(float maxwidth, float maxheight)
 		knots[i].y = knots[i-1].y + knots[i].radius * sin(knots[i].theta);
 		knots[i].x = knots[i-1].x + knots[i].radius * cos(knots[i].theta);
 	}
-	UiScheme::GetInstance().LoadSchemeFile("../../res/ui.scheme");
+	UiScheme::GetInstance().LoadSchemeFile("../res/ui.scheme");
 	uim = &UiManager::GetInstance();
 	slider = uim->CreateWidget<Slider>();
 	slider->SetId(100);
@@ -347,15 +347,16 @@ void HandleInput(const SDL_Event* e)
 int main(int argc, char* argv[])
 {
 	Init(800, 600);
-	spn::SpinachCore sc(800, 600, "../res/", UpdateAndRender, HandleInput); //Note: 3rd argument is path rel. to build folder
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(800, 600, "../res/")) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;
 		return 1;
 	}
-	//sc.SetUpdateAndRenderHandler(UpdateAndRender);
-	//sc.SetInputHandler(HandleInput);	
+
+	sc.SetUpdateAndRenderHandler(UpdateAndRender);
+	sc.SetInputHandler(HandleInput);	
 	sc.SetWindowTitle("Parametric Locus Generator");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.SetTargetFramesPerSecond(30);

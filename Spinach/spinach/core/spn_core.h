@@ -19,24 +19,15 @@ namespace spn
 	class SpinachCore
 	{
 	public:
-		SpinachCore(unsigned int width, unsigned int height,
-			const char* resourcesDir,
-			std::function<void(Canvas* canvas)> updateAndRenderFn = nullptr,
-			std::function<void(const SDL_Event* sdlEvent)> inputFn = nullptr
-			);
+		SpinachCore() = default;
 		~SpinachCore();
+		bool Init(unsigned int width, unsigned int height, const char* fontDir);
 		void SetUpdateAndRenderHandler(std::function<void(Canvas* canvas)>);
 		void SetInputHandler(std::function<void(const SDL_Event* sdlEvent)>);
 		void MainLoop();
 		void RenderCanvas();
 		void SaveScreenShot(const char* fileName);
 		void WaitForEvents();
-		inline bool IsInitSucceded(){
-			return initializationResult == 0;
-		}
-		inline bool IsInitFailed(){
-			return initializationResult != 0;
-		}
 		inline int GetInitializationResult() {
 			return initializationResult;
 		}
@@ -57,29 +48,29 @@ namespace spn
 		inline void LockFps(bool flag) {
 			lockFps = flag;
 		};
+		void Destroy();
 	private:
 		char appName[MAX_APP_NAME_LEN + 1];
-		bool lockFps;
-		SDL_Window* window;
-		SDL_Renderer* renderer;
-		SDL_Texture* texture;
+		bool lockFps = false;
+		SDL_Window* window = nullptr;
+		SDL_Renderer* renderer = nullptr;
+		SDL_Texture* texture = nullptr;
 		Image image;
-		int initializationResult;
-		RFont* font;
-		Canvas *canvas;
-		unsigned int targetFramesPerSecond;
-		unsigned int targetMillisPerFrame;
-		bool userWantsToQuit;
-		std::function<void(Canvas* canvas)> updateAndRenderHandler;
-		std::function<void(const SDL_Event* sdlEvent)> inputHandler;
-		int Init(unsigned int width, unsigned int height, const char* resDir);
+		int initializationResult=0;
+		RFont* font=nullptr;
+		Canvas *canvas=nullptr;
+		unsigned int targetFramesPerSecond=0;
+		unsigned int targetMillisPerFrame=0;
+		bool userWantsToQuit=false;
+		std::function<void(Canvas* canvas)> updateAndRenderHandler=nullptr;
+		std::function<void(const SDL_Event* sdlEvent)> inputHandler=nullptr;
+		
 
-		void Destroy();
 #ifdef MSF_GIF_DEFINED
-		bool isRecording;
+		bool isRecording = false;
 		MsfGifState msfGifState;
-		int msfGifCentiSecondsPerFrame;
-		int msfGifQuality;
+		int msfGifCentiSecondsPerFrame=0;
+		int msfGifQuality=16;
 		void StartRecording();
 		void ProcessRecording();
 		void StopRecording(bool saveData);

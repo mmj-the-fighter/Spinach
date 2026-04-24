@@ -10,8 +10,8 @@ int main(int argc, char* argv[])
 	constexpr int imageWt = 640;
 	constexpr double aspectRatio = 16.0/9.0;
 	constexpr int imageHt = RayTracer::CalculateImageHeight(aspectRatio, imageWt);
-	spn::SpinachCore sc(imageWt, imageHt, "../res/"); //Note: 3rd argument is path rel. to build folder
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(imageWt, imageHt, "../res/")) {	//Note: 3rd argument is path rel. to build folder
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;

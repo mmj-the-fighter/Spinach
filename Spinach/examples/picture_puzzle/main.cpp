@@ -9,8 +9,8 @@
 
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, "../res/"); //Note: 3rd argument is path rel. to build folder
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, "../res/")) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;

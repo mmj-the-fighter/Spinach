@@ -146,13 +146,15 @@ void HandleInput(const SDL_Event* e) {
 
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(800, 600, "../res/", UpdateAndRender, HandleInput); //Note: 3rd argument is path rel. to build folder
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(800, 600, "../res/")) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;
 		return 1;
 	}
+	sc.SetUpdateAndRenderHandler(UpdateAndRender);
+	sc.SetInputHandler(HandleInput);
 	pCore = &sc;
 	sc.SetWindowTitle("Spinach Demo");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);

@@ -225,8 +225,8 @@ void HandleInput(const SDL_Event* sdlEvent) {
 
 int main(int argc, char* argv[])
 {
-	spn::SpinachCore sc(MAXRESX, MAXRESY, "../res/"); //Note: 3rd argument is path rel. to build folder
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(MAXRESX, MAXRESY, "../res/")) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;

@@ -5,8 +5,8 @@
 
 int main() {
 	Game game;
-	spn::SpinachCore sc(800, 600, "../res/");
-	if (sc.IsInitFailed()) {
+	spn::SpinachCore sc;
+	if (!sc.Init(800, 600, "../res/")) {
 		std::cout << "initialization failed with error "
 			<< sc.GetInitializationResult()
 			<< std::endl;
