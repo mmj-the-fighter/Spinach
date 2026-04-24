@@ -3,6 +3,9 @@
 #include "../common/spn_utils.h"
 #define MSF_GIF_IMPL
 #include "spn_core.h"
+#include "spn_canvas.h"
+#include "spn_image.h"
+#include "spn_rfont.h"
 
 
 //#define SHOWFRAMESTATS
@@ -79,6 +82,7 @@ namespace spn
 		}
 		canvas = new Canvas(width, height);
 		canvas->SetFont(font);
+		image = new Image();
 		initializationResult = 0;
 		return true;
 	}
@@ -284,9 +288,9 @@ namespace spn
 
 	void SpinachCore::SaveScreenShot(const char* fileName)
 	{
-		image.SetCanvas(canvas);
-		image.SaveAsPng(fileName);
-		image.SetCanvas(nullptr);
+		image->SetCanvas(canvas);
+		image->SaveAsPng(fileName);
+		image->SetCanvas(nullptr);
 	}
 
 	void SpinachCore::WaitForEvents()
@@ -352,6 +356,10 @@ namespace spn
 		if (window != nullptr) {
 			SDL_DestroyWindow(window);
 			window = nullptr;
+		}
+		if (image != nullptr) {
+			delete image;
+			image = nullptr;
 		}
 	}
 }

@@ -10,12 +10,13 @@
 #include "../external/msf_gif/msf_gif.h"
 #endif
 
-#include "spn_canvas.h"
-#include "spn_image.h"
-#include "spn_rfont.h"
 
 namespace spn
 {
+	class Canvas;
+	class RFont;
+	class Image;
+
 	class SpinachCore
 	{
 	public:
@@ -55,7 +56,7 @@ namespace spn
 		SDL_Window* window = nullptr;
 		SDL_Renderer* renderer = nullptr;
 		SDL_Texture* texture = nullptr;
-		Image image;
+		Image* image;
 		int initializationResult=0;
 		RFont* font=nullptr;
 		Canvas *canvas=nullptr;

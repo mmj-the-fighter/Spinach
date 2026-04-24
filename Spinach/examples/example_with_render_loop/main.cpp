@@ -8,7 +8,6 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	++frameNum;
 	spn::ProfilerLimitedScope scope(frameNum, 10, 40);
 	static int k = 1;
-	std::string str = std::to_string(canvas->GetLastFrameTime() * 1000);
 	unsigned char *pixBuffer = canvas->GetPixelBuffer();
 	int bytes = canvas->GetPixelDataLength();
 	int half = bytes / 2;

@@ -3,6 +3,7 @@
 
 #include <spn_canvas.h>
 #include <spn_core.h>
+#include <spn_image.h>
 
 #define MAX_JUMP_DELAY 0.15f
 #define MAX_JUMP_ACCELERATION 17.5f
