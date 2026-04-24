@@ -17,7 +17,7 @@ namespace spn
 	void SetInputHandler(std::function<void(const SDL_Event* sdlEvent)>);
 
 	SpinachCore::SpinachCore(unsigned int width, unsigned int height,
-		std::string resourcesDir,
+		const char* resourcesDir,
 		std::function<void(Canvas* canvas)> updateAndRenderFn,
 		std::function<void(const SDL_Event* sdlEvent)> inputFn
 	) :
@@ -32,12 +32,11 @@ namespace spn
 			isRecording = false;
 			msfGifQuality = 16; //values allowed 1-16
 		#endif
-		resourcesDirectory = resourcesDir;
 		SetTargetFramesPerSecond(DEFAULTFPS);
 		updateAndRenderHandler = updateAndRenderFn;
 		inputHandler = inputFn;
 		strcpy(appName, " ");
-		initializationResult = Init(width, height);
+		initializationResult = Init(width, height, resourcesDir);
 	}
 
 	SpinachCore::~SpinachCore()
@@ -53,7 +52,7 @@ namespace spn
 	}
 
 
-	int SpinachCore::Init(unsigned int width, unsigned int height)
+	int SpinachCore::Init(unsigned int width, unsigned int height, const char* resDir)
 	{
 		userWantsToQuit = false;
 
@@ -90,10 +89,9 @@ namespace spn
 			std::cout << "Couldn't create streaming texture: " << SDL_GetError() << std::endl;
 			return 3;
 		}
-		
-		std::string atlasName = resourcesDirectory;
+		std::string atlasName = resDir;
 		atlasName.append("TrueNoFontAtlas.ppm");
-		std::string csvName = resourcesDirectory;
+		std::string csvName = resDir;
 		csvName.append("TrueNoFontData.csv");
 
 		//std::string atlasName{ "res/TrueNoFontAtlas.ppm" };
@@ -360,6 +358,7 @@ namespace spn
 
 		if (texture != nullptr) {
 			SDL_DestroyTexture(texture);
+			texture = nullptr;
 		}
 
 		if (canvas != nullptr) {

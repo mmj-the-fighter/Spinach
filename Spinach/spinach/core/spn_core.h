@@ -4,7 +4,6 @@
 #define MSF_GIF_DEFINED
 #define MAX_APP_NAME_LEN 255
 #include <functional>
-#include <string>
 #include <SDL3/SDL.h>
 
 #ifdef MSF_GIF_DEFINED
@@ -21,7 +20,7 @@ namespace spn
 	{
 	public:
 		SpinachCore(unsigned int width, unsigned int height,
-			std::string resourcesDir = "res/",
+			const char* resourcesDir,
 			std::function<void(Canvas* canvas)> updateAndRenderFn = nullptr,
 			std::function<void(const SDL_Event* sdlEvent)> inputFn = nullptr
 			);
@@ -61,7 +60,6 @@ namespace spn
 	private:
 		char appName[MAX_APP_NAME_LEN + 1];
 		bool lockFps;
-		std::string resourcesDirectory;
 		SDL_Window* window;
 		SDL_Renderer* renderer;
 		SDL_Texture* texture;
@@ -74,7 +72,7 @@ namespace spn
 		bool userWantsToQuit;
 		std::function<void(Canvas* canvas)> updateAndRenderHandler;
 		std::function<void(const SDL_Event* sdlEvent)> inputHandler;
-		int Init(unsigned int width, unsigned int height);
+		int Init(unsigned int width, unsigned int height, const char* resDir);
 
 		void Destroy();
 #ifdef MSF_GIF_DEFINED
