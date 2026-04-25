@@ -424,7 +424,7 @@ namespace spn
 			w = 0;
 			h = 0;
 		}
-		int textHeight = font->GetCellHeight();
+		int textHeight = font->GetCharHeight();
 		unsigned char c;
 		int textWidth = 0;
 		for (int i = 0; (c = text[i]) != '\0'; i++) {
