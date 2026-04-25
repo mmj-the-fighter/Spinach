@@ -175,36 +175,25 @@ namespace spn::rmgui {
 			return false;
 		}
 		void Display(spn::Canvas* canvas) {
-			canvas->SetPrimaryColorUint(
-				spn::ui::UiScheme::GetInstance().sliderTrackColor);
+			auto& scheme = spn::ui::UiScheme::GetInstance();
+			canvas->SetPrimaryColorUint(scheme.sliderTrackColor);
 			canvas->DrawRectangle(x, y, x + w, y + h);
 			canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + h - 2);
 			if (isHover) {
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance().sliderKnobColor);
+				canvas->SetPrimaryColorUint(scheme.sliderKnobColor);
 				canvas->DrawRectangle(knobx, knoby, knobx + knobw, knoby + h);
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance().sliderKnobHoverColor);
+				canvas->SetPrimaryColorUint(scheme.sliderKnobHoverColor);
 				canvas->DrawFilledRectangle(
 					knobx + 2, knoby + 2, knobx + knobw - 2, knoby + knobh - 2);
 			}
 			else {
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance().sliderKnobColor);
+				canvas->SetPrimaryColorUint(scheme.sliderKnobColor);
 				canvas->DrawFilledRectangle(knobx, knoby, knobx + knobw, knoby + h);
 			}
-
-
-
-			canvas->SetPrimaryColorUint(
-				spn::ui::UiScheme::GetInstance().sliderTextColor);
+			canvas->SetPrimaryColorUint(scheme.sliderTextColor);
 			float tw = 0, th = 0;
 			canvas->GetCStringDisplaySize(text.c_str(), tw, th);
-
-			canvas->SetPrimaryColorUint(
-				spn::ui::UiScheme::GetInstance()
-				.textColor
-			);
+			canvas->SetPrimaryColorUint(scheme.textColor);
 			canvas->DrawCString(text.c_str(), x + (w - tw) / 2, y + (h - th) / 2);
 			canvas->DrawCString(labelText.c_str(), x + w + 4, y + (h - th) / 2);
 		}

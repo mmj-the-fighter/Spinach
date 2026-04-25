@@ -45,7 +45,7 @@ float sampleTime = 0;
 bool canSample = true;
 bool clearPoints = false;
 bool hideUi = false;
-spn::rmgui::Slider* slider;
+spn::rmgui::Slider* slider1;
 spn::rmgui::Slider* slider2;
 spn::rmgui::Slider* slider3;
 spn::rmgui::Slider* slider4;
@@ -110,16 +110,16 @@ void Init(float maxwidth, float maxheight)
 	}
 	spn::ui::UiScheme::GetInstance().LoadSchemeFile("../res/ui.scheme");
 	uim = &UiManager::GetInstance();
-	slider = uim->CreateWidget<Slider>();
-	slider->SetId(100);
-	slider->SetPosition(16, 300);
-	slider->SetSize(128, 32);
-	slider->SetDecimalPlaces(0);
-	slider->SetRangeAndValue(0, 80, speedMultiplier);
-	slider->SetCallback(OnSliderValueChanged);
-	slider->CalculateKnobPosition();
-	slider->SetSensitivity(0.5);
-	slider->SetCStringLabel("AnimSpeed");
+	slider1 = uim->CreateWidget<Slider>();
+	slider1->SetId(100);
+	slider1->SetPosition(16, 300);
+	slider1->SetSize(128, 32);
+	slider1->SetDecimalPlaces(0);
+	slider1->SetRangeAndValue(0, 80, speedMultiplier);
+	slider1->SetCallback(OnSliderValueChanged);
+	slider1->CalculateKnobPosition();
+	slider1->SetSensitivity(0.5);
+	slider1->SetCStringLabel("AnimSpeed");
 
 	slider2 = uim->CreateWidget<Slider>();
 	slider2->SetId(200);

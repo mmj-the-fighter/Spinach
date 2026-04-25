@@ -191,12 +191,11 @@ namespace spn::rmgui {
 				textScrollNeeded = false;
 			}
 
+			auto& scheme = spn::ui::UiScheme::GetInstance();
 			int cwidth = canvas->GetWidth();
 			int cheight = canvas->GetHeight();
 			canvas->SetClippingRectangle(x, y, w, h);
-			canvas->SetPrimaryColorUint(
-				spn::ui::UiScheme::GetInstance().textColor);
-
+			canvas->SetPrimaryColorUint(scheme.textColor);
 			canvas->DrawCStringInRange(text.c_str(), scrollOffset, text.size(), x + 4, y);
 
 			if (HasFocus()) {
@@ -230,13 +229,10 @@ namespace spn::rmgui {
 					caretShowFrames = 30;
 					caretHideFrames = 30;
 				}
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance().buttonHoverColor);
-
+				canvas->SetPrimaryColorUint(scheme.buttonHoverColor);
 			}
 			else {
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance().buttonReleaseColor);
+				canvas->SetPrimaryColorUint(scheme.buttonReleaseColor);
 			}
 			canvas->DrawRectangle(x, y, x + w, y + h);
 			canvas->SetClippingRectangle(0, 0, cwidth, cheight);

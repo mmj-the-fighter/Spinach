@@ -115,46 +115,30 @@ namespace spn::rmgui {
 			if (options.size() == 0) {
 				return;
 			}
+			auto& scheme = spn::ui::UiScheme::GetInstance();
 			switch (state)
 			{
 			case DD_EXPANDED:
 			{
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance().buttonReleaseColor
-				);
+				canvas->SetPrimaryColorUint(scheme.buttonReleaseColor);
 				canvas->DrawRectangle(x, y, x + w, y + ch);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + ch - 2);
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance()
-					.textColor
-				);
+				canvas->SetPrimaryColorUint(scheme.textColor);
 				canvas->DrawCString(options[selectedIndex].c_str(), x + 12, y + 1);
 				int i = 1;
 				for (const auto& opt : options) {
 					if (i - 1 == hoveredIndex) {
-						canvas->SetPrimaryColorUint(
-							spn::ui::UiScheme::GetInstance()
-							.buttonHoverColor
-						);
+						canvas->SetPrimaryColorUint(scheme.buttonHoverColor);
 						canvas->DrawRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
 						canvas->DrawFilledRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
-						canvas->SetPrimaryColorUint(
-							spn::ui::UiScheme::GetInstance()
-							.textColor
-						);
+						canvas->SetPrimaryColorUint(scheme.textColor);
 						canvas->DrawCString(options[hoveredIndex].c_str(), x + 12, y + (i * ch) + 1);
 					}
 					else {
-						canvas->SetPrimaryColorUint(
-							spn::ui::UiScheme::GetInstance()
-							.buttonReleaseColor
-						);
+						canvas->SetPrimaryColorUint(scheme.buttonReleaseColor);
 						canvas->DrawRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
 						canvas->DrawFilledRectangle(x, y + i * ch, x + w, y + (i + 1) * ch);
-						canvas->SetPrimaryColorUint(
-							spn::ui::UiScheme::GetInstance()
-							.textColor
-						);
+						canvas->SetPrimaryColorUint(scheme.textColor);
 						canvas->DrawCString(options[i - 1].c_str(), x + 12, y + (i * ch) + 1);
 					}
 					++i;
@@ -162,16 +146,10 @@ namespace spn::rmgui {
 			}
 			break;
 			case DD_NORMALSIZE:
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance()
-					.buttonReleaseColor
-				);
+				canvas->SetPrimaryColorUint(scheme.buttonReleaseColor);
 				canvas->DrawRectangle(x, y, x + w, y + ch);
 				canvas->DrawFilledRectangle(x + 2, y + 2, x + w - 2, y + ch - 2);
-				canvas->SetPrimaryColorUint(
-					spn::ui::UiScheme::GetInstance()
-					.textColor
-				);
+				canvas->SetPrimaryColorUint(scheme.textColor);
 				canvas->DrawCString(options[selectedIndex].c_str(), x + 12, y + 1);
 				break;
 			}
