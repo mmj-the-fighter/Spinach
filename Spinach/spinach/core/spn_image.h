@@ -5,6 +5,11 @@ namespace spn
 {
 	class Canvas;
 
+	enum ScaleMethod {
+		NEAREST,
+		BLERP
+	};
+
 	class Image
 	{
 	public:
@@ -30,10 +35,16 @@ namespace spn
 			canvas = aCanvas;
 		}
 		Image* Clone();
-
+		void Scale(ScaleMethod sm, Image* dstImage);
 	private:
 		Canvas *canvas;
+		inline float lerp(float s, float e, float t) {
+			return s + t * (e - s);
+		}
+		void ScaleNearest(Image* dstImage);
+		void ScaleBlerp(Image* dstImage);
 		void DestroyCanvas();
+
 	};
 }
 

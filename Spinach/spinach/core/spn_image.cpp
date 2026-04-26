@@ -1,5 +1,8 @@
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <cmath>
+
 #include "spn_image.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -291,6 +294,115 @@ namespace spn
 		stbi_write_png(fileName, width, height, 4, png_data, pitch);
 		delete[] png_data;
 		return true;
+	}
+
+	void Image::Scale(ScaleMethod sm, Image* dstImage) {
+		switch (sm) {
+		case NEAREST:
+			return ScaleNearest(dstImage);
+		case BLERP:
+			return ScaleBlerp(dstImage);
+		}
+	}
+
+	// Copyright and License for this function 
+	// SPDX-License-Identifier: MIT
+	// SPDX-FileCopyrightText: 2026 Meitar Basson
+	// Gist:https://gist.github.com/meitarBass/ff224ae087e1ffd3a1b50b74b6721e1a
+	void Image::ScaleBlerp(Image* destination) {
+		int target_width = destination->GetCanvas()->GetWidth();
+		int target_height = destination->GetCanvas()->GetHeight();
+		if (target_width <= 0 || target_height <= 0) {
+			return;
+		}
+		unsigned char* srcPix = canvas->GetPixelBuffer();
+		unsigned char* dstPix = destination->GetCanvas()->GetPixelBuffer();
+		int width = canvas->GetWidth();
+		int height = canvas->GetHeight();
+		float scale_x = width / static_cast<float>(target_width);
+		float scale_y = height / static_cast<float>(target_height);
+		for (int y_d = 0; y_d < target_height; y_d++) {
+			for (int x_d = 0; x_d < target_width; x_d++) {
+				float scaled_x_pos = (x_d + 0.5f) * scale_x - 0.5f;
+				float scaled_y_pos = (y_d + 0.5f) * scale_y - 0.5f;
+				int x0 = (int)floorf(scaled_x_pos);
+				int y0 = (int)floorf(scaled_y_pos);
+				int x1 = x0 + 1;
+				int y1 = y0 + 1;
+
+				float tx = scaled_x_pos - x0;
+				float ty = scaled_y_pos - y0;
+				int ix0 = (int)std::clamp(x0, 0, width - 1);
+				int iy0 = (int)std::clamp(y0, 0, height - 1);
+				int ix1 = (int)std::clamp(x1, 0, width - 1);
+				int iy1 = (int)std::clamp(y1, 0, height - 1);
+				int p00i = iy0 * width + ix0;
+				float p00b = srcPix[p00i*4];
+				float p00g = srcPix[p00i*4+1];
+				float p00r = srcPix[p00i*4+2];
+				
+				int p10i = iy0 * width + ix1;
+				float p10b = srcPix[p10i*4];
+				float p10g = srcPix[p10i*4+1];
+				float p10r = srcPix[p10i*4+2];
+
+				int p01i = iy1 * width + ix0;
+				float p01b = srcPix[p01i*4];
+				float p01g = srcPix[p01i*4+1];
+				float p01r = srcPix[p01i*4+2];
+				
+				int p11i = iy1 * width + ix1;
+				float p11b = srcPix[p11i*4];
+				float p11g = srcPix[p11i*4+1];
+				float p11r = srcPix[p11i*4+2];
+				float topr = lerp(p00r, p10r, tx);
+				float topg = lerp(p00g, p10g, tx);
+				float topb = lerp(p00b, p10b, tx);
+				float bottomr = lerp(p01r, p11r, tx);
+				float bottomg = lerp(p01g, p11g, tx);
+				float bottomb = lerp(p01b, p11b, tx);
+				float finalr = lerp(topr, bottomr, ty);
+				float finalg = lerp(topg, bottomg, ty);
+				float finalb = lerp(topb, bottomb, ty);
+				int pixi = y_d * target_width + x_d;
+				dstPix[pixi*4] = (unsigned char)(finalb + 0.5f);
+				dstPix[pixi*4+1] = (unsigned char)(finalg + 0.5f);
+				dstPix[pixi*4+2] = (unsigned char)(finalr + 0.5f);
+				dstPix[pixi*4+3] = 255;
+			}
+		}
+	}
+
+	// Copyright and License for this function 
+	// SPDX-License-Identifier: MIT
+	// SPDX-FileCopyrightText: 2026 Meitar Basson
+	// Gist:https://gist.github.com/meitarBass/ff224ae087e1ffd3a1b50b74b6721e1a
+	void Image::ScaleNearest(Image* destination) {
+		int target_width = destination->GetCanvas()->GetWidth();
+		int target_height = destination->GetCanvas()->GetHeight();
+		if (target_width <= 0 || target_height <= 0) {
+			return;
+		}
+		unsigned char* srcPix = canvas->GetPixelBuffer();
+		unsigned char* dstPix = destination->GetCanvas()->GetPixelBuffer();
+		int width = canvas->GetWidth();
+		int height = canvas->GetHeight();
+		float scale_x = width / static_cast<float>(target_width);
+		float scale_y = height / static_cast<float>(target_height);
+		for (int y_d = 0; y_d < target_height; y_d++) {
+			for (int x_d = 0; x_d < target_width; x_d++) {
+				float src_x = (x_d + 0.5f) * scale_x - 0.5f;
+				float src_y = (y_d + 0.5f) * scale_y - 0.5f;
+				int x_scaled = static_cast<int>(std::round(std::clamp(src_x, 0.0f, width - 1.0f)));
+				int y_scaled = static_cast<int>(std::round(std::clamp(src_y, 0.0f, height - 1.0f)));
+				int dst = y_d * target_width + x_d;
+				int src = y_scaled * width + x_scaled;
+				dstPix[dst*4] = srcPix[src*4];
+				dstPix[dst*4+1] = srcPix[src*4+1];
+				dstPix[dst*4+2] = srcPix[src*4+2];
+				dstPix[dst*4+3] = 255;
+			}
+		}
 	}
 }
 

@@ -44,6 +44,8 @@ int main(int argc, char* argv[])
 
 	img.CreateFromPng("../examples/res_for_examples/road.png"); //path relative to the build folder
 	spn::Image* sepiaImage = img.Clone();
+	std::cout << sepiaImage->GetCanvas()->GetWidth() << " " 
+		<< sepiaImage->GetCanvas()->GetHeight() << "\n";
 	
 
 	//Begin, End Paradigm
@@ -53,8 +55,14 @@ int main(int argc, char* argv[])
 	ApplySepiaFilter(sepiaImage);
 	profiler.End();
 	
+	profiler.Begin(134);
+	spn::Image* scaledImage = new spn::Image(256, 256);
+	//img.Scale(spn::BLERP, scaledImage);
+	//scaledImage->SaveAsPng("blerp.png");
+	img.Scale(spn::NEAREST, scaledImage);
+	//scaledImage->SaveAsPng("near.png");
+	profiler.End();
 
-	
 	profiler.Begin(1002);
 	spn::Image svgImg;
 	svgImg.CreateFromSvg("../examples/res_for_examples/NAND_ANSI.svg", 100); 
@@ -66,6 +74,14 @@ int main(int argc, char* argv[])
 	}
 	
 	spn::Canvas* canvas = sc.GetCanvas();
+
+	canvas->Clear();
+	canvas->DrawImage(scaledImage, 10, 10);
+	canvas->DrawCString("after scaling down to 256x256", 100, 400);
+	canvas->DrawCString("Click for next", 100, 400 - 40);
+	sc.RenderCanvas();
+	sc.WaitForEvents();
+
 
 	float minx = 30;
 	float miny = 30;
@@ -113,6 +129,9 @@ int main(int argc, char* argv[])
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 
+
+
+	delete scaledImage;
 	delete sepiaImage;
 	profiler.Print();
 	return 0;
