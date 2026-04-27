@@ -192,7 +192,7 @@ namespace spn {
 
 #define PROFILE_REST_OF_THE_CURRENT_BLOCK(tag)  spn::ProfilerScope object123(tag);
 #define PROFILE_REST_OF_THE_CURRENT_BLOCK_IF_TAG_WITHIN_BOUNDS(tag,lb,ub)  spn::ProfilerLimitedScope object123(tag,lb,ub);
-#define PRINT_PROFILER_OUTPUT spn::Profiler::GetInstance().Print();
+#define PROFILE_PRINT_PROFILER_OUTPUT spn::Profiler::GetInstance().Print();
 }
 
 #endif
