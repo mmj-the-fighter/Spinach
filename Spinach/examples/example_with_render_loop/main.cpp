@@ -6,27 +6,27 @@
 void UpdateAndRender(spn::Canvas* canvas) {
 	static int frameNum = 0;
 	++frameNum;
-	spn::ProfilerLimitedScope scope(frameNum, 10, 40);
-	static int k = 1;
+	PROFILE_REST_OF_THE_CURRENT_BLOCK_IF_TAG_WITHIN_BOUNDS(frameNum,30,40)
+	static unsigned char k = 0;
 	unsigned char *pixBuffer = canvas->GetPixelBuffer();
 	int bytes = canvas->GetPixelDataLength();
 	int half = bytes / 2;
-	for (int i = 0; i < bytes; i += 4) {
-		if (i < half){
-			pixBuffer[i] = 128 + k;
-			pixBuffer[i + 1] = 0;
-			pixBuffer[i + 2] = 0;
-			pixBuffer[i + 3] = 255;
-		}
-		else{
-			pixBuffer[i] = 0;
-			pixBuffer[i + 1] = 128 + k;
-			pixBuffer[i + 2] = 0;
-			pixBuffer[i + 3] = 255;
-		}
+	for (int i = 0; i < half; i += 4) {
+		pixBuffer[i] = 32 + k;
+		pixBuffer[i + 1] = 0;
+		pixBuffer[i + 2] = 0;
+		pixBuffer[i + 3] = 255;
+	}
+
+	for (int i = half; i < bytes; i += 4) {
+		pixBuffer[i] = 0;
+		pixBuffer[i + 1] = 32 + k;
+		pixBuffer[i + 2] = 0;
+		pixBuffer[i + 3] = 255;
 	}
 	++k;
-	k = k % 254;
+	k %= 220;
+	
 	canvas->DisplayFps(100, 100);
 }
 
@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
 	sc.SetTargetFramesPerSecond(30);
 	sc.LockFps(true);
 	sc.MainLoop();
-	spn::Profiler::GetInstance().Print();
+	//spn::Profiler::GetInstance().Print();
+	PROFILE_PRINT_PROFILER_OUTPUT
 	return 0;
 }
