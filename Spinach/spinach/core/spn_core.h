@@ -3,6 +3,8 @@
 
 #define MSF_GIF_DEFINED
 #define MAX_APP_NAME_LEN 255
+#define DEFAULTFPS 64
+
 #include <functional>
 #include <SDL3/SDL.h>
 
@@ -45,7 +47,7 @@ namespace spn
 			strcpy(appName, text);
 			SDL_SetWindowTitle(window, text);
 		}
-		void SetTargetFramesPerSecond(unsigned int aFps);
+		void SetTargetFramesPerSecond(int aFps);
 		inline void LockFps(bool flag) {
 			lockFps = flag;
 		};
@@ -69,6 +71,8 @@ namespace spn
 
 #ifdef MSF_GIF_DEFINED
 		bool isRecording = false;
+		int recordingPingPongFrame = DEFAULTFPS / 2;
+		int recordingPingPongMaxFrameCount = DEFAULTFPS / 2;
 		MsfGifState msfGifState;
 		int msfGifCentiSecondsPerFrame=0;
 		int msfGifQuality=16;

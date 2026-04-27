@@ -10,7 +10,7 @@
 
 //#define SHOWFRAMESTATS
 #define SINGLEMEMCOPY
-#define DEFAULTFPS 64
+
 
 
 
@@ -21,9 +21,9 @@ namespace spn
 		Destroy();
 	}
 
-	void SpinachCore::SetTargetFramesPerSecond(unsigned int aFps)
+	void SpinachCore::SetTargetFramesPerSecond(int aFps)
 	{
-		int fps = (aFps == 0) ? 1 : aFps;
+		int fps = std::clamp(aFps, 1, 1000);
 		targetFramesPerSecond = fps;
 		targetMillisPerFrame = 1000.0f / static_cast<float>(fps);
 	}
@@ -224,35 +224,36 @@ namespace spn
 		msf_gif_begin(&msfGifState, canvas->GetWidth(), canvas->GetHeight());
 		std::cout << "Recording started...\n";
 		isRecording = true;
+		recordingPingPongMaxFrameCount = targetFramesPerSecond / 2;
+		if (recordingPingPongMaxFrameCount == 0) {
+			recordingPingPongMaxFrameCount = 1;
+		}
+		recordingPingPongFrame = recordingPingPongMaxFrameCount;
 	}
 
 	void SpinachCore::ProcessRecording() {
 		//////////////////////////////////
-		//This portion of the code does a ping pong of the value DEFAULTFPS/2
-		//between -DEFAULTFPS/2 to DEFAULTFPS/2
 		//for giving a flickering notification of recording
-		static int frames = DEFAULTFPS / 2;
-		static int maxFrames = DEFAULTFPS / 2;
-		static const int framesCap = 25;
-		if (frames == maxFrames) {
+		if (recordingPingPongFrame == recordingPingPongMaxFrameCount) {
 			SDL_SetWindowTitle(window, "Recording...");
 		}
-		else if (frames == -1) {
+		else if (recordingPingPongFrame == 0) {
 			SDL_SetWindowTitle(window, " ");
 		}
-		--frames;
-		if (frames < -maxFrames) {
-			frames = maxFrames;
+		--recordingPingPongFrame;
+		if (recordingPingPongFrame < -recordingPingPongMaxFrameCount) {
+			recordingPingPongFrame = recordingPingPongMaxFrameCount;
 		}
 		//////////////////////////////////////////////
 		//This portion of the code set the gif rendering speed and 
 		//records the frame
+		static const int framesCap = 25;
 		float frameTime = canvas->GetLastFrameTime();
 		if (frameTime < 0.0001) {
-				frames = maxFrames;
+				recordingPingPongFrame = recordingPingPongMaxFrameCount;
 		}
 		else {
-			maxFrames = std::min(
+			recordingPingPongMaxFrameCount = std::min(
 				static_cast<int>(1.0 / frameTime),
 				framesCap
 			);
