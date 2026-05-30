@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <spn_rng.h>
+#include <bluenoise.h>
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
@@ -15,7 +16,7 @@
 
 #define MAXRESX 800
 #define MAXRESY 600
-#define NOISEBUFSIZE 256
+#define NOISEIMGSIZE 32
 
 spn::Image sourceImage;
 spn::Image* workingImage;
@@ -28,7 +29,7 @@ bool inputEnabled = true;
 //allocate temporary buffers
 unsigned char* fullyFilteredImagePixels;
 unsigned char* horizontallyFilteredImagePixels;
-
+unsigned char noisebuffer[NOISEIMGSIZE * NOISEIMGSIZE];
 
 spn::rmgui::Slider* threshSlider;
 struct RoiRect{
@@ -165,7 +166,7 @@ void Filter(bool noFiltering)
 
 	//init horizontal and vertical kernels (for box filtering)
 	float filterValue = 1.0f / (float)kernelSize;
-	float noiseAmount = 20 + rng.GenerateFloat()*40;
+	float noiseAmount = 20 + rng.GenerateFloat() * 15;
 	std::cout << "noise amount " << noiseAmount << "\n";
 	RoiRect& roi = curRoi;
 
@@ -254,13 +255,28 @@ void Filter(bool noFiltering)
 			unsigned char* buffer = fullyFilteredImagePixels +
 				(width * channels * y) +
 				(x * channels);
-			float displ = (2.0 * rng.GenerateFloat() - 1.0) * noiseAmount;
-			float brs = *buffer + displ;
-			float grs = *(buffer + 1) + displ;
-			float rrs = *(buffer + 2) + displ;
-			brs = std::clamp(brs, 0.0f, 255.0f);
-			grs = std::clamp(grs, 0.0f, 255.0f);
-			rrs = std::clamp(rrs, 0.0f, 255.0f);
+			float brs, grs, rrs;
+			if (SampleBlueNoise(noisebuffer, NOISEIMGSIZE, x, y)) {
+				float displ = (2.0 * rng.GenerateFloat() - 1.0) * noiseAmount;
+				brs = *buffer + displ;
+				grs = *(buffer + 1) + displ;
+				rrs = *(buffer + 2) + displ;
+				brs = std::clamp(brs, 0.0f, 255.0f);
+				grs = std::clamp(grs, 0.0f, 255.0f);
+				rrs = std::clamp(rrs, 0.0f, 255.0f);
+			}
+			else {
+				brs = *buffer;
+				grs = *(buffer + 1);
+				rrs = *(buffer + 2);
+			}
+			//float displ = (2.0 * rng.GenerateFloat() - 1.0) * noiseAmount;
+			//float brs = *buffer + displ;
+			//float grs = *(buffer + 1) + displ;
+			//float rrs = *(buffer + 2) + displ;
+			//brs = std::clamp(brs, 0.0f, 255.0f);
+			//grs = std::clamp(grs, 0.0f, 255.0f);
+			//rrs = std::clamp(rrs, 0.0f, 255.0f);
 
 			unsigned char* outbuffer =
 				fullyFilteredImagePixels +
@@ -327,6 +343,10 @@ void InitUi() {
 
 
 void InitApp() {
+	spn::Profiler::GetInstance().Begin(954);
+	GenerateBlueNoiseMitchell(noisebuffer, NOISEIMGSIZE, 512, 2);
+	spn::Profiler::GetInstance().End();
+
 	sourceImage.CreateFromPng("../examples/res_for_examples/road.png");
 	workingImage = sourceImage.Clone();
 	int channels = 4;
