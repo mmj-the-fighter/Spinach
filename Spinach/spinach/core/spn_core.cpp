@@ -74,6 +74,10 @@ namespace spn
 		atlasName.append("TrueNoFontAtlas.ppm");
 		std::string csvName = fontDir;
 		csvName.append("TrueNoFontData.csv");
+		std::string logoName = fontDir;
+		logoName.append("logo.ppm");
+		logoImage = new spn::Image();
+		logoImage->CreateFromPpmRaw(logoName.c_str());
 		font = new RFont(atlasName.c_str(), csvName.c_str());
 		if (!font->IsInitSucceded()){
 			initializationResult = 4;
@@ -110,7 +114,11 @@ namespace spn
 		int bufferBytesLength = height * pitch;
 		unsigned char* pixels = canvas->GetPixelBuffer();
 		userWantsToQuit = false;
-		
+		bool canDisplayLogo = true;
+		if (logoImage != nullptr && logoImage->GetCanvas() == nullptr) {
+			canDisplayLogo = false;
+		}
+		int logoWaitFrames = targetFramesPerSecond * 5;
 		while (!userWantsToQuit)
 		{
 			frameStartTime = SDL_GetTicks();
@@ -125,6 +133,7 @@ namespace spn
 #endif
 					break;
 				case SDL_EVENT_KEY_DOWN:
+					canDisplayLogo = false;
 					switch (event.key.key)
 					{
 					case SDLK_ESCAPE:
@@ -166,7 +175,18 @@ namespace spn
 			}
 
 			if (nullptr != updateAndRenderHandler) {
-				updateAndRenderHandler(canvas);
+				if (!canDisplayLogo) {
+					updateAndRenderHandler(canvas);
+				}
+				else {
+					float x = canvas->GetWidth()/2 - logoImage->GetCanvas()->GetWidth()/2;
+					float y = canvas->GetHeight()/2 - logoImage->GetCanvas()->GetHeight()/2;
+					canvas->Clear();
+					canvas->DrawImage(logoImage, x, y);
+					if (--logoWaitFrames <= 0) {
+						canDisplayLogo = false;
+					}
+				}
 			}
 
 #ifdef MSF_GIF_DEFINED
@@ -361,6 +381,10 @@ namespace spn
 		if (image != nullptr) {
 			delete image;
 			image = nullptr;
+		}
+		if (logoImage != nullptr) {
+			delete logoImage;
+			logoImage = nullptr;
 		}
 	}
 }

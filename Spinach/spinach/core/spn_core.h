@@ -59,6 +59,7 @@ namespace spn
 		SDL_Renderer* renderer = nullptr;
 		SDL_Texture* texture = nullptr;
 		Image* image;
+		Image* logoImage;
 		int initializationResult=0;
 		RFont* font=nullptr;
 		Canvas *canvas=nullptr;
