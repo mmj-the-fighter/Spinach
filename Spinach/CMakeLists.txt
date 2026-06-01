@@ -19,6 +19,7 @@ set(RAYTRACING_EXAMPLE raytracing_example)
 set(PICTUREPUZZLE_EXAMPLE picture_puzzle)
 set(WIREFRAME_RENDERING_EXAMPLE wireframe_rendering)
 set(LOGARITHMIC_SPIRAL logarithmic_spiral)
+set(TICTACTOE tictactoe)
 
 
 # Platform-specific flags
@@ -478,3 +479,37 @@ target_include_directories(${LOGARITHMIC_SPIRAL} PRIVATE
 
 
 target_link_libraries(${LOGARITHMIC_SPIRAL} PRIVATE SDL3::SDL3)
+
+
+# 12. tic-tac-toe spiral
+# Collect C++ source files
+file(GLOB_RECURSE TICTACTOE_CPP_SRC CONFIGURE_DEPENDS
+    examples/tictactoe/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE TICTACTOE_CPP_H CONFIGURE_DEPENDS
+	examples/tictactoe/*.h
+)
+
+# Create the executable
+add_executable(	${TICTACTOE}
+	${TICTACTOE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${TICTACTOE_CPP_H} 
+	${SPINACH_H}
+	${NANOSVG_H}
+)
+target_include_directories(${TICTACTOE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	spinach/external/nanosvg
+	examples/tictactoe
+)
+
+
+target_link_libraries(${TICTACTOE} PRIVATE SDL3::SDL3)
+
