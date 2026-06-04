@@ -7,3 +7,7 @@ road.png: (copyright Manoj M J)
 danger.png (ai generated image)(chatgpt)
 
 flag.png (ai generated image)(chatgpt)
+
+o_player.png (ai generated image)(chatgpt)
+
+x_player.png (ai generated image)(chatgpt)
