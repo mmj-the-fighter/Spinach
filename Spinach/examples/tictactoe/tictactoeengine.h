@@ -239,9 +239,8 @@ private:
        int trialBoard[10]; 
 
        //for each hashcode
-       for (int i = 0; i < HASHCODESSIZE; i++) {
-           int h = canonicalHashCodes[i];
-           if (h == HASHNOTSET) {
+       for (int i = 1; i < HASHCODESSIZE; i++) {
+           if (canonicalHashCodes[i] == HASHNOTSET) {
                DecodeHashcode(i, trialBoard);
                int minHash = HASHCODESSIZE+1;
                int generatedHashCodeArray[8];
@@ -249,8 +248,10 @@ private:
                    //transform the booard
                    int transformedBoard[10];
                    for (int k = 0; k < 9; k++) {
-                       int index = dihedralGroupPermutationTable[j][k];
-                       transformedBoard[k] = trialBoard[index];
+                       //int index = dihedralGroupPermutationTable[j][k];
+                       //transformedBoard[k] = trialBoard[index];
+                       transformedBoard[k] = 
+                           trialBoard[dihedralGroupPermutationTable[j][k] ];
                    }
                    int currentHash = ComputeHashcode(transformedBoard);
                    if (currentHash < minHash) {
@@ -259,8 +260,9 @@ private:
                    generatedHashCodeArray[j] = currentHash;
                }
                for (int j = 0; j < 8; j++) {
-                   int index = generatedHashCodeArray[j];
-                   canonicalHashCodes[index] = minHash;
+                   //int index = generatedHashCodeArray[j];
+                   //canonicalHashCodes[index] = minHash;
+                   canonicalHashCodes[ generatedHashCodeArray[j] ] = minHash;
                }
            }
        }
