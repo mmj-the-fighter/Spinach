@@ -65,7 +65,7 @@ bool waitingForTimer;
 
 void Restart() {
     gameResult = ONGOING;
-    ttt.Init(rand()%12345);
+    ttt.Restart();
     turn = ttt.Toss() ? HUMAN : COMPUTER;
     for (int i = 0; i < 9; i++) {
         board[i] = EMPTY;
@@ -92,6 +92,7 @@ void InitApp() {
     buttonY = startY + maxheight + buttonHeight / 2;
     oImage.CreateFromPng("../examples/res_for_examples/o_player.png");
     baseImage.CreateSolidColorBlockImage(width, height, 255, 255, 255, 1.0);
+    ttt.Init(rand() % 12345);
     Restart();
 }
 
@@ -208,5 +209,6 @@ int main(int argc, char* argv[])
     sc.SetTargetFramesPerSecond(30);
     sc.LockFps(true);
     sc.MainLoop();
+    ttt.DeInit();
     return 0;
 }
