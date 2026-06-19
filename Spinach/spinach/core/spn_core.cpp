@@ -74,10 +74,14 @@ namespace spn
 		atlasName.append("TrueNoFontAtlas.ppm");
 		std::string csvName = fontDir;
 		csvName.append("TrueNoFontData.csv");
+
+#ifdef  DISPLAY_SPINACH_LOGO
 		std::string logoName = fontDir;
 		logoName.append("logo.ppm");
 		logoImage = new spn::Image();
 		logoImage->CreateFromPpmRaw(logoName.c_str());
+#endif
+
 		font = new RFont(atlasName.c_str(), csvName.c_str());
 		if (!font->IsInitSucceded()){
 			initializationResult = 4;
@@ -114,11 +118,13 @@ namespace spn
 		int bufferBytesLength = height * pitch;
 		unsigned char* pixels = canvas->GetPixelBuffer();
 		userWantsToQuit = false;
+#ifdef  DISPLAY_SPINACH_LOGO
 		bool canDisplayLogo = true;
 		if (logoImage != nullptr && logoImage->GetCanvas() == nullptr) {
 			canDisplayLogo = false;
 		}
 		int logoWaitFrames = targetFramesPerSecond * 5;
+#endif
 		while (!userWantsToQuit)
 		{
 			frameStartTime = SDL_GetTicks();
@@ -133,7 +139,9 @@ namespace spn
 #endif
 					break;
 				case SDL_EVENT_KEY_DOWN:
+#ifdef  DISPLAY_SPINACH_LOGO
 					canDisplayLogo = false;
+#endif
 					switch (event.key.key)
 					{
 					case SDLK_ESCAPE:
@@ -173,14 +181,14 @@ namespace spn
 					break;
 				}
 			}
-
+#ifdef  DISPLAY_SPINACH_LOGO
 			if (nullptr != updateAndRenderHandler) {
 				if (!canDisplayLogo) {
 					updateAndRenderHandler(canvas);
 				}
 				else {
-					float x = canvas->GetWidth()/2 - logoImage->GetCanvas()->GetWidth()/2;
-					float y = canvas->GetHeight()/2 - logoImage->GetCanvas()->GetHeight()/2;
+					float x = canvas->GetWidth() / 2 - logoImage->GetCanvas()->GetWidth() / 2;
+					float y = canvas->GetHeight() / 2 - logoImage->GetCanvas()->GetHeight() / 2;
 					canvas->Clear();
 					canvas->DrawImage(logoImage, x, y);
 					if (--logoWaitFrames <= 0) {
@@ -188,6 +196,11 @@ namespace spn
 					}
 				}
 			}
+#else
+			if (nullptr != updateAndRenderHandler) {
+				updateAndRenderHandler(canvas);
+			}
+#endif
 
 #ifdef MSF_GIF_DEFINED
 			if (isRecording) {
@@ -382,9 +395,11 @@ namespace spn
 			delete image;
 			image = nullptr;
 		}
+#ifdef  DISPLAY_SPINACH_LOGO
 		if (logoImage != nullptr) {
 			delete logoImage;
 			logoImage = nullptr;
 		}
+#endif
 	}
 }

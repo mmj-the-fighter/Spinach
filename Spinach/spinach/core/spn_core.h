@@ -1,6 +1,7 @@
 #ifndef SPN_CORE_H
 #define SPN_CORE_H
 
+//#define DISPLAY_SPINACH_LOGO
 #define MSF_GIF_DEFINED
 #define MAX_APP_NAME_LEN 255
 #define DEFAULTFPS 64
@@ -59,7 +60,9 @@ namespace spn
 		SDL_Renderer* renderer = nullptr;
 		SDL_Texture* texture = nullptr;
 		Image* image;
+#ifdef  DISPLAY_SPINACH_LOGO
 		Image* logoImage;
+#endif
 		int initializationResult=0;
 		RFont* font=nullptr;
 		Canvas *canvas=nullptr;
