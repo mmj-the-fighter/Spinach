@@ -2,21 +2,22 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <spn_rng.h>
-#include <bluenoise.h>
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
+#include <spn_collision_utils.h>
 #include <spn_ui_event.h>
 #include <spn_ui_event_translator.h>
 #include <rmgui/spn_rmgui_ui_manager.h>
 #include <rmgui/spn_rmgui_textbox.h>
 #include <rmgui/spn_rmgui_button.h>
 #include <rmgui/spn_rmgui_slider.h>
+#include <rmgui/spn_rmgui_dropdown.h>
+#include "imgprc.h"
 
 #define MAXRESX 800
 #define MAXRESY 600
-#define NOISEIMGSIZE 32
+
 
 spn::Image sourceImage;
 spn::Image* workingImage;
@@ -24,107 +25,57 @@ spn::rmgui::Button* doFilterButton;
 spn::rmgui::Button* showOriginalButton;
 spn::rmgui::Button* autoThreshButton;
 spn::rmgui::Textbox* kernelSizeTextBox;
+spn::rmgui::Dropdown* algoDropdown;
 spn::rmgui::UiManager* uim;
 bool inputEnabled = true;
-//allocate temporary buffers
-unsigned char* fullyFilteredImagePixels;
-unsigned char* horizontallyFilteredImagePixels;
-unsigned char noisebuffer[NOISEIMGSIZE * NOISEIMGSIZE];
 
 spn::rmgui::Slider* threshSlider;
-struct RoiRect{
-	int x0;
-	int y0;
-	int x1;
-	int y1;
-};
-
 RoiRect curRoi;
 bool buildingRoi = false;
-spn::RandomGen& rng = spn::RandomGen::GetInstance();
 
-/*
 
-Thresholding partitions the the image into black and white
-
-Pixels having intensity less than the threshold intensity
-will become black
-
-And pixels having intensity greater than or equal to threshold
-will become white
-
-The threshold intensity has a minimum value of 0
-and a maximum value of 255
-
-Automatic threshold demonstrated here is the
-average intensity of the image
-
-Note that the intensity calculation used
-here is an approximation
-
-*/
-
-void Threshold(float thresh) {
-	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
-	unsigned char* dstImg = workingImage->GetCanvas()->GetPixelBuffer();
-	
-	int n = sourceImage.GetCanvas()->GetNumOfPixels();
-	for (int i = 0; i < n; ++i)
-	{
-		int b = *srcImg;
-		int g = *(srcImg + 1);
-		int r = *(srcImg + 2);
-		float intensity = (float)((b + g + r)) / 3.0f;
-
-		if (intensity < thresh)
-		{
-			*dstImg++ = 0;
-			*dstImg++ = 0;
-			*dstImg++ = 0;
-			*dstImg++ = 255;
-		}
-		else
-		{
-			*dstImg++ = b;
-			*dstImg++ = g;
-			*dstImg++ = r;
-			*dstImg++ = 255;
-		}
-		srcImg += 4;
-	}
+bool IsRoiDiscardable(const RoiRect r, int x, int y, int w, int h) {
+	return
+		std::abs((r.x0 - r.x1) * (r.y0 - r.y1)) < 4L
+		||
+		!spn::CheckCollision(r.x0, r.y0, r.x1, r.y1, x, y, x + w, y + h);
 }
 
-void AutoThreshold() {
-	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
-	float sum = 0;
-	int count = 0;
-	int n = sourceImage.GetCanvas()->GetNumOfPixels();
-	for (int i = 0; i < n; ++i)
-	{
-		int b = *srcImg;
-		int g = *(srcImg + 1);
-		int r = *(srcImg + 2);
-		float intensity = (float)((b + g + r)) / 3.0f;
-		sum += intensity;
-		++count;
-		srcImg += 4;
+void ThresholdSeperation(float threshold) {
+	spn::Canvas* srcCanvas = sourceImage.GetCanvas();
+	int w = srcCanvas->GetWidth();
+	int h = srcCanvas->GetHeight();
+	int chn = srcCanvas->GetChannels();
+	if (IsRoiDiscardable(curRoi, 0, 0, w, h)) {
+		std::cout << "Roi invalid. right click for full window. left click and drag for region\n";
+		return;
 	}
-	float averageIntensity = sum / (float)count;
-	//Threshold(averageIntensity);
-	threshSlider->SetRangeAndValue(0, 255, averageIntensity);
+	Threshold(workingImage->GetCanvas()->GetPixelBuffer(),
+		sourceImage.GetCanvas()->GetPixelBuffer(),
+		w,h,chn,
+		curRoi,
+		threshold
+	);
+}
+void AutoThreshold() {
+	float t = GetAvgIntensity(sourceImage.GetCanvas()->GetPixelBuffer(),
+		sourceImage.GetCanvas()->GetNumOfPixels());
+	threshSlider->SetRangeAndValue(0, 255, t);
 	threshSlider->CalculateKnobPosition();
 }
+
 
 void OnSliderValueChanged(int id, float value) {
 	int i;
 	switch (id) {
 	case 100:
-		Threshold(value);
+		ThresholdSeperation(value);
 		break;
 	}
 }
 
-void Filter(bool noFiltering)
+
+void NoisedBlur(bool noFiltering)
 {	
 	int i, j;
 	int x, y;
@@ -138,6 +89,11 @@ void Filter(bool noFiltering)
 	if (noFiltering) {
 		std::cout << "Restoring the original image\n";
 		memcpy(dstImg, srcImg, width * height * channels);
+		return;
+	}
+
+	if (IsRoiDiscardable(curRoi, 0, 0, width, height)) {
+		std::cout << "Roi invalid. right click for full window. left click and drag for region\n";
 		return;
 	}
 	
@@ -161,6 +117,7 @@ void Filter(bool noFiltering)
 	}
 	spn::ProfilerScope prof(kernelSize);
 	inputEnabled = false;
+	
 	std::cout << "Kernel size: " << kernelSize << std::endl;
 	int halfKernelSize = kernelSize / 2;
 
@@ -169,128 +126,25 @@ void Filter(bool noFiltering)
 	float noiseAmount = 20 + rng.GenerateFloat() * 15;
 	std::cout << "noise amount " << noiseAmount << "\n";
 	RoiRect& roi = curRoi;
-
-
-
-	//apply filter horizontally
-	for (y = 0; y < height; ++y) {
-		for (x = 0; x < width; ++x) {
-			if (y < roi.y0 || y > roi.y1 || x < roi.x0 || x > roi.x1) continue;
-			float bs = 0.0;
-			float gs = 0.0;
-			float rs = 0.0;
-			
-			for (i = -halfKernelSize; i <= halfKernelSize; ++i) {
-				int sampleLocationX = std::clamp(x + i, 0, width - 1);
-				unsigned char* buffer = srcImg +
-					(width * channels * y) +
-					(sampleLocationX * channels);
-				bs += filterValue * *buffer;
-				gs += filterValue * *(buffer + 1);
-				rs += filterValue * *(buffer + 2);
-			}
-			unsigned char* outbuffer =
-				horizontallyFilteredImagePixels +
-				(width * channels * y) +
-				(x * channels);
-			*outbuffer = bs;
-			*(outbuffer + 1) = gs;
-			*(outbuffer + 2) = rs;
-			*(outbuffer + 3) = 255; //alpha
-		}
-	}
-
-	bool nop = false;
-
-	//apply filter vertically
-	for (y = 0; y < height; ++y) {
-		for (x = 0; x < width; ++x) {
-			if (y < roi.y0 || y > roi.y1 || x < roi.x0 || x > roi.x1) nop=true;
-			if (nop) {
-				unsigned char* buffer = srcImg +
-					(width * channels * y) +
-					(x * channels);
-				unsigned char* outbuffer =
-					fullyFilteredImagePixels +
-					(width * channels * y) +
-					(x * channels);
-				*outbuffer = *buffer;
-				*(outbuffer + 1) = *(buffer + 1);
-				*(outbuffer + 2) = *(buffer + 2);
-				*(outbuffer + 3) = 255; //alpha
-				nop = false;
-				continue;
-			}
-			float bs = 0.0;
-			float gs = 0.0;
-			float rs = 0.0;
-			for (i = -halfKernelSize; i <= halfKernelSize; ++i) {
-				int sampleLocationY = std::clamp(y + i, 0, height - 1);
-				unsigned char* buffer =
-					horizontallyFilteredImagePixels +
-					(width * channels * sampleLocationY) +
-					(x * channels);
-				bs += filterValue * *buffer;
-				gs += filterValue * *(buffer + 1);
-				rs += filterValue * *(buffer + 2);
-			}
-
-			unsigned char* outbuffer =
-				fullyFilteredImagePixels +
-				(width * channels * y) +
-				(x * channels);
-
-			*outbuffer = bs;
-			*(outbuffer + 1) = gs;
-			*(outbuffer + 2) = rs;
-			*(outbuffer + 3) = 255; //alpha
-		}
-	}
-
-
-	//add noise
-	for (y = 0; y < height; ++y) {
-		for (x = 0; x < width; ++x) {
-			if (y < roi.y0 || y > roi.y1 || x < roi.x0 || x > roi.x1) continue;
-			unsigned char* buffer = fullyFilteredImagePixels +
-				(width * channels * y) +
-				(x * channels);
-			float brs, grs, rrs;
-			if (SampleBlueNoise(noisebuffer, NOISEIMGSIZE, x, y)) {
-				float displ = (2.0 * rng.GenerateFloat() - 1.0) * noiseAmount;
-				brs = *buffer + displ;
-				grs = *(buffer + 1) + displ;
-				rrs = *(buffer + 2) + displ;
-				brs = std::clamp(brs, 0.0f, 255.0f);
-				grs = std::clamp(grs, 0.0f, 255.0f);
-				rrs = std::clamp(rrs, 0.0f, 255.0f);
-			}
-			else {
-				brs = *buffer;
-				grs = *(buffer + 1);
-				rrs = *(buffer + 2);
-			}
-			//float displ = (2.0 * rng.GenerateFloat() - 1.0) * noiseAmount;
-			//float brs = *buffer + displ;
-			//float grs = *(buffer + 1) + displ;
-			//float rrs = *(buffer + 2) + displ;
-			//brs = std::clamp(brs, 0.0f, 255.0f);
-			//grs = std::clamp(grs, 0.0f, 255.0f);
-			//rrs = std::clamp(rrs, 0.0f, 255.0f);
-
-			unsigned char* outbuffer =
-				fullyFilteredImagePixels +
-				(width * channels * y) +
-				(x * channels);
-			*outbuffer = brs;
-			*(outbuffer + 1) = grs;
-			*(outbuffer + 2) = rrs;
-			*(outbuffer + 3) = 255; //alpha
-		}
-	}
-
 	
+	Blur(smoothedImagePixels, srcImg, 
+		width, height, channels, 
+		curRoi, kernelSize);
+	int choice = algoDropdown->GetOption();
 
+	if (choice == 0) {
+		std::cout << "Blue Noise\n";
+		BlueNoise(fullyFilteredImagePixels, smoothedImagePixels,
+			width, height, channels,
+			curRoi, noiseAmount);
+	}
+	else {
+		std::cout << "White Noise\n";
+		WhiteNoise(fullyFilteredImagePixels, smoothedImagePixels,
+			width, height, channels,
+			curRoi, noiseAmount);
+	}
+	
 	//change the dest image to be filtered
 	memcpy(dstImg, fullyFilteredImagePixels, width * height * channels);
 	inputEnabled = true;
@@ -300,12 +154,30 @@ void Filter(bool noFiltering)
 void InitUi() {
 	using namespace spn::rmgui;
 	uim = &UiManager::GetInstance();
+
+	algoDropdown = uim->CreateWidget<Dropdown>();
+	algoDropdown->SetPosition(MAXRESX - 250 - 2, 100);
+	algoDropdown->AddOption("Blue Noise");
+	algoDropdown->AddOption("White Noise");
+	algoDropdown->SetSize(128, 32);
+	algoDropdown->SetId(100);
+	algoDropdown->SetCallback([=](int id, int selected) {
+		if (id != 100) return;
+		if (inputEnabled) {
+			NoisedBlur(false);
+		}
+
+		});
+
+
+	
 	doFilterButton = uim->CreateWidget<Button>();
 	doFilterButton->SetPosition(80, MAXRESY-50);
 	doFilterButton->SetSize(128, 32);
-	doFilterButton->SetString("Blur");
+	doFilterButton->SetString("Blur + Noise");
 	doFilterButton->SetCallback([=](int id) {
-		Filter(false);
+		NoisedBlur(false);
+		//EdgeDetectFilter(false);
 		});
 
 	showOriginalButton = uim->CreateWidget<Button>();
@@ -313,7 +185,8 @@ void InitUi() {
 	showOriginalButton->SetSize(128, 32);
 	showOriginalButton->SetString("Show Original");
 	showOriginalButton->SetCallback([=](int id) {
-		Filter(true);
+		NoisedBlur(true);
+		//EdgeDetectFilter(true);
 		});
 
 	autoThreshButton = uim->CreateWidget<Button>();
@@ -342,9 +215,9 @@ void InitUi() {
 }
 
 
+
 void InitApp() {
 	spn::Profiler::GetInstance().Begin(954);
-	GenerateBlueNoiseMitchell(noisebuffer, NOISEIMGSIZE, 512, 2);
 	spn::Profiler::GetInstance().End();
 
 	sourceImage.CreateFromPng("../examples/res_for_examples/road.png");
@@ -354,18 +227,15 @@ void InitApp() {
 	int height = sourceImage.GetCanvas()->GetHeight();
 
 	//allocate temporary buffers
-	fullyFilteredImagePixels = new unsigned char[width * height * channels];
-	horizontallyFilteredImagePixels = new unsigned char[width * height * channels];
 	curRoi.x0 = 0;
 	curRoi.y0 = 0;
 	curRoi.x1 = width;
 	curRoi.y1 = height;
-	
+	ImgPrcInit(width, height, channels);
 }
 
 void DestroyApp() {
-	delete[] fullyFilteredImagePixels;
-	delete[] horizontallyFilteredImagePixels;
+	ImgPrcDeInit();
 }
 
 
