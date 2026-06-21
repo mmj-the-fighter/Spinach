@@ -210,6 +210,7 @@ void InitUi() {
 		char buffer[256];
 		spn::GetFilenameFromCurrentTime(buffer, "ImgProcExample", ".png");
 		SaveWorkingImage(buffer);
+		std::cout << "Image saved: " << buffer << '\n';
 		});
 
 	kernelSizeTextBox = uim->CreateWidget<Textbox>();
