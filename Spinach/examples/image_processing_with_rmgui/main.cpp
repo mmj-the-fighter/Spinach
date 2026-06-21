@@ -5,6 +5,7 @@
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
+#include <spn_utils.h>
 #include <spn_collision_utils.h>
 #include <spn_ui_event.h>
 #include <spn_ui_event_translator.h>
@@ -24,6 +25,7 @@ spn::Image* workingImage;
 spn::rmgui::Button* doFilterButton;
 spn::rmgui::Button* showOriginalButton;
 spn::rmgui::Button* autoThreshButton;
+spn::rmgui::Button* saveButton;
 spn::rmgui::Textbox* kernelSizeTextBox;
 spn::rmgui::Dropdown* algoDropdown;
 spn::rmgui::UiManager* uim;
@@ -33,6 +35,9 @@ spn::rmgui::Slider* threshSlider;
 RoiRect curRoi;
 bool buildingRoi = false;
 
+void SaveWorkingImage(char* buffer) {
+	workingImage->SaveAsPng(buffer);
+}
 
 bool IsRoiDiscardable(const RoiRect r, int x, int y, int w, int h) {
 	return
@@ -197,6 +202,16 @@ void InitUi() {
 		AutoThreshold();
 		});
 
+	saveButton = uim->CreateWidget<Button>();
+	saveButton->SetPosition(80 + 140 + 140 + 140, MAXRESY - 50);
+	saveButton->SetSize(128, 32);
+	saveButton->SetString("Save");
+	saveButton->SetCallback([=](int id) {
+		char buffer[256];
+		spn::GetFilenameFromCurrentTime(buffer, "ImgProcExample", ".png");
+		SaveWorkingImage(buffer);
+		});
+
 	kernelSizeTextBox = uim->CreateWidget<Textbox>();
 	kernelSizeTextBox->SetPosition(10, MAXRESY-50);
 	kernelSizeTextBox->SetSize(64, 30);
@@ -308,6 +323,7 @@ void HandleInput(const SDL_Event* sdlEvent) {
 	}
 	uim->HandleUiEvent(uie);
 }
+
 
 
 
