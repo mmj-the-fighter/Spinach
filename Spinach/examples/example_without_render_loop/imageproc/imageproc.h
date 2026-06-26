@@ -6,6 +6,8 @@
 
 void ApplySepiaFilter(spn::Image *image);
 
+void ApplyHalfToning(spn::Image *image);
+
 
 
 #endif 

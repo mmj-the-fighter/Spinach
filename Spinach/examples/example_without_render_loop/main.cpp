@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
 
 	img.CreateFromPng("../examples/res_for_examples/road.png"); //path relative to the build folder
 	spn::Image* sepiaImage = img.Clone();
+	spn::Image* halfToneImage = img.Clone();
 	std::cout << sepiaImage->GetCanvas()->GetWidth() << " " 
 		<< sepiaImage->GetCanvas()->GetHeight() << "\n";
 	
@@ -53,15 +54,9 @@ int main(int argc, char* argv[])
 	profiler.SetMillisAsTimeUnit();
 	profiler.Begin(1001);   // tag = 1001
 	ApplySepiaFilter(sepiaImage);
+	ApplyHalfToning(halfToneImage);
 	profiler.End();
 	
-	profiler.Begin(134);
-	spn::Image* scaledImage = new spn::Image(256, 256);
-	//img.Scale(spn::BLERP, scaledImage);
-	//scaledImage->SaveAsPng("blerp.png");
-	img.Scale(spn::NEAREST, scaledImage);
-	//scaledImage->SaveAsPng("near.png");
-	profiler.End();
 
 	profiler.Begin(1002);
 	spn::Image svgImg;
@@ -75,12 +70,6 @@ int main(int argc, char* argv[])
 	
 	spn::Canvas* canvas = sc.GetCanvas();
 
-	canvas->Clear();
-	canvas->DrawImage(scaledImage, 10, 10);
-	canvas->DrawCString("after scaling down to 256x256", 100, 400);
-	canvas->DrawCString("Click for next", 100, 400 - 40);
-	sc.RenderCanvas();
-	sc.WaitForEvents();
 
 
 	float minx = 30;
@@ -123,15 +112,23 @@ int main(int argc, char* argv[])
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 	
+	canvas->Clear();
 	canvas->DrawImage(sepiaImage,0,0);
 	canvas->DrawCString("after applying sepia filter", 100, 400);
 	canvas->DrawCString("Click to exit", 100, 400-40);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
 
+	canvas->Clear();
+	canvas->DrawImage(halfToneImage, 0, 0);
+	canvas->DrawCString("after applying halftoning", 100, 400);
+	canvas->DrawCString("Click to exit", 100, 400 - 40);
+	sc.RenderCanvas();
+	sc.WaitForEvents();
+	halfToneImage->SaveAsPng("hf");
 
 
-	delete scaledImage;
+	delete halfToneImage;
 	delete sepiaImage;
 	profiler.Print();
 	return 0;
