@@ -20,6 +20,7 @@ set(PICTUREPUZZLE_EXAMPLE picture_puzzle)
 set(WIREFRAME_RENDERING_EXAMPLE wireframe_rendering)
 set(LOGARITHMIC_SPIRAL logarithmic_spiral)
 set(TICTACTOE tictactoe)
+set(RAYCASTING_EXAMPLE raycasting_example)
 
 
 # Platform-specific flags
@@ -346,7 +347,7 @@ target_include_directories(${BIRD_FLIGHT} PRIVATE
 target_link_libraries(${BIRD_FLIGHT} PRIVATE SDL3::SDL3)
 
 
-#8. ray tracing example
+#9. ray tracing example
 # Collect C++ source files
 file(GLOB_RECURSE RAYTRACING_CPP_SRC CONFIGURE_DEPENDS
     examples/raytracing_example/*.cpp
@@ -381,7 +382,7 @@ target_include_directories(${RAYTRACING_EXAMPLE} PRIVATE
 target_link_libraries(${RAYTRACING_EXAMPLE} PRIVATE SDL3::SDL3)
 
 
-#9. picture puzzle example
+#10. picture puzzle example
 # Collect C++ source files
 file(GLOB_RECURSE PICTUREPUZZLE_CPP_SRC CONFIGURE_DEPENDS
     examples/picture_puzzle/*.cpp
@@ -413,7 +414,7 @@ target_include_directories(${PICTUREPUZZLE_EXAMPLE} PRIVATE
 target_link_libraries(${PICTUREPUZZLE_EXAMPLE} PRIVATE SDL3::SDL3)
 
 
-#10. wireframe rendering example
+#11. wireframe rendering example
 # Collect C++ source files
 file(GLOB_RECURSE WIREFRAME_RENDERING_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
 	examples/wireframe_rendering/*.cpp
@@ -448,7 +449,7 @@ target_include_directories(${WIREFRAME_RENDERING_EXAMPLE} PRIVATE
 target_link_libraries(${WIREFRAME_RENDERING_EXAMPLE} PRIVATE SDL3::SDL3)
 
 
-# 11. logarithmic spiral
+# 12. logarithmic spiral
 # Collect C++ source files
 file(GLOB_RECURSE LOGARITHMIC_SPIRAL_CPP_SRC CONFIGURE_DEPENDS
     examples/logarithmic_spiral/*.cpp
@@ -481,7 +482,7 @@ target_include_directories(${LOGARITHMIC_SPIRAL} PRIVATE
 target_link_libraries(${LOGARITHMIC_SPIRAL} PRIVATE SDL3::SDL3)
 
 
-# 12. tic-tac-toe spiral
+# 13. tic-tac-toe 
 # Collect C++ source files
 file(GLOB_RECURSE TICTACTOE_CPP_SRC CONFIGURE_DEPENDS
     examples/tictactoe/*.cpp
@@ -512,4 +513,35 @@ target_include_directories(${TICTACTOE} PRIVATE
 
 
 target_link_libraries(${TICTACTOE} PRIVATE SDL3::SDL3)
+
+
+# 14. raycasting example 
+# Collect C++ source files
+file(GLOB_RECURSE RAYCASTING_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
+    examples/raycasting_example/*.cpp
+)
+
+# Collect headers 
+file(GLOB_RECURSE RAYCASTING_EXAMPLE_CPP_H CONFIGURE_DEPENDS
+	examples/raycasting_example/*.h
+)
+
+# Create the executable
+add_executable(	${RAYCASTING_EXAMPLE}
+	${RAYCASTING_EXAMPLE_CPP_SRC}
+	${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${RAYCASTING_EXAMPLE_CPP_H} 
+	${SPINACH_H}
+)
+target_include_directories(${RAYCASTING_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+	examples/raycasting_example
+)
+
+
+target_link_libraries(${RAYCASTING_EXAMPLE} PRIVATE SDL3::SDL3)
 
