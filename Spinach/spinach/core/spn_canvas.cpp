@@ -145,6 +145,36 @@ namespace spn
 		}
 	}
 
+	//AI generated code
+	void Canvas::DrawVLine(int x, int y0, int y1)
+	{
+		if (x < 0 || x >= width) {
+			return;
+		}
+			
+		if (y0 > y1) {
+			std::swap(y0, y1);
+		}
+			
+		if (y0 < 0) {
+			y0 = 0;
+		}
+			
+		if (y1 >= height) {
+			y1 = height - 1;
+		}
+		
+		unsigned char* loc = pixBuffer + y0 * pitch + x * 4;
+		int count = y1 - y0 + 1;
+		while (count--)
+		{
+			*loc = primaryColorB;
+			*(loc + 1) = primaryColorG;
+			*(loc + 2) = primaryColorR;
+			loc += pitch;
+		}
+	}
+
 	void Canvas::DrawLine(int x0, int y0, int x1, int y1)
 	{
 		if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
