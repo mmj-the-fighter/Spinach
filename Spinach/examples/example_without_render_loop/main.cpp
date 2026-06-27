@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 	canvas->DrawCString("Click to exit", 100, 400 - 40);
 	sc.RenderCanvas();
 	sc.WaitForEvents();
-	halfToneImage->SaveAsPng("hf");
+	//halfToneImage->SaveAsPng("hf");
 
 
 	delete halfToneImage;
