@@ -38,9 +38,10 @@ public:
         return state;
     }
 
-    int NextInt(int maxExclusive)
-    {
-        return static_cast<int>(Next() % maxExclusive);
+    //NextInt fix by Claude
+    int NextInt(int maxExclusive) {
+        unsigned int r = Next();
+        return static_cast<int>((static_cast<unsigned long long>(r) * maxExclusive) >> 32);
     }
 
 private:
@@ -56,6 +57,10 @@ public:
             board[i] = EMPTY;
         }
         board[9] = 0;
+        moveNo = 0;
+        //for (int i = 0; i < 18; i++) {
+        //    std::cout << rng.NextInt(4) << std::endl;
+        //}
     }
 
 	void Init(int seed) {
@@ -70,6 +75,8 @@ public:
 	bool PlayHumanMove(int index) {
         if (index>=0 && index<9 && board[index] == EMPTY && board[9] < 9) {
             board[index] = HUMAN;
+            //std::cout << moveNo << " Human played at " << index << '\n';
+            ++moveNo;
             ++board[9];
             return true;
         }
@@ -78,17 +85,24 @@ public:
         }
 	}
 
+
 	int PlayAiMove() {
         int index = FindTheBestAiMove();
         if (index != INVALID) {
             board[index] = COMPUTER;
             ++board[9];
+            //std::cout << moveNo << " AI played at " << index << '\n';
+            ++moveNo;
             return index;
         }
         else {
             return INVALID;
         }
 	}
+
+    inline int GetMoveNo() {
+        return moveNo;
+    }
 
     bool Toss() {
         return rng.NextInt(2) == 1;
@@ -227,6 +241,7 @@ private:
                6,3,0
            }  
        };
+       const int permutationTableCount = 8;
 
        for (int i = 0; i < HASHCODESSIZE; i++) {
            boardConfigValues[i] = HASHNOTSET;
@@ -244,7 +259,7 @@ private:
                DecodeHashcode(i, trialBoard);
                int minHash = HASHCODESSIZE+1;
                int generatedHashCodeArray[8];
-               for (int j = 0; j < 8; j++) {
+               for (int j = 0; j < permutationTableCount; j++) {
                    //transform the booard
                    int transformedBoard[10];
                    for (int k = 0; k < 9; k++) {
@@ -259,10 +274,13 @@ private:
                    }
                    generatedHashCodeArray[j] = currentHash;
                }
-               for (int j = 0; j < 8; j++) {
-                   //int index = generatedHashCodeArray[j];
-                   //canonicalHashCodes[index] = minHash;
-                   canonicalHashCodes[ generatedHashCodeArray[j] ] = minHash;
+               for (int j = 0; j < permutationTableCount; j++) {
+                   int index = generatedHashCodeArray[j];
+                   if (index < 0 || index >= HASHCODESSIZE) {
+                       continue;
+                   }                   
+                   canonicalHashCodes[index] = minHash;
+                  //canonicalHashCodes[ generatedHashCodeArray[j] ] = minHash;
                }
            }
        }
@@ -273,26 +291,18 @@ private:
        int minhash = canonicalHashCodes[hash];
 
        if (boardConfigValues[minhash] != HASHNOTSET) {
-           return boardConfigValues[minhash];
+            return boardConfigValues[minhash];
        }
-        if (CheckWin(COMPUTER)) {
-            if (boardConfigValues[minhash] == HASHNOTSET) {
-                boardConfigValues[minhash] = WINNINGSCORE - depth;
-            }
-
+       else if (CheckWin(COMPUTER)) {
+            boardConfigValues[minhash] = WINNINGSCORE - depth;
             return WINNINGSCORE - depth;
-        }
-        else if (CheckWin(HUMAN)) {
-            if (boardConfigValues[minhash] == HASHNOTSET) {
-                boardConfigValues[minhash] = -(WINNINGSCORE - depth);
-            }
+       }
+       else if (CheckWin(HUMAN)) {
+            boardConfigValues[minhash] = -(WINNINGSCORE - depth);
             return -(WINNINGSCORE - depth);
         }
-        
-        if (board[9] == 9) { //board[9] is count of coins placed
-            if (boardConfigValues[minhash] == HASHNOTSET) {
-                boardConfigValues[minhash] = 0;
-            }
+        else if (board[9] == 9) { //board[9] is count of coins placed
+            boardConfigValues[minhash] = 0;
             return 0;
         }
 
@@ -322,9 +332,6 @@ private:
 
                 }
             }
-            if (boardConfigValues[minhash] == HASHNOTSET) {
-                boardConfigValues[minhash] = best;
-            }
             return best;
         }
         else {
@@ -350,9 +357,6 @@ private:
                     if (beta <= alpha)
                         break;
                 }
-            }
-            if (boardConfigValues[minhash] == HASHNOTSET) {
-                boardConfigValues[minhash] = best;
             }
             return best;
         }
@@ -396,6 +400,7 @@ private:
     static constexpr int HASHNOTSET = -TTT_INFINITY-5000;
     static constexpr int HASHCODESSIZE = 19683;
 	
+    int moveNo = 0;
     int board[10];
     // board[0..8] = cells
     // board[9] = number of occupied cells

@@ -31,6 +31,16 @@ int buttonX;
 int buttonY;
 int buttonWidth;
 int buttonHeight;
+const char moveNumChars[9] = {
+    '0','1','2',
+    '3','4','5',
+    '6','7','8'
+};
+char boardMoveChar[9] = {
+    ' ',' ',' ',
+    ' ',' ',' ',
+    ' ',' ',' '
+};
 
 //ai generated class
 class Timer
@@ -64,11 +74,25 @@ Timer timer;
 bool waitingForTimer; 
 
 void Restart() {
+    switch (gameResult) {
+    case DRAWN:
+        std::cout << "Draw\n";
+        break;
+    case LOST:
+        std::cout << "Computer Won\n";
+        break;
+    case WON:
+        std::cout << "Human Won\n";
+        break;
+    }
     gameResult = ONGOING;
     ttt.Restart();
     turn = ttt.Toss() ? HUMAN : COMPUTER;
     for (int i = 0; i < 9; i++) {
         board[i] = EMPTY;
+    }
+    for (int i = 0; i < 9; i++) {
+        boardMoveChar[i] = ' ';
     }
     if (turn == COMPUTER) {
         turn = HUMAN;
@@ -78,7 +102,7 @@ void Restart() {
 }
 
 void InitApp() {
-    srand(static_cast<unsigned int>(time(NULL)));
+    
     xImage.CreateFromPng("../examples/res_for_examples/x_player.png");
     width = xImage.GetCanvas()->GetWidth();
     height = xImage.GetCanvas()->GetHeight();
@@ -92,7 +116,9 @@ void InitApp() {
     buttonY = startY + maxheight + buttonHeight / 2;
     oImage.CreateFromPng("../examples/res_for_examples/o_player.png");
     baseImage.CreateSolidColorBlockImage(width, height, 255, 255, 255, 1.0);
-    ttt.Init(rand() % 12345);
+
+    srand(static_cast<unsigned int>(time(NULL)));
+    ttt.Init(rand());
     Restart();
 }
 
@@ -105,7 +131,9 @@ void UpdateAndRender(spn::Canvas* canvas) {
     gameResult = ttt.GetGameResult();
     //Draw something with the canvas
     canvas->Clear();
+    canvas->SetPrimaryColorUint(0x0000ff);
  
+    float charw, charh;
     for (int i = 0; i < 9; i++) {
         int r = i / 3;
         int c = i % 3;
@@ -117,9 +145,12 @@ void UpdateAndRender(spn::Canvas* canvas) {
         switch (tile) {
         case HUMAN:
             canvas->DrawImage(&xImage, x, y);
+            canvas->DrawChar(boardMoveChar[i], x+5, y+20);
             break;
         case COMPUTER:
             canvas->DrawImage(&oImage, x, y);
+            canvas->GetCharDisplaySize(boardMoveChar[i], charw, charh);
+            canvas->DrawChar(boardMoveChar[i], x+width/2-charw/2, y+height/2-charh/2+4);
             break;
         }
     }
@@ -127,6 +158,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
     if (gameResult == ONGOING) {
         if (turn == COMPUTER) {
             int aiMove = ttt.PlayAiMove();
+            boardMoveChar[aiMove] = moveNumChars[ttt.GetMoveNo()-1];
             board[aiMove] = COMPUTER;
             turn = HUMAN;
         }
@@ -144,12 +176,15 @@ void UpdateAndRender(spn::Canvas* canvas) {
     switch (gameResult) {
     case DRAWN:
         canvas->DrawCString("It's a Draw", startX+20, startY - 40);
+        //std::cout << "Draw\n";
         break;
     case LOST:
         canvas->DrawCString("I Won!", startX+20, startY - 40);
+        //std::cout << "Computer Won\n";
         break;
     case WON:
         canvas->DrawCString("You Won!", startX+20, startY - 40);
+        //std::cout << "Human Won\n";
         break;
     }
 
@@ -173,6 +208,7 @@ void HandleInput(const SDL_Event* sdlEvent) {
             // std::cout << idx << '\n';
             if (gameResult == ONGOING && turn == HUMAN && idx >= 0 && idx < 9) 
             {
+                boardMoveChar[idx] = moveNumChars[ttt.GetMoveNo()];
                 if (ttt.PlayHumanMove(idx)) {
                     board[idx] = HUMAN;
                     timer.Start(500);
