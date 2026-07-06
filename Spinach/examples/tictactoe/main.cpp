@@ -7,6 +7,8 @@
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_image.h>
+#include <rmgui/spn_rmgui_ui_manager.h>
+#include <rmgui/spn_rmgui_textscrollview.h>
 #include <spn_ui_event.h>
 #include <spn_ui_event_translator.h>
 #include <imgui/spn_imgui_imgui.h>
@@ -25,12 +27,16 @@ int turn = HUMAN;
 int playedLocation = -1;
 GameResult gameResult = ONGOING;
 spn::ui::UiEvent uie;
+spn::rmgui::UiManager* uim;
 int board[9];
 int buttonState = spn::imgui::BTN_RELEASE;
 int buttonX;
 int buttonY;
 int buttonWidth;
 int buttonHeight;
+
+spn::rmgui::TextScrollView* tsv;
+
 const char moveNumChars[9] = {
     '0','1','2',
     '3','4','5',
@@ -99,13 +105,19 @@ void Restart() {
         waitingForTimer = true;
         timer.Start(500);
     }
+    tsv->AddText("***New Game***");
 }
 
 void InitApp() {
-    
+    uim = &spn::rmgui::UiManager::GetInstance();
     xImage.CreateFromPng("../examples/res_for_examples/x_player.png");
     width = xImage.GetCanvas()->GetWidth();
     height = xImage.GetCanvas()->GetHeight();
+
+    tsv = uim->CreateWidget<spn::rmgui::TextScrollView>();
+    tsv->SetPosition(640-128-32-25, 480/2-100);
+    tsv->SetSize(150, 200);
+
     maxwidth = 3.0 * (width + 4);
     maxheight = 3.0 * (height + 4);
     startX = (640 - maxwidth) / 2;
@@ -120,6 +132,32 @@ void InitApp() {
     srand(static_cast<unsigned int>(time(NULL)));
     ttt.Init(rand());
     Restart();
+}
+
+void AddMove(int hc, int idx) {
+    int count = ttt.GetMoveNo() - 1;
+    static char buf1[256];
+    static char buf2[256];
+    char buf[512];
+
+    std::cout << count;
+    switch (count % 2) {
+    case 0:
+        if (hc == 0)
+            sprintf(buf1, "%d, C-%d   ", count, idx);
+        else
+            sprintf(buf1, "%d, H-%d   ", count, idx);
+        tsv->AddText(buf1);
+        break;
+    case 1:
+        if (hc == 0)
+            sprintf(buf2, "%d, C-%d", count, idx);
+        else
+            sprintf(buf2, "%d, H-%d", count, idx);
+        tsv->GetTextAtCurrentLine().append(buf2);
+        count = 0;
+        break;
+    }
 }
 
 void UpdateAndRender(spn::Canvas* canvas) {
@@ -161,6 +199,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
             boardMoveChar[aiMove] = moveNumChars[ttt.GetMoveNo()-1];
             board[aiMove] = COMPUTER;
             turn = HUMAN;
+            AddMove(0, aiMove);
         }
         else {
             if (waitingForTimer) {
@@ -191,6 +230,8 @@ void UpdateAndRender(spn::Canvas* canvas) {
     if (spn::imgui::Button(canvas, uie, "Restart", buttonX, buttonY, buttonWidth, buttonHeight, buttonState)) {
         Restart();
     }
+
+    uim->Display(canvas);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
@@ -202,19 +243,24 @@ void HandleInput(const SDL_Event* sdlEvent) {
         case spn::ui::MouseButton::Left:
         if (uie.eventType == spn::ui::UiEventType::MouseDown) 
         {
-            int c = (uie.mouseX - startX) / (width + 4);
-            int r = (uie.mouseY - startY) / (height + 4);
-            int idx = r * 3 + c;
-            // std::cout << idx << '\n';
-            if (gameResult == ONGOING && turn == HUMAN && idx >= 0 && idx < 9) 
-            {
-                boardMoveChar[idx] = moveNumChars[ttt.GetMoveNo()];
-                if (ttt.PlayHumanMove(idx)) {
-                    board[idx] = HUMAN;
-                    timer.Start(500);
-                    waitingForTimer = true;
+            if (uie.mouseX > startX && uie.mouseX < startX + width * 3
+                && uie.mouseY > startY && uie.mouseY < startY + height * 3
+                ) {
+                int c = (uie.mouseX - startX) / (width + 4);
+                int r = (uie.mouseY - startY) / (height + 4);
+                int idx = r * 3 + c;
+                // std::cout << idx << '\n';
+                if (gameResult == ONGOING && turn == HUMAN && idx >= 0 && idx < 9)
+                {
+                    boardMoveChar[idx] = moveNumChars[ttt.GetMoveNo()];
+                    if (ttt.PlayHumanMove(idx)) {
+                        board[idx] = HUMAN;
+                        timer.Start(500);
+                        waitingForTimer = true;
+                        AddMove(1, idx);
+                    }
+                    uie = {};
                 }
-                uie = {};
             }
         }
     }
@@ -222,7 +268,7 @@ void HandleInput(const SDL_Event* sdlEvent) {
         Restart();
         uie = {};
     }
-    
+    uim->HandleUiEvent(uie);
 }
 
 
