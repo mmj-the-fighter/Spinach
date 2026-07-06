@@ -175,6 +175,36 @@ namespace spn
 		}
 	}
 
+	//AI generated code
+	void Canvas::DrawHLine(int y, int x0, int x1)
+	{
+		if (y < 0 || y >= height) {
+			return;
+		}
+
+		if (x0 > x1) {
+			std::swap(x0, x1);
+		}
+
+		if (x0 < 0) {
+			x0 = 0;
+		}
+
+		if (x1 >= width) {
+			x1 = width - 1;
+		}
+
+		unsigned char* loc = pixBuffer + y * pitch + x0 * 4;
+		int count = x1 - x0 + 1;
+		while (count--)
+		{
+			*loc = primaryColorB;
+			*(loc + 1) = primaryColorG;
+			*(loc + 2) = primaryColorR;
+			loc += 4;
+		}
+	}
+
 	void Canvas::DrawLine(int x0, int y0, int x1, int y1)
 	{
 		if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
@@ -213,10 +243,14 @@ namespace spn
 	}
 
 	void Canvas::DrawRectangle(int left, int top, int right, int bottom) {
-		DrawLine(left, top, right, top);
-		DrawLine(right, top, right, bottom);
-		DrawLine(right, bottom, left, bottom);
-		DrawLine(left, bottom, left, top);
+		//DrawLine(left, top, right, top);
+		//DrawLine(right, top, right, bottom);
+		//DrawLine(right, bottom, left, bottom);
+		//DrawLine(left, bottom, left, top);
+		DrawHLine(top, left, right);
+		DrawHLine(bottom, left, right);
+		DrawVLine(left, top, bottom);
+		DrawVLine(right, top, bottom);
 	}
 
 

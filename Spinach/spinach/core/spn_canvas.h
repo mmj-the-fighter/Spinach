@@ -26,6 +26,7 @@ namespace spn
 		}
 		void DrawLine(int x0, int y0, int x1, int y1);
 		void DrawVLine(int x, int y0, int y1);
+		void DrawHLine(int y, int x0, int x1);
 		
 		inline void ClipLineNaive(int& x0, int& y0, int& x1, int& y1) {
 			if (x0 < 0) x0 = 0;
