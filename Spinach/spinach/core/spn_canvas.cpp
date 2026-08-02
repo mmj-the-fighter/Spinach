@@ -243,6 +243,9 @@ namespace spn
 	}
 
 	void Canvas::DrawRectangle(int left, int top, int right, int bottom) {
+		if (left < 0 || right > width - 1 || top < 0 || bottom > height - 1) {
+			return;
+		}
 		//DrawLine(left, top, right, top);
 		//DrawLine(right, top, right, bottom);
 		//DrawLine(right, bottom, left, bottom);
