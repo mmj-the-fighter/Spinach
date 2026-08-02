@@ -479,7 +479,8 @@ namespace spn
 			w = 0;
 			h = 0;
 		}
-		int textHeight = font->GetCellHeight();
+		//int textHeight = font->GetCellHeight();
+		int textHeight = font->GetCharHeight();
 		int textWidth = font->GetCharWidth(c);
 		w = textWidth;
 		h = textHeight;
