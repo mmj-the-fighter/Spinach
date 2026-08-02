@@ -17,18 +17,20 @@ Useful for:
 - [Currently Screen recording / render to GIF is unoptimized and can be dangerous](https://github.com/mmj-the-fighter/Spinach/issues/1)
  
 ## Examples / Tutorials
-- [render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering rapidly changing pixels. use case for software rasterization and raytracing
-- [without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  shows how Spinach can be used without render loop. examples: sierpienski triangle, rendering svg and sepia filter 
-- [logarithmic spiral](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/logarithmic_spiral) shows how Spinach can be used to make a logarithmic spiral, it includes an imgui checkbox too  
-- [locus generation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/parametric_locus_generator)  shows how spn::rmgui can be used for  controlling two indpendantly rotating links
-- [game of life simulation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) shows how Spinach can be used for programming game of life. this involves using std::thread  
-- [mine sweeper clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/mine_sweeper) shows how a clone of mine sweeper game can be developed using Spinach  
-- [flappy bird clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/bird_flight) shows how a flappy bird like game can be made  
-- [snake clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/snake_clone) shows how a snake like game can be made  
-- [picture puzzle game](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/picture_puzzle) shows how a picture puzzle game can be made    
-- [image processing example with spn::rmgui](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui) shows how Spinach can be used for image processing  and how rmgui of Spinach can be used for that.  
-- [raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raytracing_example) shows how Spinach can be used for raytracing  
-- [software rendering example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/wireframe_rendering) implementation of a wireframe renderer  
+- [render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering frames of pixelbuffer which is being modified per frame
+- [without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  demonstration of rendering a pixelbuffer once and waiting for input
+- [logarithmic spiral](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/logarithmic_spiral)
+- [locus generation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/parametric_locus_generator)
+- [game of life simulation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) 
+- [mine sweeper clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/mine_sweeper) 
+- [flappy bird clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/bird_flight)
+- [snake clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/snake_clone)
+- [picture puzzle](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/picture_puzzle)
+- [tic-tac-toe](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/tictactoe)
+- [image processing and spn::rmgui example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui)
+- [raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raytracing_example) 
+- [raycasting example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raycasting_example) 
+- [software rendering example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/wireframe_rendering)
 
 ## Build / Project Generation
 
