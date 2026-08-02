@@ -115,9 +115,10 @@ void InitApp() {
     height = xImage.GetCanvas()->GetHeight();
 
     tsv = uim->CreateWidget<spn::rmgui::TextScrollView>();
-    tsv->SetPosition(640-128-32-25, 480/2-100);
-    tsv->SetSize(150, 200);
-
+    tsv->Init(640 - 128 - 32 - 25,
+        480 / 2 - 100,
+        150,
+        200);
     maxwidth = 3.0 * (width + 4);
     maxheight = 3.0 * (height + 4);
     startX = (640 - maxwidth) / 2;
@@ -154,7 +155,8 @@ void AddMove(int hc, int idx) {
             sprintf(buf2, "%d, C-%d", count, idx);
         else
             sprintf(buf2, "%d, H-%d", count, idx);
-        tsv->GetTextAtCurrentLine().append(buf2);
+        std::string* pstr = tsv->GetTextAtCurrentLine();
+        pstr->append(buf2);
         count = 0;
         break;
     }
