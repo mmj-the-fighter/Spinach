@@ -111,6 +111,17 @@ namespace spn {
 			}
 			db[serial].deltaTime = duration.count() / unitDivisor;
 		}
+		
+		inline float CalcAvgDeltaTime() {
+			int count = 0;
+			int sum = 0;
+			int sz = db.size();
+			for (int i = 0; i < sz; i++) {
+				++count;
+				sum += db[i].deltaTime;
+			}
+			return sum / static_cast<float>(count);
+		}
 
 		inline void Print() {
 			for (const auto& codeProfile : db) {
