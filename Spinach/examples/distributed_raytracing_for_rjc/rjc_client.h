@@ -10,11 +10,23 @@
 #include <cstdlib>
 #include <cstdint>
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+typedef int socklen_t;
+#define close_socket(s) closesocket(s)
+#else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#define close_socket(s) close(s)
+#endif
 
 namespace rjc
 {
@@ -27,22 +39,38 @@ namespace rjc
     public:
         static HttpResponse PostJson(const std::string& host, int port, const std::string& path, const std::string& jsonBody, int timeoutSec = 120) {
             HttpResponse response;
-            int sock = socket(AF_INET, SOCK_STREAM, 0);
+#ifdef _WIN32
+            WSADATA wsaData;
+            WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
+            int sock = (int)socket(AF_INET, SOCK_STREAM, 0);
             if (sock < 0) {
                 std::cerr << "[rjc::HttpClient] socket creation failed\n";
+#ifdef _WIN32
+                WSACleanup();
+#endif
                 return response;
             }
 
+#ifdef _WIN32
+            DWORD timeoutMs = timeoutSec * 1000;
+            setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeoutMs, sizeof(timeoutMs));
+            setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeoutMs, sizeof(timeoutMs));
+#else
             struct timeval tv;
             tv.tv_sec = timeoutSec;
             tv.tv_usec = 0;
             setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
             setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&tv, sizeof(tv));
+#endif
 
             struct hostent* server = gethostbyname(host.c_str());
             if (server == nullptr) {
                 std::cerr << "[rjc::HttpClient] could not resolve host: " << host << "\n";
-                close(sock);
+                close_socket(sock);
+#ifdef _WIN32
+                WSACleanup();
+#endif
                 return response;
             }
 
@@ -54,7 +82,10 @@ namespace rjc
 
             if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
                 std::cerr << "[rjc::HttpClient] connection to " << host << ":" << port << " failed\n";
-                close(sock);
+                close_socket(sock);
+#ifdef _WIN32
+                WSACleanup();
+#endif
                 return response;
             }
 
@@ -67,21 +98,27 @@ namespace rjc
                 << jsonBody;
 
             std::string reqStr = req.str();
-            ssize_t sent = send(sock, reqStr.c_str(), reqStr.size(), 0);
+            int sent = send(sock, reqStr.c_str(), (int)reqStr.size(), 0);
             if (sent < 0) {
                 std::cerr << "[rjc::HttpClient] send failed\n";
-                close(sock);
+                close_socket(sock);
+#ifdef _WIN32
+                WSACleanup();
+#endif
                 return response;
             }
 
             std::string rawResponse;
             char buffer[8192];
-            ssize_t bytesRead = 0;
+            int bytesRead = 0;
             while ((bytesRead = recv(sock, buffer, sizeof(buffer) - 1, 0)) > 0) {
                 buffer[bytesRead] = '\0';
                 rawResponse.append(buffer, bytesRead);
             }
-            close(sock);
+            close_socket(sock);
+#ifdef _WIN32
+            WSACleanup();
+#endif
 
             size_t headerEnd = rawResponse.find("\r\n\r\n");
             if (headerEnd != std::string::npos) {

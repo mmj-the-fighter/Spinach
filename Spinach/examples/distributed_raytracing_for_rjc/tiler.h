@@ -93,8 +93,8 @@ namespace rtutil
     static void ComputeGrid(int N, int W, int H, int& rows, int& cols, int k = 2) {
         int T = k * N;
         double aspect = double(W) / double(H);
-        cols = std::max(1, (int)std::round(std::sqrt(T * aspect)));
-        rows = std::max(1, (int)std::round(double(T) / cols));
+        cols = (std::max)(1, (int)std::round(std::sqrt(T * aspect)));
+        rows = (std::max)(1, (int)std::round(double(T) / cols));
     }
 }
 

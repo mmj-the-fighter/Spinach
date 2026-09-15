@@ -6,10 +6,18 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include <sys/stat.h>
 #include <climits>
-#include <unistd.h>
 #include <stdexcept>
+
+#ifdef _WIN32
+#include <direct.h>
+#include <io.h>
+#include <windows.h>
+#define mkdir(dir, mode) _mkdir(dir)
+#else
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 namespace rtutil
 {
@@ -30,10 +38,21 @@ namespace rtutil
             if (path.empty()) continue;
             std::ifstream f(path);
             if (f.good()) {
+#ifdef _WIN32
+                char resolved[MAX_PATH];
+                if (GetFullPathNameA(path.c_str(), MAX_PATH, resolved, nullptr)) {
+                    std::string resStr(resolved);
+                    for (char& c : resStr) {
+                        if (c == '\\') c = '/';
+                    }
+                    return resStr;
+                }
+#else
                 char resolved[PATH_MAX];
                 if (realpath(path.c_str(), resolved)) {
                     return std::string(resolved);
                 }
+#endif
                 return path;
             }
         }

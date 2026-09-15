@@ -1,3 +1,11 @@
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
+
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -7,6 +15,13 @@
 #include <fstream>
 #include <future>
 #include <chrono>
+
+#ifdef _WIN32
+#include <direct.h>
+#define rmdir(d) _rmdir(d)
+#else
+#include <unistd.h>
+#endif
 
 #include <spn_canvas.h>
 #include <spn_core.h>
@@ -173,7 +188,11 @@ int program(int argc, char* argv[])
 
         asyncDispatches.push_back(std::async(std::launch::async, [=, &onTileCompleted]() {
             std::ostringstream tileDirStream;
+#ifdef _WIN32
+            tileDirStream << "C:/tmp/rt_tile_" << sessionTimestamp << "_" << tileIdx;
+#else
             tileDirStream << "/tmp/rt_tile_" << sessionTimestamp << "_" << tileIdx;
+#endif
             std::string tileDir = tileDirStream.str();
 
             std::string paramsCsvPath = rtutil::WriteTileParamsCsv(tileDir, tile);
