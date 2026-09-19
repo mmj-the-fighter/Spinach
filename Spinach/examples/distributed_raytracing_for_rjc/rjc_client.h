@@ -64,8 +64,16 @@ namespace rjc
             setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&tv, sizeof(tv));
 #endif
 
-            struct hostent* server = gethostbyname(host.c_str());
-            if (server == nullptr) {
+            struct addrinfo hints;
+            std::memset(&hints, 0, sizeof(hints));
+            hints.ai_family = AF_INET;
+            hints.ai_socktype = SOCK_STREAM;
+            hints.ai_protocol = IPPROTO_TCP;
+
+            struct addrinfo* addrResult = nullptr;
+            std::string portStr = std::to_string(port);
+            int res = getaddrinfo(host.c_str(), portStr.c_str(), &hints, &addrResult);
+            if (res != 0 || addrResult == nullptr) {
                 std::cerr << "[rjc::HttpClient] could not resolve host: " << host << "\n";
                 close_socket(sock);
 #ifdef _WIN32
@@ -74,13 +82,10 @@ namespace rjc
                 return response;
             }
 
-            struct sockaddr_in serv_addr;
-            std::memset(&serv_addr, 0, sizeof(serv_addr));
-            serv_addr.sin_family = AF_INET;
-            std::memcpy(&serv_addr.sin_addr.s_addr, server->h_addr, server->h_length);
-            serv_addr.sin_port = htons(port);
+            int connRes = connect(sock, addrResult->ai_addr, (int)addrResult->ai_addrlen);
+            freeaddrinfo(addrResult);
 
-            if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+            if (connRes < 0) {
                 std::cerr << "[rjc::HttpClient] connection to " << host << ":" << port << " failed\n";
                 close_socket(sock);
 #ifdef _WIN32

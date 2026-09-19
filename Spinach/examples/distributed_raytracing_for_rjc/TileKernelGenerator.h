@@ -30,8 +30,7 @@ namespace rtutil
             "examples/distributed_raytracing_for_rjc/" + filename,
             "../examples/distributed_raytracing_for_rjc/" + filename,
             "../../examples/distributed_raytracing_for_rjc/" + filename,
-            "Spinach/examples/distributed_raytracing_for_rjc/" + filename,
-            "/Users/pranav/Desktop/ramanujan_oss/Spinach/Spinach/examples/distributed_raytracing_for_rjc/" + filename
+            "Spinach/examples/distributed_raytracing_for_rjc/" + filename
         };
 
         for (const auto& path : searchPaths) {
