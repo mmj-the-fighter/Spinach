@@ -22,7 +22,7 @@ set(LOGARITHMIC_SPIRAL logarithmic_spiral)
 set(TICTACTOE tictactoe)
 set(RAYCASTING_EXAMPLE raycasting_example)
 set(DISTRIBUTED_RAYTRACING_FOR_RJC distributed_raytracing_for_rjc)
-
+set(MULTITHREADED_RAYTRACING_EXAMPLE multithreaded_raytracing_example)
 
 # Platform-specific flags
 if(APPLE)
@@ -575,5 +575,35 @@ target_include_directories(${DISTRIBUTED_RAYTRACING_FOR_RJC} PRIVATE
 )
 
 target_link_libraries(${DISTRIBUTED_RAYTRACING_FOR_RJC} PRIVATE SDL3::SDL3)
+
+# 16. multithreaded raytracing example
+file(GLOB MULTITHREADED_RAYTRACING_CPP_SRC CONFIGURE_DEPENDS
+    examples/multithreaded_raytracing_example/*.cpp
+)
+
+file(GLOB MULTITHREADED_RAYTRACING_CPP_H CONFIGURE_DEPENDS
+    examples/multithreaded_raytracing_example/*.h
+)
+
+add_executable(${MULTITHREADED_RAYTRACING_EXAMPLE}
+    ${MULTITHREADED_RAYTRACING_CPP_SRC}
+    ${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${MULTITHREADED_RAYTRACING_CPP_H}
+    ${SPINACH_H}
+    ${NANOSVG_H}
+)
+
+target_include_directories(${MULTITHREADED_RAYTRACING_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+    spinach/external/nanosvg
+    examples/multithreaded_raytracing_example
+)
+
+target_link_libraries(${MULTITHREADED_RAYTRACING_EXAMPLE} PRIVATE SDL3::SDL3)
+
 
 
