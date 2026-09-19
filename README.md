@@ -29,6 +29,8 @@ Useful for:
 - [tic-tac-toe](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/tictactoe)
 - [image processing and spn::rmgui example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui)
 - [raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raytracing_example) 
+- [multithreaded raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/multithreaded_raytracing_example)
+- [distributed raytracing example with Ramanujan Computing](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/distributed_raytracing_for_rjc)
 - [raycasting example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raycasting_example) 
 - [software rendering example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/wireframe_rendering)
 
