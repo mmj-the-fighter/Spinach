@@ -15,6 +15,7 @@
 #include <fstream>
 #include <future>
 #include <chrono>
+#include <thread>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -197,34 +198,65 @@ int program(int argc, char* argv[])
 
             std::string paramsCsvPath = rtutil::WriteTileParamsCsv(tileDir, tile);
             std::string csvPath = tileDir + "/pixels.csv";
-            std::string reqId = "rt_tile_" + std::to_string(sessionTimestamp) + "_" + std::to_string(tileIdx);
-
-            // POST to /orchestrator/run with constant kernel and tile params.csv
-            std::ostringstream runPayload;
-            runPayload << "{\"args\":[\"" << kernelPath << "\",\"" << paramsCsvPath << "\"],\"requestId\":\"" << reqId << "\"}";
-
-            rjc::HttpResponse runResp = rjc::HttpClient::PostJson(
-                rjcHost, rjcPort, "/orchestrator/run", runPayload.str(), 180);
-
-            if (runResp.statusCode != 200) {
-                std::cerr << "[SpinachRT] Error on /orchestrator/run for tile " << tileIdx
-                          << " (status " << runResp.statusCode << "): " << runResp.body << "\n";
-            }
-
-            // POST to /orchestrator/dump
-            std::ostringstream dumpPayload;
-            dumpPayload << "{\"requestId\":\"" << reqId << "\",\"name\":\"pixels\",\"path\":\"" << csvPath << "\"}";
-
-            rjc::HttpResponse dumpResp = rjc::HttpClient::PostJson(
-                rjcHost, rjcPort, "/orchestrator/dump", dumpPayload.str(), 60);
-
-            if (dumpResp.statusCode != 200) {
-                std::cerr << "[SpinachRT] Error on /orchestrator/dump for tile " << tileIdx
-                          << " (status " << dumpResp.statusCode << "): " << dumpResp.body << "\n";
-            }
-
             int expectedBytes = tile.width * tile.height * 3;
-            std::vector<uint8_t> rgb = ParseTileCsv(csvPath, expectedBytes);
+
+            bool success = false;
+            constexpr int maxRunRetries = 3;
+            constexpr int maxDumpRetries = 5;
+
+            for (int runAttempt = 0; runAttempt < maxRunRetries && !success; ++runAttempt) {
+                std::string reqId = "rt_tile_" + std::to_string(sessionTimestamp) + "_"
+                    + std::to_string(tileIdx) + (runAttempt > 0 ? ("_r" + std::to_string(runAttempt)) : "");
+
+                // POST to /orchestrator/run with constant kernel and tile params.csv
+                std::ostringstream runPayload;
+                runPayload << "{\"args\":[\"" << kernelPath << "\",\"" << paramsCsvPath << "\"],\"requestId\":\"" << reqId << "\"}";
+
+                rjc::HttpResponse runResp = rjc::HttpClient::PostJson(
+                    rjcHost, rjcPort, "/orchestrator/run", runPayload.str(), 180);
+
+                if (runResp.statusCode != 200) {
+                    std::cerr << "[SpinachRT] Error on /orchestrator/run for tile " << tileIdx
+                              << " (attempt " << runAttempt + 1 << ", status " << runResp.statusCode << "): " << runResp.body << "\n";
+                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                    continue;
+                }
+
+                // Poll /orchestrator/dump with retries
+                std::ostringstream dumpPayload;
+                dumpPayload << "{\"requestId\":\"" << reqId << "\",\"name\":\"pixels\",\"path\":\"" << csvPath << "\"}";
+                std::string dumpPayloadStr = dumpPayload.str();
+
+                for (int dumpAttempt = 0; dumpAttempt < maxDumpRetries; ++dumpAttempt) {
+                    rjc::HttpResponse dumpResp = rjc::HttpClient::PostJson(
+                        rjcHost, rjcPort, "/orchestrator/dump", dumpPayloadStr, 60);
+
+                    if (dumpResp.statusCode == 200) {
+                        success = true;
+                        break;
+                    }
+
+                    // If 404, processing may still be finalizing or registering; wait and retry
+                    std::cerr << "[SpinachRT] /orchestrator/dump for tile " << tileIdx
+                              << " returned status " << dumpResp.statusCode << " (dump attempt "
+                              << dumpAttempt + 1 << "/" << maxDumpRetries << "): " << dumpResp.body << "\n";
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100 * (dumpAttempt + 1)));
+                }
+
+                if (!success) {
+                    std::cerr << "[SpinachRT] Retrying full run for tile " << tileIdx
+                              << " (run attempt " << runAttempt + 1 << "/" << maxRunRetries << " failed)\n";
+                }
+            }
+
+            std::vector<uint8_t> rgb;
+            if (success) {
+                rgb = ParseTileCsv(csvPath, expectedBytes);
+            } else {
+                std::cerr << "[SpinachRT] FAILED to retrieve tile " << tileIdx
+                          << " after retries. Falling back to black pixels.\n";
+                rgb.resize(expectedBytes, 0);
+            }
 
             // Clean up temporary tile directory and files
             std::remove(paramsCsvPath.c_str());
