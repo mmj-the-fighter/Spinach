@@ -191,7 +191,26 @@ namespace spn::imgui {
 		return None;
 	}
 
-
+	static void ProgressBar(
+		spn::Canvas* canvas,
+		int x, int y, int w, int h,
+		unsigned int lineColor,
+		unsigned int fillColor,
+		float percentageFilled,
+		int offset = 2)
+	{
+		float barw = w * percentageFilled;
+		canvas->SaveColors();
+		canvas->SetPrimaryColorUint(lineColor);
+		canvas->DrawRectangle(x, y, x + w, y + h);
+		canvas->SetPrimaryColorUint(fillColor);
+		canvas->DrawFilledRectangle(
+			x + offset,
+			y + offset,
+			x + barw - offset,
+			y + h - offset);
+		canvas->RestoreColors();
+	}
 }
 
 

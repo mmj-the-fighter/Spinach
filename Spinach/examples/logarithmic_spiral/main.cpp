@@ -137,6 +137,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		}
 		
 	}
+	spn::imgui::ProgressBar(canvas, 10, 14, 320, 12, 0x0000ff, 0xc0c000, (float)spiralPoints.size()/272.0f);
 }
 
 void HandleInput(const SDL_Event* e) {
