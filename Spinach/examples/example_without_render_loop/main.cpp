@@ -15,6 +15,19 @@ struct vec2
 	float y;
 };
 
+void TurtleGraphicsDemo(spn::Canvas* canvas) {
+	int midx = canvas->GetWidth() / 2;
+	int midy = canvas->GetHeight() / 2;
+	
+	canvas->TurnTo(0);
+	
+	for (int i = 0; i < 7; i++) {
+		canvas->MoveTo(midx, midy);
+		canvas->Forward(100, true);
+		canvas->TurnCCW(0.523599);
+	}
+}
+
 void Sierpinski(spn::Canvas* canvas, vec2 points[3], int iterations) {
 	spn::ProfilerScope scope(1003);
 	vec2 p;
@@ -86,7 +99,13 @@ int main(int argc, char* argv[])
 	canvas->Clear();
 	canvas->EnableAlphaBlending(false);
 	canvas->SetClearColor(0, 0, 0);
-	
+
+	TurtleGraphicsDemo(canvas);
+	canvas->DrawCString("Click for next", 100, 100);
+	sc.RenderCanvas();
+	sc.WaitForEvents();
+
+	canvas->Clear();
 	Sierpinski(canvas, points, 4000);
 
 	canvas->DrawCString("Click for next", 100, 100);
