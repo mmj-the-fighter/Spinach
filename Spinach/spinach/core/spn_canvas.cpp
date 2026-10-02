@@ -11,9 +11,20 @@
 namespace spn 
 {
 	Canvas::Canvas(unsigned int aWidth, unsigned int aHeight)
-		:width(aWidth), height(aHeight), lastFrameTime(0.0f), font(nullptr),
-		primaryColorR(255), primaryColorG(255), primaryColorB(255),
-		clearColorR(0), clearColorG(0), clearColorB(0), isAlphaBlendingEnabled(false)
+		:
+		width(aWidth), 
+		height(aHeight), 
+		lastFrameTime(0.0f), 
+		font(nullptr),
+		primaryColorR(255), 
+		primaryColorG(255), 
+		primaryColorB(255),
+		clearColorR(0), 
+		clearColorG(0), 
+		clearColorB(0), 
+		isAlphaBlendingEnabled(false),
+		strokeRadius(1),
+		strokeRadiusSquared(1)
 	{
 		channels = 4;
 		pitch = width * 4;
@@ -237,6 +248,84 @@ namespace spn
 			*dstLoc++ = primaryColorG;
 			*dstLoc++ = primaryColorR;
 			*dstLoc = 255;
+			x += xIncr;
+			y += yIncr;
+		}
+	}
+
+	void Canvas::DrawDot(int x, int y) {
+		for (int yy = y - strokeRadius; yy <= y + strokeRadius; ++yy)
+		{
+			for (int xx = x - strokeRadius; xx <= x + strokeRadius; ++xx)
+			{
+				if (xx < 0 || xx > width - 1 || yy < 0 || yy > height - 1) {
+					continue;
+				}
+				int dx = xx - x;
+				int dy = yy - y;
+
+				if (dx * dx + dy * dy <= strokeRadiusSquared)
+				{
+					unsigned char* dstLoc = pixBuffer + pitch * yy + xx * channels;
+					*dstLoc++ = primaryColorB;
+					*dstLoc++ = primaryColorG;
+					*dstLoc++ = primaryColorR;
+					*dstLoc = 255;
+				}
+			}
+		}
+	}
+
+	void Canvas::DrawStroke(int x0, int y0, int x1, int y1)
+	{
+		if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
+			return;
+		}
+		if (x1 < 0 || x1 > width - 1 || y1 < 0 || y1 > height - 1) {
+			return;
+		}
+
+		float x, y, xIncr, yIncr;
+		int steps;
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+
+		if (abs(dx) > abs(dy)) {
+			steps = abs(dx);
+		}
+		else {
+			steps = abs(dy);
+		}
+		xIncr = dx / static_cast<float>(steps);
+		yIncr = dy / static_cast<float>(steps);
+		x = x0;
+		y = y0;
+		for (int i = 0; i < steps; i++) {
+			int ix = static_cast<int>(x + 0.5f);
+			int iy = static_cast<int>(y + 0.5f);
+
+			//DrawFilledCircle(ix, iy, radius);
+
+			for (int yy = iy - strokeRadius; yy <= iy + strokeRadius; ++yy)
+			{
+				for (int xx = ix - strokeRadius; xx <= ix + strokeRadius; ++xx)
+				{
+					if (xx < 0 || xx > width - 1 || yy < 0 || yy > height - 1) {
+						continue;
+					}
+					int dx = xx - ix;
+					int dy = yy - iy;
+
+					if (dx * dx + dy * dy <= strokeRadiusSquared)
+					{
+						unsigned char* dstLoc = pixBuffer + pitch * yy + xx * channels;
+						*dstLoc++ = primaryColorB;
+						*dstLoc++ = primaryColorG;
+						*dstLoc++ = primaryColorR;
+						*dstLoc = 255;
+					}
+				}
+			}
 			x += xIncr;
 			y += yIncr;
 		}

@@ -27,6 +27,12 @@ namespace spn
 		void DrawLine(int x0, int y0, int x1, int y1);
 		void DrawVLine(int x, int y0, int y1);
 		void DrawHLine(int y, int x0, int x1);
+		void SetStrokeRadius(float radius) {
+			strokeRadius = radius;
+			strokeRadiusSquared = radius * radius;
+		}
+		void DrawDot(int x, int y);
+		void DrawStroke(int x0, int y0, int x1, int y1);
 		
 		inline void ClipLineNaive(int& x0, int& y0, int& x1, int& y1) {
 			if (x0 < 0) x0 = 0;
@@ -200,6 +206,8 @@ namespace spn
 		unsigned char clearColorR;
 		unsigned char clearColorG;
 		unsigned char clearColorB;
+		float strokeRadius;
+		float strokeRadiusSquared;
 		bool isAlphaBlendingEnabled;
 
 		unsigned char originalPrimaryColorR;
