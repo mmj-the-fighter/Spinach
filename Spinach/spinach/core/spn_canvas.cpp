@@ -12,19 +12,15 @@ namespace spn
 {
 	Canvas::Canvas(unsigned int aWidth, unsigned int aHeight)
 		:
-		width(aWidth), 
-		height(aHeight), 
+		width(aWidth), height(aHeight), 
 		lastFrameTime(0.0f), 
 		font(nullptr),
-		primaryColorR(255), 
-		primaryColorG(255), 
-		primaryColorB(255),
-		clearColorR(0), 
-		clearColorG(0), 
-		clearColorB(0), 
+		primaryColorR(255), primaryColorG(255), primaryColorB(255),
+		clearColorR(0), clearColorG(0), clearColorB(0), 
 		isAlphaBlendingEnabled(false),
 		strokeRadius(1),
-		strokeRadiusSquared(1)
+		strokeRadiusSquared(1),
+		tgX(0),tgY(0),tgAngle(0)
 	{
 		channels = 4;
 		pitch = width * 4;
@@ -747,4 +743,46 @@ namespace spn
 		}
 #undef ONEOVER255
 	}
+
+	//For Turtle graphics
+	void Canvas::MoveTo(int x, int y) {
+		tgX = x;
+		tgY = y;
+	}
+
+	void Canvas::TurnTo(float angle) {
+		tgAngle = angle;
+	}
+
+	void Canvas::TurnCW(float angleDelta) {
+		tgAngle += angleDelta;
+	}
+
+	void Canvas::TurnCCW(float angleDelta) {
+		tgAngle += -angleDelta;
+	}
+
+
+	void Canvas::Forward(int distance, bool draw) {
+		float prvX = tgX;
+		float prvY = tgY;
+		tgX += distance * cos(tgAngle);
+		tgY += distance * sin(tgAngle);
+		if (draw) {
+			DrawLine(prvX, prvY, tgX, tgY);
+		}
+	}
+
+
+	void Canvas::Backward(int distance, bool draw) {
+		float prvX = tgX;
+		float prvY = tgY;
+		tgX -= distance * cos(tgAngle);
+		tgY -= distance * sin(tgAngle);
+		if (draw) {
+			DrawLine(prvX, prvY, tgX, tgY);
+		}
+	}
+
+
 }

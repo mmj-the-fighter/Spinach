@@ -187,6 +187,19 @@ namespace spn
 		}
 		void DisplayFps(int x, int y);
 
+		//For Turtle graphics
+		void MoveTo(int x, int y);
+		void TurnTo(float angle);
+		void TurnCW(float angleDelta);
+		void TurnCCW(float angleDelta);
+		void Forward(int distance, bool draw);
+		void Backward(int distance, bool draw);
+	private:
+		float tgX;
+		float tgY;
+		float tgAngle;
+		//~
+
 
 	private:
 		Rect clipRect;
