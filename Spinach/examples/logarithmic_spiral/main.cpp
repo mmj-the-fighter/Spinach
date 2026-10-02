@@ -6,6 +6,8 @@
 #include <spn_ui_event.h>
 #include <spn_ui_event_translator.h>
 #include <imgui/spn_imgui_imgui.h>
+#include <rmgui/spn_rmgui_ui_manager.h>
+#include <rmgui/spn_rmgui_dropdown.h>
 
 struct Vector2 {
 	float x;
@@ -18,6 +20,7 @@ float a = 1.0;
 float b = 0.16;
 float theta=0.0;
 int buttonState = spn::imgui::BTN_RELEASE;
+int rstbuttonState = spn::imgui::BTN_RELEASE;
 int okState = spn::imgui::BTN_RELEASE;
 int cancelState = spn::imgui::BTN_RELEASE;
 bool alertStatus = false;
@@ -28,6 +31,15 @@ char* runText = "Run";
 char* pauseText = "Pause";
 spn::ui::UiEvent uie;
 spn::SpinachCore* pCore=nullptr;
+spn::rmgui::Dropdown* drawStyleDropdown;
+spn::rmgui::UiManager* uim;
+
+void Restart() {
+	spiralPoints.clear();
+	a = 1.0;
+	b = 0.16;
+	theta = 0.0;
+}
 
 void UpdateAndRender(spn::Canvas* canvas) {
 	canvas->Clear();
@@ -97,12 +109,25 @@ void UpdateAndRender(spn::Canvas* canvas) {
 			spiralPoints.push_back(v);
 		}
 	}
-	
-	for (int i = 1; i < spiralPoints.size(); i++) {
-		canvas->DrawLine(spiralPoints[i - 1].x, spiralPoints[i - 1].y, 
-			spiralPoints[i].x, spiralPoints[i].y);
+	canvas->SetPrimaryColorUint(0x0000c0);
+	if (drawStyleDropdown->GetOption() == 0) {
+		for (int i = 1; i < spiralPoints.size(); i++) {
+			canvas->DrawStroke(spiralPoints[i - 1].x, spiralPoints[i - 1].y,
+				spiralPoints[i].x, spiralPoints[i].y);
+		}
 	}
+	else {
+		for (int i = 0; i < spiralPoints.size(); i++) {
+			canvas->DrawDot(spiralPoints[i].x, spiralPoints[i].y);
+		}
+	}
+	
 	//spn::imgui::Checkbox(canvas, uie, "running",90,100, running);
+	if (spn::imgui::Button(canvas, uie, "Restart", 90, 60, 90, 30, rstbuttonState)) {
+		Restart();
+		running = true;
+		buttonText = pauseText;
+	}
 	if (spn::imgui::Button(canvas, uie, buttonText, 90, 100, 90, 30, buttonState)) {
 		if (canrun) {
 			running = !running;
@@ -138,11 +163,26 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		
 	}
 	spn::imgui::ProgressBar(canvas, 10, 14, 320, 12, 0x0000ff, 0xc0c000, (float)spiralPoints.size()/272.0f);
+	uim->Display(canvas);
 }
 
 void HandleInput(const SDL_Event* e) {
 	
 	spn::ui::TranslateSdlEvent(e, uie);
+	uim->HandleUiEvent(uie);
+}
+
+void InitUI(spn::SpinachCore* pCore) {
+	using namespace spn::rmgui;
+	uim = &UiManager::GetInstance();
+
+	drawStyleDropdown = uim->CreateWidget<Dropdown>();
+	drawStyleDropdown->SetPosition(pCore->GetCanvas()->GetWidth() - 250 - 2, 100);
+	drawStyleDropdown->AddOption("Line");
+	drawStyleDropdown->AddOption("Dot");
+	drawStyleDropdown->SetSize(128, 32);
+	drawStyleDropdown->SetId(100);
+	//drawStyleDropdown->SetCallback([&](int id, int selected) {});
 }
 
 int main(int argc, char* argv[])
@@ -157,6 +197,8 @@ int main(int argc, char* argv[])
 	sc.SetUpdateAndRenderHandler(UpdateAndRender);
 	sc.SetInputHandler(HandleInput);
 	pCore = &sc;
+	InitUI(pCore);
+	sc.GetCanvas()->SetStrokeRadius(3);
 	sc.SetWindowTitle("Spinach Demo");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.SetTargetFramesPerSecond(30);
@@ -169,6 +211,7 @@ int main(int argc, char* argv[])
 		buttonText = runText;
 	}
 	sc.MainLoop();
+	
 	pCore = nullptr;
 	return 0;
 }
