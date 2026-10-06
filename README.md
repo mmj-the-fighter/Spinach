@@ -16,7 +16,7 @@ Useful for:
 ## Known Issues
 - [Currently Screen recording / render to GIF is unoptimized and can be dangerous](https://github.com/mmj-the-fighter/Spinach/issues/1)
 
-##Acknowledgements & Thanks
+## Acknowledgements & Thanks 
 In chronological order:  
 - Rohith Kannan (Created chess game in Spinach, which demanded many improvements)
 - Meitar Basson (Created  Image scaling feature upon request, and granted license)
