@@ -15,6 +15,15 @@ Useful for:
 
 ## Known Issues
 - [Currently Screen recording / render to GIF is unoptimized and can be dangerous](https://github.com/mmj-the-fighter/Spinach/issues/1)
+
+##Acknowledgements & Thanks
+In chronological order:  
+- Rohith Kannan (Created chess game in Spinach, which demanded many improvements)
+- Meitar Basson (Created  Image scaling feature upon request, and granted license)
+- 'Nuclear' from Graphics Programming Discord (Reviewed the code of Spinach which lead to many improvements)
+- Priyansh Kashyap (Shared Action Delegate idea which is under experimentation)
+- Pranav Saxena (Created distributed raytracing example, and made PR)
+
  
 ## Examples / Tutorials
 - [render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering frames of pixelbuffer which is being modified per frame
