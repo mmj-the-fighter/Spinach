@@ -27,8 +27,15 @@ In chronological order:
 
  
 ## Examples / Tutorials
-- [render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering frames of pixelbuffer which is being modified per frame
-- [without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  demonstration of rendering a pixelbuffer once and waiting for input
+- [update-render loop skelton app](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_with_render_loop) demonstration of rendering frames of pixelbuffer which is being modified per frame
+- [drawing without render loop](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/example_without_render_loop)  demonstration of rendering a pixelbuffer once and waiting for input
+- [helloworld to morphing](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/morphing_polygons)
+- [raycasting example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raycasting_example) 
+- [software rendering example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/wireframe_rendering)
+- [image processing and spn::rmgui example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui)
+- [raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raytracing_example) 
+- [multithreaded raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/multithreaded_raytracing_example)
+- [distributed raytracing example with Ramanujan Computing](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/distributed_raytracing_for_rjc)
 - [logarithmic spiral](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/logarithmic_spiral)
 - [locus generation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/parametric_locus_generator)
 - [game of life simulation](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/game_of_life) 
@@ -37,12 +44,6 @@ In chronological order:
 - [snake clone](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/snake_clone)
 - [picture puzzle](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/picture_puzzle)
 - [tic-tac-toe](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/tictactoe)
-- [image processing and spn::rmgui example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/image_processing_with_rmgui)
-- [raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raytracing_example) 
-- [multithreaded raytracing example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/multithreaded_raytracing_example)
-- [distributed raytracing example with Ramanujan Computing](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/distributed_raytracing_for_rjc)
-- [raycasting example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/raycasting_example) 
-- [software rendering example](https://github.com/mmj-the-fighter/Spinach/tree/main/Spinach/examples/wireframe_rendering)
 
 ## Build / Project Generation
 
