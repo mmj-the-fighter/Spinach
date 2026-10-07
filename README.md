@@ -19,6 +19,7 @@ Useful for:
 ##Acknowledgements & Thanks
 In chronological order:  
 - Rohith Kannan (Created chess game in Spinach, which demanded many improvements)
+- A Reddit user (Suggested to remove the redundancy of Canvas::CopyPixels, with hints)
 - Meitar Basson (Created  Image scaling feature upon request, and granted license)
 - 'Nuclear' from Graphics Programming Discord (Reviewed the code of Spinach which lead to many improvements)
 - Priyansh Kashyap (Shared Action Delegate idea which is under experimentation)
