@@ -23,6 +23,7 @@ set(TICTACTOE tictactoe)
 set(RAYCASTING_EXAMPLE raycasting_example)
 set(DISTRIBUTED_RAYTRACING_FOR_RJC distributed_raytracing_for_rjc)
 set(MULTITHREADED_RAYTRACING_EXAMPLE multithreaded_raytracing_example)
+set(MORPHING_POLYGONS_EXAMPLE morphing_polygons)
 
 # Platform-specific flags
 if(APPLE)
@@ -605,5 +606,35 @@ target_include_directories(${MULTITHREADED_RAYTRACING_EXAMPLE} PRIVATE
 
 target_link_libraries(${MULTITHREADED_RAYTRACING_EXAMPLE} PRIVATE SDL3::SDL3)
 
+# 17. morphing polygons
 
 
+file(GLOB MORPHING_POLYGONS_CPP_SRC CONFIGURE_DEPENDS
+    examples/morphing_polygons/*.cpp
+)
+
+file(GLOB MORPHING_POLYGONS_CPP_H CONFIGURE_DEPENDS
+    examples/morphing_polygons/*.h
+)
+
+add_executable(${MORPHING_POLYGONS_EXAMPLE}
+    ${MORPHING_POLYGONS_CPP_SRC}
+    ${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${MORPHING_POLYGONS_CPP_H}
+    ${SPINACH_H}
+    ${NANOSVG_H}
+)
+
+target_include_directories(${MORPHING_POLYGONS_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+    spinach/external/nanosvg
+    examples/morphing_polygons
+)
+
+target_link_libraries(${MORPHING_POLYGONS_EXAMPLE} PRIVATE
+    SDL3::SDL3
+)
