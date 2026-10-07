@@ -80,8 +80,9 @@ namespace spn
 		MsfGifState msfGifState;
 		int msfGifCentiSecondsPerFrame=0;
 		int msfGifQuality=16;
-		void StartRecording();
 		void ProcessRecording();
+	public:
+		void StartRecording();
 		void StopRecording(bool saveData);
 #endif
 	};

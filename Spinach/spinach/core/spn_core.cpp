@@ -251,6 +251,9 @@ namespace spn
 
 #ifdef MSF_GIF_DEFINED
 	void SpinachCore::StartRecording() {
+		if (isRecording) {
+			return;
+		}
 		msfGifState = {};
 		msf_gif_bgra_flag = true;
 		//msf_gif_alpha_threshold = 128;
@@ -299,7 +302,10 @@ namespace spn
 	}
 
 	void SpinachCore::StopRecording(bool saveData) {
-		
+		if (!isRecording) {
+			return;
+		}
+
 		MsfGifResult msfGifResult = msf_gif_end(&msfGifState);
 		if (msfGifResult.data != NULL && saveData==true) {
 			char fileName[256];
