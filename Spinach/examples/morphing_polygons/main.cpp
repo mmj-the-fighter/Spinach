@@ -6,7 +6,7 @@
 #include <spn_profiler.h>
 #include <spn_geom.h>
 
-
+spn::SpinachCore* core;
 inline float easeInCubic(float t)
 {
 	return t * t * t;
@@ -100,8 +100,10 @@ void HandleInput(const SDL_Event* sdlEvent) {
 		case SDLK_F1:
 			std::cout << easingFnIndex << "  " << easeFnNamesArray[easingFnIndex] << std::endl;
 			running = true;
+			//core->StartRecording();
 			break;
 		case SDLK_SPACE:
+			//core->StopRecording(true);
 			frameCount = 0;
 			++easingFnIndex;
 			easingFnIndex = easingFnIndex % numOfEasingFns;
@@ -132,6 +134,7 @@ int main(int argc, char* argv[])
 	sc.SetTargetFramesPerSecond(30);
 	SetAnimationDelay(2.5, 30);
 	sc.LockFps(true);
+	core = &sc;
 	
 	sc.MainLoop();
 	//spn::Profiler::GetInstance().Print();
