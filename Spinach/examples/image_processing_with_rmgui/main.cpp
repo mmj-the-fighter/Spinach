@@ -276,7 +276,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 			bottom = t;
 		}
 		canvas->SetPrimaryColorUint(0xc0c0c0);
-		canvas->DrawRectangle(left, top, right, bottom);
+		canvas->DrawDashedRectangle(left, top, right, bottom);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
