@@ -40,10 +40,18 @@ void SaveWorkingImage(char* buffer) {
 }
 
 bool IsRoiDiscardable(const RoiRect r, int x, int y, int w, int h) {
+	RoiRect rr = r;
+	//is LR to TL drag then correct the roi
+	if ((r.x1 > r.x0) && (r.y0 > r.y1)) {
+		rr.x0 = r.x1;
+		rr.x1 = r.x0;
+		rr.y0 = rr.y1;
+		rr.y1 = rr.y0;
+	}
 	return
-		std::abs((r.x0 - r.x1) * (r.y0 - r.y1)) < 4L
+		std::abs((rr.x0 - rr.x1) * (rr.y0 - rr.y1)) < 4L
 		||
-		!spn::CheckCollision(r.x0, r.y0, r.x1, r.y1, x, y, x + w, y + h);
+		!spn::CheckCollision(rr.x0, rr.y0, rr.x1, rr.y1, x, y, x + w, y + h);
 }
 
 void ThresholdSeperation(float threshold) {
