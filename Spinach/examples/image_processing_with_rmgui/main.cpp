@@ -14,7 +14,9 @@
 #include <rmgui/spn_rmgui_button.h>
 #include <rmgui/spn_rmgui_slider.h>
 #include <rmgui/spn_rmgui_dropdown.h>
+#include <spn_geom.h>
 #include "imgprc.h"
+
 
 #define MAXRESX 800
 #define MAXRESY 600
@@ -22,6 +24,7 @@
 
 spn::Image sourceImage;
 spn::Image* workingImage;
+
 spn::rmgui::Button* doFilterButton;
 spn::rmgui::Button* showOriginalButton;
 spn::rmgui::Button* autoThreshButton;
@@ -30,28 +33,118 @@ spn::rmgui::Textbox* kernelSizeTextBox;
 spn::rmgui::Dropdown* algoDropdown;
 spn::rmgui::UiManager* uim;
 bool inputEnabled = true;
+int roiMaxWt = 0;
+int roiMaxHt = 0;
 
 spn::rmgui::Slider* threshSlider;
-RoiRect curRoi;
 bool buildingRoi = false;
+
+struct Roi {
+	spn::Vec2d point0 = {};
+	spn::Vec2d point1 = {};
+	RoiRect curRoi;
+	Roi(){}
+	
+	void AddPointFirst(spn::Vec2d&& p) {
+		point0 = std::move(p);
+	}
+
+	void UpdatePointSecond(spn::Vec2d&& p) {
+		point1 = std::move(p);
+		spn::Vec2d delta = spn::Sub(point1, point0);
+		if (delta.x > 0 && delta.y > 0) {//TL TO BR
+			curRoi = {
+				(int)point0.x,
+				(int)point0.y,
+				(int)point1.x,
+				(int)point1.y,
+			};
+		}
+		else if (delta.x < 0 && delta.y < 0) {//BR TO TL
+			curRoi = {
+			(int)point1.x,
+			(int)point1.y,
+			(int)point0.x,
+			(int)point0.y,
+			};
+		}
+		else if (delta.x > 0 && delta.y < 0) {//LB TO TR
+			curRoi = {
+			(int)(point0.x),
+			(int)point1.y,
+			(int)(point1.x),
+			(int)point0.y,
+			};
+		}
+		else if (delta.x < 0 && delta.y > 0) {//TR to LB
+			curRoi = {
+			(int)(point1.x),
+			(int)point0.y,
+			(int)(point0.x),
+			(int)point1.y,
+			};
+		}
+		else {
+			curRoi = {
+			(int)point0.x,
+			(int)point0.y,
+			(int)point0.x,
+			(int)point0.y,
+			};
+		}
+	}
+
+	const RoiRect& GetRoiRect() {
+		return curRoi;
+	}
+	void Display(spn::Canvas* canvas) {
+		canvas->DrawDashedRectangle(curRoi.x0, curRoi.y0, curRoi.x1, curRoi.y1);
+	}
+};
+
+Roi roi;
+
+struct Cursor {
+	spn::Image* cursorImage;
+	int x;
+	int y;
+	int offset;
+	bool isVisible;
+	Cursor(): x(0),y(0),offset(8),cursorImage(nullptr), isVisible(false){
+		cursorImage = new spn::Image(offset*2, offset*2);
+		spn::Canvas* cvs = cursorImage->GetCanvas();
+		cvs->SetAlpha(0);
+		int midx = cvs->GetWidth() / 2;
+		int midy = cvs->GetHeight() / 2;
+		cvs->DrawStroke(midx, 0, midx, cvs->GetHeight() - 1);
+		cvs->DrawStroke(0, midy, cvs->GetWidth() - 1, midy);
+	}
+	~Cursor() {
+		if (cursorImage != nullptr) {
+			delete cursorImage;
+			cursorImage = nullptr;
+		}
+	}
+	void Display(spn::Canvas* canvas) {
+		if (!isVisible) {
+			return;
+		}
+		canvas->EnableAlphaBlending(true);
+		canvas->DrawImage(cursorImage, x-offset, y-offset);
+		canvas->EnableAlphaBlending(false);
+	}
+	void Hide() {
+		isVisible = false;
+	}
+	void Show() {
+		isVisible = true;
+	}
+};
+
+Cursor cursor;
 
 void SaveWorkingImage(char* buffer) {
 	workingImage->SaveAsPng(buffer);
-}
-
-bool IsRoiDiscardable(const RoiRect r, int x, int y, int w, int h) {
-	RoiRect rr = r;
-	//is LR to TL drag then correct the roi
-	if ((r.x1 > r.x0) && (r.y0 > r.y1)) {
-		rr.x0 = r.x1;
-		rr.x1 = r.x0;
-		rr.y0 = rr.y1;
-		rr.y1 = rr.y0;
-	}
-	return
-		std::abs((rr.x0 - rr.x1) * (rr.y0 - rr.y1)) < 4L
-		||
-		!spn::CheckCollision(rr.x0, rr.y0, rr.x1, rr.y1, x, y, x + w, y + h);
 }
 
 void ThresholdSeperation(float threshold) {
@@ -59,24 +152,21 @@ void ThresholdSeperation(float threshold) {
 	int w = srcCanvas->GetWidth();
 	int h = srcCanvas->GetHeight();
 	int chn = srcCanvas->GetChannels();
-	if (IsRoiDiscardable(curRoi, 0, 0, w, h)) {
-		std::cout << "Roi invalid. right click for full window. left click and drag for region\n";
-		return;
-	}
+	
 	Threshold(workingImage->GetCanvas()->GetPixelBuffer(),
 		sourceImage.GetCanvas()->GetPixelBuffer(),
 		w,h,chn,
-		curRoi,
+		roi.GetRoiRect(),
 		threshold
 	);
 }
+
 void AutoThreshold() {
 	float t = GetAvgIntensity(sourceImage.GetCanvas()->GetPixelBuffer(),
 		sourceImage.GetCanvas()->GetNumOfPixels());
 	threshSlider->SetRangeAndValue(0, 255, t);
 	threshSlider->CalculateKnobPosition();
 }
-
 
 void OnSliderValueChanged(int id, float value) {
 	int i;
@@ -86,7 +176,6 @@ void OnSliderValueChanged(int id, float value) {
 		break;
 	}
 }
-
 
 void NoisedBlur(bool noFiltering)
 {	
@@ -104,12 +193,6 @@ void NoisedBlur(bool noFiltering)
 		memcpy(dstImg, srcImg, width * height * channels);
 		return;
 	}
-
-	if (IsRoiDiscardable(curRoi, 0, 0, width, height)) {
-		std::cout << "Roi invalid. right click for full window. left click and drag for region\n";
-		return;
-	}
-	
 
 	try {
 		kernelSize = std::stoi(kernelSizeTextBox->GetText());
@@ -138,31 +221,29 @@ void NoisedBlur(bool noFiltering)
 	float filterValue = 1.0f / (float)kernelSize;
 	float noiseAmount = 20 + rng.GenerateFloat() * 15;
 	std::cout << "noise amount " << noiseAmount << "\n";
-	RoiRect& roi = curRoi;
 	
 	Blur(smoothedImagePixels, srcImg, 
 		width, height, channels, 
-		curRoi, kernelSize);
+		roi.GetRoiRect(), kernelSize);
 	int choice = algoDropdown->GetOption();
 
 	if (choice == 0) {
 		std::cout << "Blue Noise\n";
 		BlueNoise(fullyFilteredImagePixels, smoothedImagePixels,
 			width, height, channels,
-			curRoi, noiseAmount);
+			roi.GetRoiRect(), noiseAmount);
 	}
 	else {
 		std::cout << "White Noise\n";
 		WhiteNoise(fullyFilteredImagePixels, smoothedImagePixels,
 			width, height, channels,
-			curRoi, noiseAmount);
+			roi.GetRoiRect(), noiseAmount);
 	}
 	
 	//change the dest image to be filtered
 	memcpy(dstImg, fullyFilteredImagePixels, width * height * channels);
 	inputEnabled = true;
 }
-
 
 void InitUi() {
 	using namespace spn::rmgui;
@@ -235,26 +316,23 @@ void InitUi() {
 	threshSlider->SetCallback(OnSliderValueChanged);
 	threshSlider->SetSensitivity(0.1);
 	threshSlider->SetCStringLabel("Threshold");
-	
 }
-
-
 
 void InitApp() {
 	spn::Profiler::GetInstance().Begin(954);
 	spn::Profiler::GetInstance().End();
 
 	sourceImage.CreateFromPng("../examples/res_for_examples/road.png");
+	roiMaxWt = sourceImage.GetCanvas()->GetWidth();
+	roiMaxHt = sourceImage.GetCanvas()->GetHeight();
 	workingImage = sourceImage.Clone();
 	int channels = 4;
 	int width = sourceImage.GetCanvas()->GetWidth();
 	int height = sourceImage.GetCanvas()->GetHeight();
 
 	//allocate temporary buffers
-	curRoi.x0 = 0;
-	curRoi.y0 = 0;
-	curRoi.x1 = width;
-	curRoi.y1 = height;
+	roi.AddPointFirst(spn::Vec2d{0,0});
+	roi.UpdatePointSecond(spn::Vec2d{(float)width,(float)height});
 	ImgPrcInit(width, height, channels);
 }
 
@@ -262,29 +340,13 @@ void DestroyApp() {
 	ImgPrcDeInit();
 }
 
-
 void UpdateAndRender(spn::Canvas* canvas) {
 	canvas->Clear();
 	canvas->DrawImage(workingImage, 0, 0);
 	uim->Display(canvas);
-		RoiRect& r = curRoi;
-		int left = r.x0;
-		int right = r.x1;
-		int t;
-		if (right < left) {
-			t = right;
-			right = left;
-			left = t;
-		}
-		int top = r.y0;
-		int bottom = r.y1;
-		if (top > bottom) {
-			t = top;
-			top = bottom;
-			bottom = t;
-		}
-		canvas->SetPrimaryColorUint(0xc0c0c0);
-		canvas->DrawDashedRectangle(left, top, right, bottom);
+	canvas->SetPrimaryColorUint(0xc0c0c0);
+	roi.Display(canvas);
+	cursor.Display(canvas);
 }
 
 void HandleInput(const SDL_Event* sdlEvent) {
@@ -298,10 +360,12 @@ void HandleInput(const SDL_Event* sdlEvent) {
 	switch (uie.mouseButton) {
 	case spn::ui::MouseButton::Right:
 			buildingRoi = false;
-			curRoi.x0 = 0;
-			curRoi.y0 = 0;
-			curRoi.x1 = sourceImage.GetCanvas()->GetWidth();
-			curRoi.y1 = sourceImage.GetCanvas()->GetHeight();
+			roi.AddPointFirst(spn::Vec2d{ 0,0 });
+			roi.UpdatePointSecond(
+				spn::Vec2d{ 
+					(float)sourceImage.GetCanvas()->GetWidth(),
+					(float)sourceImage.GetCanvas()->GetHeight() 
+				});
 			break;
 	case spn::ui::MouseButton::Left:
 		if (uie.eventType == spn::ui::UiEventType::MouseDown) {
@@ -309,10 +373,8 @@ void HandleInput(const SDL_Event* sdlEvent) {
 			if (uie.mouseX > sourceImage.GetCanvas()->GetWidth() || uie.mouseY > sourceImage.GetCanvas()->GetHeight()) {
 				break;
 			}
-			curRoi.x0 = uie.mouseX;
-			curRoi.x1 = uie.mouseX;
-			curRoi.y0 = uie.mouseY;
-			curRoi.y1 = uie.mouseY;
+			roi.AddPointFirst(spn::Vec2d{ (float)uie.mouseX,(float)uie.mouseY});
+			roi.UpdatePointSecond(spn::Vec2d{ (float)uie.mouseX,(float)uie.mouseY});
 		}
 		else if (uie.eventType == spn::ui::UiEventType::MouseDrag) {
 			if (buildingRoi) {
@@ -320,8 +382,7 @@ void HandleInput(const SDL_Event* sdlEvent) {
 					buildingRoi = false;
 					break;
 				}
-				curRoi.x1 = uie.mouseX;
-				curRoi.y1 = uie.mouseY;
+				roi.UpdatePointSecond(spn::Vec2d{ (float)uie.mouseX,(float)uie.mouseY });
 			}
 		}
 		else if (uie.eventType == spn::ui::UiEventType::MouseUp) {
@@ -330,11 +391,19 @@ void HandleInput(const SDL_Event* sdlEvent) {
 			}
 		}
 	}
+	cursor.x = uie.mouseX;
+	cursor.y = uie.mouseY;
+	if (cursor.x < roiMaxWt && cursor.y < roiMaxHt) {
+		SDL_HideCursor();
+		cursor.Show();
+	}
+	else {
+		SDL_ShowCursor();
+		cursor.Hide();
+	}
+
 	uim->HandleUiEvent(uie);
 }
-
-
-
 
 int main(int argc, char* argv[])
 {
