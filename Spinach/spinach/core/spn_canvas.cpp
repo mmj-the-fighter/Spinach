@@ -212,6 +212,138 @@ namespace spn
 		}
 	}
 
+
+	void Canvas::DrawDashedVLine(int x, int y0, int y1)
+	{
+		float dashon = 0.7;
+		float segmentDistance = 15;
+		float dashonDist = dashon * segmentDistance;
+		float distanceCovered = 0;
+
+		if (x < 0 || x >= width) {
+			return;
+		}
+
+		if (y0 > y1) {
+			std::swap(y0, y1);
+		}
+
+		if (y0 < 0) {
+			y0 = 0;
+		}
+
+		if (y1 >= height) {
+			y1 = height - 1;
+		}
+
+		unsigned char* loc = pixBuffer + y0 * pitch + x * 4;
+		int count = y1 - y0 + 1;
+		while (count--)
+		{
+			bool isVisible = std::fmod(distanceCovered, segmentDistance) < dashonDist;
+			if (isVisible) {
+				*loc = primaryColorB;
+				*(loc + 1) = primaryColorG;
+				*(loc + 2) = primaryColorR;
+			}
+			loc += pitch;
+			distanceCovered += 1;
+		}
+	}
+
+	
+	void Canvas::DrawDashedHLine(int y, int x0, int x1)
+	{
+		float dashon = 0.7;
+		float segmentDistance = 15;
+		float dashonDist = dashon * segmentDistance;
+		float distanceCovered = 0;
+
+		if (y < 0 || y >= height) {
+			return;
+		}
+
+		if (x0 > x1) {
+			std::swap(x0, x1);
+		}
+
+		if (x0 < 0) {
+			x0 = 0;
+		}
+
+		if (x1 >= width) {
+			x1 = width - 1;
+		}
+
+		unsigned char* loc = pixBuffer + y * pitch + x0 * 4;
+		int count = x1 - x0 + 1;
+		while (count--)
+		{
+			bool isVisible = std::fmod(distanceCovered, segmentDistance) < dashonDist;
+			if (isVisible) {
+				*loc = primaryColorB;
+				*(loc + 1) = primaryColorG;
+				*(loc + 2) = primaryColorR;
+			}
+			loc += 4;
+			distanceCovered += 1;
+		}
+	}
+
+
+	void Canvas::DrawDashedLine(int x0, int y0, int x1, int y1)
+	{
+		float dashon = 0.7;
+		float segmentDistance = 15;
+		float dashonDist = dashon * segmentDistance;
+		float distanceCovered = 0;
+
+		if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
+			return;
+		}
+		if (x1 < 0 || x1 > width - 1 || y1 < 0 || y1 > height - 1) {
+			return;
+		}
+
+		float x, y, xIncr, yIncr;
+		int steps;
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+
+
+		if (abs(dx) > abs(dy)) {
+			steps = abs(dx);
+		}
+		else {
+			steps = abs(dy);
+		}
+		xIncr = dx / static_cast<float>(steps);
+		yIncr = dy / static_cast<float>(steps);
+
+		
+		x = x0;
+		y = y0;
+		for (int i = 0; i < steps; i++) {
+			int ix = static_cast<int>(x + 0.5f);
+			int iy = static_cast<int>(y + 0.5f);
+			unsigned char* dstLoc = pixBuffer + pitch * iy + ix * channels;
+			bool isVisible = std::fmod(distanceCovered, segmentDistance) < dashonDist;
+			if (isVisible) {
+				*dstLoc++ = primaryColorB;
+				*dstLoc++ = primaryColorG;
+				*dstLoc++ = primaryColorR;
+				*dstLoc = 255;
+			}
+			else {
+				dstLoc += 4;
+			}
+
+			x += xIncr;
+			y += yIncr;
+			distanceCovered += sqrt(xIncr * xIncr + yIncr * yIncr);
+		}
+	}
+
 	void Canvas::DrawLine(int x0, int y0, int x1, int y1)
 	{
 		if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
@@ -326,7 +458,15 @@ namespace spn
 			y += yIncr;
 		}
 	}
-
+	void Canvas::DrawDashedRectangle(int left, int top, int right, int bottom) {
+		if (left < 0 || right > width - 1 || top < 0 || bottom > height - 1) {
+			return;
+		}
+		DrawDashedHLine(top, left, right);
+		DrawDashedHLine(bottom, left, right);
+		DrawDashedVLine(left, top, bottom);
+		DrawDashedVLine(right, top, bottom);
+	}
 	void Canvas::DrawRectangle(int left, int top, int right, int bottom) {
 		if (left < 0 || right > width - 1 || top < 0 || bottom > height - 1) {
 			return;

@@ -25,8 +25,11 @@ namespace spn
 			return (x >= 0 && x < width && y >= 0 && y < height);
 		}
 		void DrawLine(int x0, int y0, int x1, int y1);
+		void DrawDashedLine(int x0, int y0, int x1, int y1);
 		void DrawVLine(int x, int y0, int y1);
 		void DrawHLine(int y, int x0, int x1);
+		void DrawDashedVLine(int x, int y0, int y1);
+		void DrawDashedHLine(int y, int x0, int x1);
 		void SetStrokeRadius(float radius) {
 			strokeRadius = radius;
 			strokeRadiusSquared = radius * radius;
@@ -45,6 +48,7 @@ namespace spn
 			if (y1 >= height) y1 = height - 1;
 		}
 		void DrawRectangle(int left, int top, int right, int bottom);
+		void DrawDashedRectangle(int left, int top, int right, int bottom);
 		void DrawFilledRectangle(int left, int top, int right, int bottom);
 		void DrawImage(Image* image, int x, int y);
 		void DrawSubImage(Image* image, int x, int y,
