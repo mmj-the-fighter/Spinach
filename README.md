@@ -20,8 +20,9 @@ Useful for:
 In chronological order:  
 - Rohith Kannan (Created chess game in Spinach, which demanded many improvements)
 - A Reddit user (Suggested to remove the redundancy of Canvas::CopyPixels, with hints)
-- Meitar Basson (Created  Image scaling feature upon request, and granted license)
+- Sagar Kalbande (Posted a multisegment locus generater in LI, which inspired to do spn::rmgui from scratch)
 - 'Nuclear' from Graphics Programming Discord (Reviewed the code of Spinach which lead to many improvements)
+- Meitar Basson (Created  Image scaling feature upon request, and granted license)
 - Priyansh Kashyap (Shared Action Delegate idea which is under experimentation)
 - Pranav Saxena (Created distributed raytracing example, and made PR)
 
