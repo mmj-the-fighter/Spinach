@@ -31,6 +31,138 @@ static inline void ImgPrcDeInit(){
 	delete[] smoothedImagePixels;
 }
 
+static inline void PrepareBoxFilterKernel(float* kernel, int kernelSize) {
+	int halfKernelSize = kernelSize / 2;
+	float filterValue = 1.0f / (float)(kernelSize * kernelSize);
+	for (int i = 0; i < kernelSize; ++i) {
+		for (int j = 0; j < kernelSize; ++j) {
+			kernel[i * kernelSize + j] = filterValue;
+		}
+	}
+}
+
+static inline void PrepareUnmaskSharpeningKernel(
+	float* umsKernelOut,
+	int blurKernelSize,
+	float* blurKernel,
+	float sharpeningAmount) {
+	int halfKernelSize = blurKernelSize / 2;
+
+	for (int i = 0; i < blurKernelSize; ++i) {
+		for (int j = 0; j < blurKernelSize; ++j) {
+			umsKernelOut[i*blurKernelSize+j] = -sharpeningAmount * blurKernel[i * blurKernelSize + j];
+		}
+	}
+
+	umsKernelOut[halfKernelSize * blurKernelSize + halfKernelSize] += sharpeningAmount + 1.0f;
+}
+
+static inline void Convolve(
+	unsigned char* op,
+	unsigned char* ip,
+	int w, int h, int channels, 
+	const RoiRect& roi, 
+	int kernelSize, float* kernel
+) {
+	int halfKernelSize = kernelSize / 2;
+	for (int y = 0; y < h; ++y) {
+		for (int x = 0; x < w; ++x) {
+			//outside roi, just copy
+			if (y < roi.y0 || y > roi.y1 || x < roi.x0 || x > roi.x1) {
+				unsigned char* buffer = ip +
+					(w * channels * y) +
+					(x * channels);
+				unsigned char* outbuffer =
+					op +
+					(w * channels * y) +
+					(x * channels);
+				*outbuffer = *buffer;
+				*(outbuffer + 1) = *(buffer + 1);
+				*(outbuffer + 2) = *(buffer + 2);
+				*(outbuffer + 3) = 255; //alpha
+				continue;
+			}
+			//inside roi, convolve
+			float bs = 0.0;
+			float gs = 0.0;
+			float rs = 0.0;
+			for (int ki = -halfKernelSize; ki <= halfKernelSize; ++ki) {
+				for (int kj = -halfKernelSize; kj <= halfKernelSize; ++kj) {
+					int sampleLocationX = std::clamp(x + kj, 0, w - 1);
+					int sampleLocationY = std::clamp(y + ki, 0, h - 1);
+					float filterValue = kernel[(ki + halfKernelSize) * kernelSize + (kj + halfKernelSize)];
+					unsigned char* buffer = ip +
+						(w * channels * sampleLocationY) +
+						(sampleLocationX * channels);
+					bs += filterValue * *buffer;
+					gs += filterValue * *(buffer + 1);
+					rs += filterValue * *(buffer + 2);
+				}
+			}
+			unsigned char* outbuffer =
+				op +
+				(w * channels * y) +
+				(x * channels);
+			*outbuffer = 
+				static_cast<unsigned char>(std::clamp(bs, 0.0f, 255.0f));
+			*(outbuffer + 1) = 
+				static_cast<unsigned char>(std::clamp(gs, 0.0f, 255.0f));
+			*(outbuffer + 2) = 
+				static_cast<unsigned char>(std::clamp(rs, 0.0f, 255.0f));
+			//preserve alpha
+			*(outbuffer + 3) = 
+				*(ip + (w * channels * y) + (x * channels) + 3);
+		}
+	}
+}
+
+static inline void SharpenUmask(unsigned char* op, unsigned char* i, unsigned char* b, int w, int h, int channels, const RoiRect& roi, float sharpeningAmount) {
+	
+	for (int y = 0; y < h; ++y) {
+		for (int x = 0; x < w; ++x) {
+			if (y < roi.y0 || y > roi.y1 || x < roi.x0 || x > roi.x1) {
+				unsigned char* buffer = i +
+					(w * channels * y) +
+					(x * channels);
+				unsigned char* outbuffer =
+					op +
+					(w * channels * y) +
+					(x * channels);
+				*outbuffer = *buffer;
+				*(outbuffer + 1) = *(buffer + 1);
+				*(outbuffer + 2) = *(buffer + 2);
+				*(outbuffer + 3) = *(buffer + 3);
+				continue;
+			}
+			unsigned char* outbuffer =
+				op +
+				(w * channels * y) +
+				(x * channels);
+			unsigned char* bufferi = i +
+				(w * channels * y) +
+				(x * channels);
+			unsigned char* bufferb = b +
+				(w * channels * y) +
+				(x * channels);
+			//S = I + k * (I - B)
+			float v = *bufferi + sharpeningAmount * (*bufferi - *bufferb);
+			*outbuffer = 
+				static_cast<unsigned char>(std::clamp(v, 0.0f, 255.0f));
+			
+			v = *(bufferi + 1) 
+				+ sharpeningAmount * (*(bufferi + 1) - *(bufferb + 1));
+			*(outbuffer + 1) = 
+				static_cast<unsigned char>(std::clamp(v, 0.0f, 255.0f));
+			
+			v = *(bufferi + 2) 
+				+ sharpeningAmount * (*(bufferi + 2) - *(bufferb + 2));
+			*(outbuffer + 2) = 
+				static_cast<unsigned char>(std::clamp(v, 0.0f, 255.0f));
+			*(outbuffer + 3) = *(bufferi + 3);
+		}
+	}
+}
+
 static inline void Blur(unsigned char* op, unsigned char* ip, int w, int h, int channels, const RoiRect& roi,int kernelSize) {
 	
 	int halfKernelSize = kernelSize / 2;
