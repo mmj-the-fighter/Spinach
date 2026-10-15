@@ -17,14 +17,26 @@ Useful for:
 - [Currently Screen recording / render to GIF is unoptimized and can be dangerous](https://github.com/mmj-the-fighter/Spinach/issues/1)
 
 ## Acknowledgements & Thanks 
-In chronological order:  
+In chronological order (2015 - present):  
+- Akshay Aradhya (For writing an easy to grasp tutorial on Tic Tac Toe AI, it influenced the design of Tic Tac Toe example)
+- Sean Barrett (For giving the stb image libray to public domain, spn::image uses stb image)
 - Rohith Kannan (Created chess game in Spinach, which demanded many improvements)
 - A Reddit user (Suggested to remove the redundancy of Canvas::CopyPixels, with hints)
+- Abhinav Ashok Kumar (Helped with writing CMakeLists.txt through commits in Namaste3D project)
+- Peter Shirley (For giving the Raytracing in one weekend's source code to public domain, rt example uses that code)
 - Sagar Kalbande (Posted a multisegment locus generater in LI, which inspired to do spn::rmgui from scratch)
+- Mikko Mononen (For giving the nano svg library a permissible license, spn::image's svg rasterization is because of nano svg)
+- 'notnullnotvoid' (For giving the msf_gif library to public domain, spn::core's screen recording uses msf_gif)
 - 'Nuclear' from Graphics Programming Discord (Reviewed the code of Spinach which lead to many improvements)
 - Meitar Basson (Created  Image scaling feature upon request, and granted license)
+- Shaurya Aditya (Inspired to improve img prc example code)
+- Navonil Mukherjee (Helped with blue noise, Reviewed img prc example code which lead to modularalization)
+- Alan Wolfe (Helped with blue noise, Reposted LI post on Spinach, Inspired to create UMSharpen module in img prc example)
+- Lode Vandevenne (For giving the Raycasting example's source code a permissible license)
 - Priyansh Kashyap (Shared Action Delegate idea which is under experimentation)
-- Pranav Saxena (Created distributed raytracing example, and made PR)
+- Pranav Saxena (Created distributed raytracing example, and made PR, Reposted LI post on Spinach with Ramanujan Computing for distributed work loads)
+- Ajish G Habib (Inspired to do the example of morphing polygons)
+- F.S Hill Jr. (For writing the wonderful book: 'Computer Graphics with OpenGL'. Morphing polygons and spn::canvas turtle graphics module are inspired from the book's descriptions)
 
  
 ## Examples / Tutorials
