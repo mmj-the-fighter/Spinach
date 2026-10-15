@@ -37,6 +37,10 @@ namespace spn::rmgui {
 			onValueChangedFn = onValueChangedCallback;
 		}
 
+		inline float GetValue() {
+			return value;
+		}
+
 		void SetRangeAndValue(float start, float end, float val) {
 			rangeStart = start;
 			rangeEnd = end;
@@ -54,6 +58,7 @@ namespace spn::rmgui {
 			knoby = y;
 
 			value = rangeStart + (knobx - x) * (rangeEnd - rangeStart) / (x + w - x - knobw);
+			value = std::clamp(value, rangeStart, rangeEnd);
 			PrepareText(value);
 			if (onValueChangedFn != nullptr) {
 				onValueChangedFn(id, value);
@@ -132,6 +137,7 @@ namespace spn::rmgui {
 				}
 
 				float nv = rangeStart + ((knobx - x) * (rangeEnd - rangeStart) / (x + w - x - knobw));
+				nv = std::clamp(nv, rangeStart, rangeEnd);
 				bool valueChanged = false;
 				if (nv != value) {
 					valueChanged = true;
@@ -155,6 +161,7 @@ namespace spn::rmgui {
 			if (state == SLIDER_TRACK_PRESS && IsPointInsideTrack(mx, my)) {
 				knobx = mx;
 				float nv = ((knobx - x) * (rangeEnd - rangeStart) / (x + w - x - knobw));
+				nv = std::clamp(nv, rangeStart, rangeEnd);
 				//std::cout <<"\n" <<value << "\t\t";
 				bool valueChanged = false;
 				if (nv != value) {
