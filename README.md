@@ -19,6 +19,7 @@ Useful for:
 ## Acknowledgements & Thanks 
 In chronological order (2015 - present):  
 - Akshay Aradhya (For writing an easy to grasp tutorial on Tic Tac Toe AI, it influenced the design of Tic Tac Toe example)
+- Sam Oscar Lantinga and others responsible for SDL3 (SDL3 is currently the backbone of Spinach)
 - Sean Barrett (For giving the stb image libray to public domain, spn::image uses stb image)
 - Rohith Kannan (Created chess game in Spinach, which demanded many improvements)
 - A Reddit user (Suggested to remove the redundancy of Canvas::CopyPixels, with hints)
