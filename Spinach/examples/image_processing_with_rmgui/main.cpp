@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <memory_resource>
 #include <spn_canvas.h>
 #include <spn_core.h>
 #include <spn_profiler.h>
@@ -29,14 +30,20 @@ spn::rmgui::Button* doFilterButton;
 spn::rmgui::Button* showOriginalButton;
 spn::rmgui::Button* autoThreshButton;
 spn::rmgui::Button* saveButton;
+spn::rmgui::Button* sharpenButton;
 spn::rmgui::Textbox* kernelSizeTextBox;
 spn::rmgui::Dropdown* algoDropdown;
 spn::rmgui::UiManager* uim;
 bool inputEnabled = true;
 int roiMaxWt = 0;
 int roiMaxHt = 0;
+std::pmr::monotonic_buffer_resource pool;
+
+std::pmr::vector<float> blurKernel{ &pool };
+std::pmr::vector<float> sharpenKernel{ &pool };
 
 spn::rmgui::Slider* threshSlider;
+spn::rmgui::Slider* sharpenStrengthSlider;
 bool buildingRoi = false;
 
 struct Roi {
@@ -168,11 +175,124 @@ void AutoThreshold() {
 	threshSlider->CalculateKnobPosition();
 }
 
+//S = I + k * (I - B)
+void SharpenWithSeperableBlur(bool noFiltering) {
+	int i, j;
+	int x, y;
+	const int channels = 4;
+	int kernelSize = 3;
+	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
+	unsigned char* dstImg = workingImage->GetCanvas()->GetPixelBuffer();
+
+	int width = sourceImage.GetCanvas()->GetWidth();
+	int height = sourceImage.GetCanvas()->GetHeight();
+	if (noFiltering) {
+		std::cout << "Restoring the original image\n";
+		memcpy(dstImg, srcImg, width * height * channels);
+		return;
+	}
+
+	try {
+		kernelSize = std::stoi(kernelSizeTextBox->GetText());
+	}
+	catch (...) {
+		std::cout << "Parsing int failed...\n";
+		std::cout << "Blurring with kernel size 3\n";
+		kernelSize = 3;
+	}
+
+	if (kernelSize % 2 == 0) {
+		std::cout << "Can't work on even kernel size\n";
+		return;
+	}
+	if (kernelSize < 0 || kernelSize > 100) {
+		std::cout << "Invalid kernel size\n";
+		return;
+	}
+	inputEnabled = false;
+	std::cout << "Kernel size: " << kernelSize << std::endl;
+
+	Blur(smoothedImagePixels, srcImg,
+		width, height, channels,
+		roi.GetRoiRect(), kernelSize);
+
+
+	SharpenUmask(fullyFilteredImagePixels,
+		srcImg,
+		smoothedImagePixels,
+		width,
+		height,
+		channels,
+		roi.GetRoiRect(),
+		sharpenStrengthSlider->GetValue());
+
+	//change the dest image to be filtered
+	memcpy(dstImg, fullyFilteredImagePixels, width * height * channels);
+	inputEnabled = true;
+
+}
+
+void SharpenWithSingleKernel(bool noFiltering) {
+	int i, j;
+	int x, y;
+	const int channels = 4;
+	int kernelSize = 3;
+	unsigned char* srcImg = sourceImage.GetCanvas()->GetPixelBuffer();
+	unsigned char* dstImg = workingImage->GetCanvas()->GetPixelBuffer();
+
+	int width = sourceImage.GetCanvas()->GetWidth();
+	int height = sourceImage.GetCanvas()->GetHeight();
+	if (noFiltering) {
+		std::cout << "Restoring the original image\n";
+		memcpy(dstImg, srcImg, width * height * channels);
+		return;
+	}
+
+	try {
+		kernelSize = std::stoi(kernelSizeTextBox->GetText());
+	}
+	catch (...) {
+		std::cout << "Parsing int failed...\n";
+		std::cout << "Blurring with kernel size 3\n";
+		kernelSize = 3;
+	}
+	if (kernelSize % 2 == 0) {
+		std::cout << "Can't work on even kernel size\n";
+		return;
+	}
+	if (kernelSize < 0 || kernelSize > 100) {
+		std::cout << "Invalid kernel size\n";
+		return;
+	}
+	inputEnabled = false;
+	std::size_t count =
+		static_cast<std::size_t>(kernelSize * kernelSize);
+
+	blurKernel.resize(count);
+	sharpenKernel.resize(count);
+
+	PrepareBoxFilterKernel(blurKernel.data(), kernelSize);
+	PrepareUnmaskSharpeningKernel(sharpenKernel.data(), kernelSize, blurKernel.data(), sharpenStrengthSlider->GetValue());
+	/*for (int i = 0; i < kernelSize; i++) {
+		for (int j = 0; j < kernelSize; j++) {
+			std::cout << sharpenKernel.data()[i*kernelSize+j] << "\t";
+		}
+		std::cout << '\n';
+	}*/
+	Convolve(dstImg, srcImg, width, height, channels, roi.GetRoiRect(), kernelSize, sharpenKernel.data());
+	inputEnabled = true;
+}
+
 void OnSliderValueChanged(int id, float value) {
 	int i;
 	switch (id) {
 	case 100:
 		ThresholdSeperation(value);
+		break;
+	case 200:
+		//if(inputEnabled){
+			//Sharpen2(false);
+		//}
 		break;
 	}
 }
@@ -267,7 +387,7 @@ void InitUi() {
 	
 	doFilterButton = uim->CreateWidget<Button>();
 	doFilterButton->SetPosition(80, MAXRESY-50);
-	doFilterButton->SetSize(128, 32);
+	doFilterButton->SetSize(128-8, 32);
 	doFilterButton->SetString("Blur + Noise");
 	doFilterButton->SetCallback([=](int id) {
 		NoisedBlur(false);
@@ -275,25 +395,36 @@ void InitUi() {
 		});
 
 	showOriginalButton = uim->CreateWidget<Button>();
-	showOriginalButton->SetPosition(80+140, MAXRESY - 50);
-	showOriginalButton->SetSize(128, 32);
-	showOriginalButton->SetString("Show Original");
+	showOriginalButton->SetPosition(80+140-8, MAXRESY - 50);
+	showOriginalButton->SetSize(128-8, 32);
+	showOriginalButton->SetString("Original");
 	showOriginalButton->SetCallback([=](int id) {
 		NoisedBlur(true);
 		//EdgeDetectFilter(true);
 		});
 
 	autoThreshButton = uim->CreateWidget<Button>();
-	autoThreshButton->SetPosition(80 + 140+140, MAXRESY - 50);
-	autoThreshButton->SetSize(128, 32);
+	autoThreshButton->SetPosition(80 + 140+140-8-8, MAXRESY - 50);
+	autoThreshButton->SetSize(128-8, 32);
 	autoThreshButton->SetString("Auto Thresh");
 	autoThreshButton->SetCallback([=](int id) {
 		AutoThreshold();
 		});
 
+	sharpenButton = uim->CreateWidget<Button>();
+	sharpenButton->SetPosition(80 + 140 + 140 + 140-24, MAXRESY - 50);
+	sharpenButton->SetSize(128-8, 32);
+	sharpenButton->SetString("Sharpen");
+	sharpenButton->SetCallback([=](int id) {
+		std::cout << "Sharpen\n";
+		if (inputEnabled) {
+			SharpenWithSeperableBlur(false);
+		}
+		});
+
 	saveButton = uim->CreateWidget<Button>();
-	saveButton->SetPosition(80 + 140 + 140 + 140, MAXRESY - 50);
-	saveButton->SetSize(128, 32);
+	saveButton->SetPosition(80 + 140 + 140 + 140+140-32, MAXRESY - 50);
+	saveButton->SetSize(128-8, 32);
 	saveButton->SetString("Save");
 	saveButton->SetCallback([=](int id) {
 		char buffer[256];
@@ -316,6 +447,17 @@ void InitUi() {
 	threshSlider->SetCallback(OnSliderValueChanged);
 	threshSlider->SetSensitivity(0.1);
 	threshSlider->SetCStringLabel("Threshold");
+
+	sharpenStrengthSlider = uim->CreateWidget<Slider>();
+	sharpenStrengthSlider->SetId(200);
+	sharpenStrengthSlider->SetPosition(MAXRESX - 250 - 2, MAXRESY / 2+38);
+	sharpenStrengthSlider->SetSize(120, 32);
+	sharpenStrengthSlider->SetDecimalPlaces(2);
+	sharpenStrengthSlider->SetRangeAndValue(0.0f, 1.0f, 1.0f);
+	sharpenStrengthSlider->CalculateKnobPosition();
+	sharpenStrengthSlider->SetCallback(OnSliderValueChanged);
+	sharpenStrengthSlider->SetSensitivity(0.1);
+	sharpenStrengthSlider->SetCStringLabel("S. Amount");
 }
 
 void InitApp() {
@@ -420,7 +562,7 @@ int main(int argc, char* argv[])
 	
 	sc.SetUpdateAndRenderHandler(UpdateAndRender);
 	sc.SetInputHandler(HandleInput);	
-	sc.SetWindowTitle("Image Processing Example");
+	sc.SetWindowTitle("Spinach: Image Processing Example");
 	sc.GetCanvas()->SetPrimaryColor(255, 255, 0);
 	sc.GetCanvas()->SetClearColor(0, 0, 0);
 	sc.SetTargetFramesPerSecond(30);
