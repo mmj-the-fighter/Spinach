@@ -30,6 +30,7 @@ In chronological order (2015 - present):
 - 'notnullnotvoid' (For giving the msf_gif library to public domain, spn::core's screen recording uses msf_gif)
 - 'Nuclear' from Graphics Programming Discord (Reviewed the code of Spinach which lead to many improvements)
 - Meitar Basson (Created  Image scaling feature upon request, and granted license)
+-Ayush Raju Bade (Wrote article on pitfalls of constructor based initialization, it affected the design of Spinach)
 - Shaurya Aditya (Inspired to improve img prc example code)
 - Navonil Mukherjee (Helped with blue noise, Reviewed img prc example code which lead to modularalization)
 - Alan Wolfe (Helped with blue noise, Reposted LI post on Spinach, Inspired to create UMSharpen module in img prc example)
