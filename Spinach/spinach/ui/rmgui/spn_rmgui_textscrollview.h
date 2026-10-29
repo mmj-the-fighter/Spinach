@@ -199,44 +199,59 @@ namespace spn::rmgui {
 			}
 		}
 
+		bool ScrollDown() {
+			if (lines.size() == 0) {
+				return true;
+			}
+			lineStart = ClampValue<int>(lineStart + 1, 0, lines.size() - 1);
+			float lsz = lines.size();
+			value = ClampValue<float>(value + (1.0f / lsz), 0.0f, 1.0f);
+			CalculateThumbPosition();
+		}
+
 		bool OnDownArrowKey() {
 			if (!HasFocus()) {
 				return  false;
 			}
+			return ScrollDown();
+		}
+
+		bool ScrollUp() {
 			if (lines.size() == 0) {
 				return true;
 			}
-			lineStart = ClampValue<int>(lineStart+1, 0, lines.size()-1);
+			lineStart = ClampValue<int>(lineStart - 1, 0, lines.size() - 1);
 			float lsz = lines.size();
-			value = ClampValue<float>(value + (1.0f / lsz), 0.0f, 1.0f);
+			value = ClampValue<float>(value - (1.0f / lsz), 0.0f, 1.0f);
 			CalculateThumbPosition();
-			return true;
 		}
 
 		bool OnUpArrowKey() {
 			if (!HasFocus()) {
 				return  false;
 			}
-			if (lines.size() == 0) {
-				return true;
-			}
-			lineStart = ClampValue<int>(lineStart-1, 0, lines.size()-1);
-			float lsz = lines.size();
-			value = ClampValue<float>(value - (1.0f / lsz), 0.0f, 1.0f);
-			CalculateThumbPosition();
-			return true;
+			return ScrollUp();
 		}
 
 		int GetLineNum() {
 			return lines.size();
 		}
 		
+		void HighLight(int n) {
+			if (n >= lines.size()) {
+				return;
+			}
+			highLightedLineNum = n;
+		}
+
+		void ClearHighLight() {
+			highLightedLineNum = -1;
+		}
 
 		std::string* GetTextAtLine(size_t lineNo) 
 		{
 			if (lineNo >= lines.size())
 				return nullptr;
-
 			return &lines[lineNo];
 		}
 
@@ -287,9 +302,19 @@ namespace spn::rmgui {
 				int k = 0;
 				for (int i = lineStart; i < lines.size() && i < lineStart+maxLinesInView; ++i, ++k) {
 					//canvas->DrawCString(lines[i].c_str(), x + 4, y + th * k + 2);
-					canvas->DrawCString(lines[i].c_str(), x + 4, y + th * k);
+					if (highLightedLineNum >= 0 && i == highLightedLineNum) {
+						canvas->SetPrimaryColorUint(0x0000ff);
+						canvas->DrawFilledRectangle(x, y + th * k, x + w- thumbW, y + th);
+						canvas->SetPrimaryColorUint(0xffffff);
+						canvas->DrawCString(lines[i].c_str(), x + 4, y + th * k);
+					}
+					else {
+						canvas->SetPrimaryColorUint(0xffffff);
+						canvas->DrawCString(lines[i].c_str(), x + 4, y + th * k);
+					}
 				}
 			}
+			canvas->SetPrimaryColorUint(0xffffff);
 			
 			
 			//Track
@@ -394,6 +419,7 @@ namespace spn::rmgui {
 		int lastMouseY = 0;
 
 		std::vector<std::string> lines;
+		int highLightedLineNum = -1;
 	};
 
 }
