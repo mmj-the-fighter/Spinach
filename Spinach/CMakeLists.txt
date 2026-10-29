@@ -24,6 +24,7 @@ set(RAYCASTING_EXAMPLE raycasting_example)
 set(DISTRIBUTED_RAYTRACING_FOR_RJC distributed_raytracing_for_rjc)
 set(MULTITHREADED_RAYTRACING_EXAMPLE multithreaded_raytracing_example)
 set(MORPHING_POLYGONS_EXAMPLE morphing_polygons)
+set(TOH_SIM_EXAMPLE toh_sim)
 
 # Platform-specific flags
 if(APPLE)
@@ -636,5 +637,37 @@ target_include_directories(${MORPHING_POLYGONS_EXAMPLE} PRIVATE
 )
 
 target_link_libraries(${MORPHING_POLYGONS_EXAMPLE} PRIVATE
+    SDL3::SDL3
+)
+
+
+# 18. tower of hanoi simulation
+file(GLOB TOH_SIM_CPP_SRC CONFIGURE_DEPENDS
+    examples/toh_sim/*.cpp
+)
+
+file(GLOB TOH_SIM_CPP_H CONFIGURE_DEPENDS
+    examples/toh_sim/*.h
+)
+
+add_executable(${TOH_SIM_EXAMPLE}
+    ${TOH_SIM_CPP_SRC}
+    ${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${TOH_SIM_CPP_H}
+    ${SPINACH_H}
+    ${NANOSVG_H}
+)
+
+target_include_directories(${TOH_SIM_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+    spinach/external/nanosvg
+    examples/toh_sim
+)
+
+target_link_libraries(${TOH_SIM_EXAMPLE} PRIVATE
     SDL3::SDL3
 )
