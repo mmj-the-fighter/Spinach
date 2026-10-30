@@ -247,7 +247,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 
 void ProcessCommandBuffer(std::vector<Command> commandBuffer) {
 	std::thread t([=]() {
-		std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		isAnimating = true;
 		int i = 0;
 		for (const auto& c : commandBuffer) {
@@ -260,7 +260,7 @@ void ProcessCommandBuffer(std::vector<Command> commandBuffer) {
 			inputArray[3] = toTower.GetTopEmptyPos();
 			fromTower.EnableTopDiskVisibility(false);
 			animatedDisk = fromTower.GetTopDisk();
-			threeLineAnimator.Set(3, inputArray);
+			threeLineAnimator.Set(1.5, inputArray);
 			while (!threeLineAnimator.IsEndValueReached()) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(250));
 			}
