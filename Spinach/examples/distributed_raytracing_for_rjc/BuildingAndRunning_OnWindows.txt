@@ -25,31 +25,36 @@ java -jar developer-console-1.0-SNAPSHOT-fat.jar %*
 
 Save it as rjc.cmd and place it in workspace directory.
 
+Make system variable called RAMANUJAN_WS with the workspace directory path
+
 Step 5: Run Locally
-in workspace directory execute these commands
+In workspace directory, execute these commands
 rjc homelab 8888
 
-in a separate shell:
+In a separate shell:
 rjc worker http://127.0.0.1:8888 8
 
 Build Spinach part
 Run distributed_raytracing_for_rjc example
 
 Step 6: Run 4 workers locally and 4 workers in another computer in LAN
-in workspace directory execute these commands
+In workspace directory, execute these commands
 rjc homelab 8888
 
-in a separate shell:
+In a separate shell:
 rjc worker http://127.0.0.1:8888 4
 
-in a separate shell:
+In a separate shell:
 ipconfig
 note down the ip address of the machine
 
 in a second PC on the LAN
+copy workspace folder containg rjc.cmd, developer-console-1.0-SNAPSHOT-fat.jar, and native.dll 
+Make system variable called RAMANUJAN_WS with the workspace directory path
+
 rjc worker http://thenotedipaddress:8888 4
 
-in the first PC:
+In the first PC:
 Build Spinach part
 Run distributed_raytracing_for_rjc example
 
