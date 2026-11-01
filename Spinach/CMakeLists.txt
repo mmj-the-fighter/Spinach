@@ -25,6 +25,7 @@ set(DISTRIBUTED_RAYTRACING_FOR_RJC distributed_raytracing_for_rjc)
 set(MULTITHREADED_RAYTRACING_EXAMPLE multithreaded_raytracing_example)
 set(MORPHING_POLYGONS_EXAMPLE morphing_polygons)
 set(TOH_SIM_EXAMPLE toh_sim)
+set(LC_CONSTRAINTS_EXAMPLE constraints_example)
 
 # Platform-specific flags
 if(APPLE)
@@ -669,5 +670,36 @@ target_include_directories(${TOH_SIM_EXAMPLE} PRIVATE
 )
 
 target_link_libraries(${TOH_SIM_EXAMPLE} PRIVATE
+    SDL3::SDL3
+)
+
+# 19. constraints example
+file(GLOB LC_EXAMPLE_CPP_SRC CONFIGURE_DEPENDS
+    examples/constraints_example/*.cpp
+)
+
+file(GLOB LC_EXAMPLE_CPP_H CONFIGURE_DEPENDS
+    examples/constraints_example/*.h
+)
+
+add_executable(${LC_CONSTRAINTS_EXAMPLE}
+    ${LC_EXAMPLE_CPP_SRC}
+    ${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${LC_EXAMPLE_CPP_H}
+    ${SPINACH_H}
+    ${NANOSVG_H}
+)
+
+target_include_directories(${LC_CONSTRAINTS_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+    spinach/external/nanosvg
+    examples/constraints_example
+)
+
+target_link_libraries(${LC_CONSTRAINTS_EXAMPLE} PRIVATE
     SDL3::SDL3
 )
