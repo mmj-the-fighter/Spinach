@@ -1,5 +1,6 @@
 #ifndef SPN_GEOM_H
 #define SPN_GEOM_H
+#include <cmath>
 
 namespace spn
 {
@@ -22,6 +23,10 @@ namespace spn
 	inline static float DistanceSquared(const Vec2d& a, const Vec2d& b) {
 		return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
 	}
+
+	inline static float Distance(const Vec2d& a, const Vec2d& b) {
+		return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+	}
 	
 	inline static Vec2d Add(const Vec2d& a, const Vec2d& b) {
 		return Vec2d{ 
@@ -34,6 +39,13 @@ namespace spn
 		return Vec2d{ 
 			a.x - b.x, 
 			a.y - b.y
+		};
+	}
+
+	inline static Vec2d Perp(const Vec2d& a) {
+		return Vec2d{
+			-a.y,
+			a.x
 		};
 	}
 	
