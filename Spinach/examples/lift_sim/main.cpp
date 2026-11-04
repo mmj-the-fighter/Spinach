@@ -19,6 +19,46 @@
 //TODO: Add a module for Optimized lift-scheduling, 
 // where each person's source and destination are known
 
+
+struct  UserRequest {
+	int requestedFloor;
+	int requestedIndex;
+};
+
+struct LiftState {
+	int currentFloor;
+	bool isLiftLoadingAndUnloading;
+};
+
+struct LiftScanRange {
+	int start;
+	int end;
+};
+
+struct UserRequestWithProps {
+	UserRequest req;
+	bool enqueued;
+	int floorDelta;
+	int absoluteFloorDelta;
+};
+
+enum IndicatorStatus {
+	PENDING, SERVING, SERVED
+};
+struct Indicator {
+	spn::Vec2d point;
+	IndicatorStatus status;
+};
+
+std::unordered_map<int, spn::Vec2d> floorToLiftPointMapping;
+std::unordered_map<int, Indicator> floorToIndicatorMapping;
+std::vector<int> requestedFloors;
+utils::Vec2dInterpolator interpolator;
+std::unordered_map<int, UserRequestWithProps> indexToRequestMapping;
+std::vector<UserRequestWithProps> requestsVec;
+std::queue<UserRequest> requests;
+LiftState liftState;
+
 spn::rmgui::UiManager* uiManager;
 spn::rmgui::Button* nextButton;
 
@@ -32,37 +72,12 @@ int floorWidth = 200;
 int liftStartx;
 int liftStarty;
 int liftHeight = 0;
-int liftWidth = floorWidth*2/3;
+int liftWidth = floorWidth * 2 / 3;
 int liftx;
 int lifty;
 int numberOfFloors = 0;
 int buildingOffsetFromTop;
-std::unordered_map<int, spn::Vec2d> floorToLiftPointMapping;
-std::unordered_map<int, spn::Vec2d> indicatorMap;
-std::vector<int> requestedFloors;
-utils::Vec2dInterpolator interpolator;
 
-
-struct LiftState {
-	int currentFloor;
-	bool isLiftLoadingAndUnloading;
-};
-
-LiftState liftState;
-
-struct  UserRequest {
-	int requestedFloor;
-	int requestedIndex;
-};
-
-struct UserRequestWithProps {
-	UserRequest req;
-	bool enqueued;
-	int floorDelta;
-	int absoluteFloorDelta;
-};
-
-std::queue<UserRequest> requests;
 
 int ConvertFloorToIndex(int floor) {
 	return floor - floorsRangeStart;
@@ -72,7 +87,7 @@ int ConvertIndexToFloor(int index) {
 	return index + floorsRangeStart;
 }
 
-int CalculateCost(int liftfloor, std::queue<UserRequest> r) {
+int CalculateTravelCost(int liftfloor, std::queue<UserRequest> r) {
 	int i = liftfloor;
 	int cost = 0;
 	while (!r.empty()) {
@@ -97,31 +112,26 @@ void SetLiftFloor(int floor) {
 	liftStarty = buildingOffsetFromTop - (ConvertFloorToIndex(floor) + 1) * floorHeight;
 }
 
-int Sign(int n) {
-	return n < 0 ? -1 : 1;
+bool CompareUserRequestsWithProps(UserRequestWithProps a, UserRequestWithProps b) {
+	return a.floorDelta < b.floorDelta;
 }
 
-struct LiftScanRange {
-	int start;
-	int end;
-};
-
-void GenerateRandomRequests() {
-	std::unordered_map<int, UserRequestWithProps> indexToRequestMapping;
-	LiftScanRange scanRange[2];
+void GenerateRandomRequestsWithPropsAndSort() {
+	indexToRequestMapping = {};
+	requestsVec = {};
+	
 	requests = {};
 	requestedFloors = {};
-	std::vector<UserRequestWithProps> requestsVec;      
+
 	spn::RandomGen& rng = spn::RandomGen::GetInstance();
-	int n = rng.GenerateInRange(0, 10);
-	
-	int arr[] = { -2,2,-1,3, 0};
+	//int n = rng.GenerateInRange(0, 10);
+
+	//int arr[] = { -2,2,-1,3, 0 };
 	//int lfr = rng.GenerateInRange(floorsRangeStart, floorsRangeEnd);
 	//int lfr = 0;
 	//SetLiftFloor(lfr);
 	//InitLiftPosition(lfr);
 	std::cout << "Lift at " << liftState.currentFloor << '\n';
-	int liftStateFloorCopy = liftState.currentFloor;
 
 	//create random requests with properties wrt currentFloor of the lift
 	for (int i = 0; i < 5; i++) {
@@ -129,7 +139,7 @@ void GenerateRandomRequests() {
 		//int rfloor = arr[i];
 		int rfloorIndex = ConvertFloorToIndex(rfloor);
 		if (indexToRequestMapping.find(rfloorIndex) == indexToRequestMapping.end()) {
-			UserRequest r = { rfloor, rfloorIndex};
+			UserRequest r = { rfloor, rfloorIndex };
 			int floorDelta = rfloor - liftState.currentFloor;
 			UserRequestWithProps urwp = { r,false,floorDelta, std::abs(floorDelta) };
 			requestsVec.push_back(urwp);
@@ -137,16 +147,17 @@ void GenerateRandomRequests() {
 			std::cout << "Floor requested: " << rfloor << '\n';
 		}
 	}
-	
-	//sort according to absolute distance 
-	std::sort(requestsVec.begin(), requestsVec.end(), 
-		[](UserRequestWithProps a, UserRequestWithProps b) {
-			return a.floorDelta < b.floorDelta;
-		});
 
+	//sort according to floor delta 
+	std::sort(requestsVec.begin(), requestsVec.end(), CompareUserRequestsWithProps);
+}
 
+void ScheduleAndEnqueueRequests(){
+	if (requestsVec.empty()) {
+		return;
+	}
+	LiftScanRange scanRange[2];
 	//do nearest extreme scheduling and enqueue requests
-	int reqVecSize = requestsVec.size();
 	UserRequestWithProps rs = requestsVec.front();
 	UserRequestWithProps re = requestsVec.back();
 	if (rs.absoluteFloorDelta < re.absoluteFloorDelta) {
@@ -208,7 +219,7 @@ void GenerateRandomRequests() {
 			}
 		}
 	}
-	std::cout << "Cost "<< CalculateCost(liftState.currentFloor, requests) << '\n';
+	std::cout << "Cost "<< CalculateTravelCost(liftState.currentFloor, requests) << '\n';
 }
 
 void UpdateAndRender(spn::Canvas* canvas) {
@@ -235,8 +246,24 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	canvas->DrawRectangle(lp.x, lp.y, lp.x + liftWidth, lp.y + liftHeight);
 
 	for (const auto& rf: requestedFloors) {
-		spn::Vec2d ip = indicatorMap[rf];
-		canvas->DrawFilledRectangle(ip.x, ip.y, ip.x + 20, ip.y + 20);
+		Indicator indicator = floorToIndicatorMapping[rf];
+		switch (indicator.status) {
+		case PENDING:
+			canvas->SetPrimaryColorUint(0xc0c000);
+			break;
+		case SERVING:
+			canvas->SetPrimaryColorUint(0x0000c0);
+			break;
+		case SERVED:
+			canvas->SetPrimaryColorUint(0xc0c0c0);
+			break;
+		}
+		canvas->DrawFilledRectangle(
+			indicator.point.x, 
+			indicator.point.y, 
+			indicator.point.x + 20, 
+			indicator.point.y + 20
+		);
 	}
 
 	uiManager->Display(canvas);
@@ -259,8 +286,6 @@ void HandleInput(const SDL_Event* sdlEvent) {
 	uiManager->HandleUiEvent(uie);
 }
 
-
-
 void Init(spn::SpinachCore *core) {
 	using namespace spn::rmgui;
 	uiManager = &UiManager::GetInstance();
@@ -270,8 +295,21 @@ void Init(spn::SpinachCore *core) {
 	nextButton->SetString("Next");
 	nextButton->SetCallback([=](int id) {
 		if (!hasEntitiesInQueue) {
-			GenerateRandomRequests();
+			GenerateRandomRequestsWithPropsAndSort();
+			ScheduleAndEnqueueRequests();
 			hasEntitiesInQueue = true;
+			for (auto& [i, indicator] : floorToIndicatorMapping) {
+				if (
+					indexToRequestMapping.find(ConvertFloorToIndex(i)) 
+					== indexToRequestMapping.end()
+					)
+				{
+					indicator.status = SERVED;
+				}
+				else {
+					indicator.status = PENDING;
+				}
+			}
 		}
 		});
 	numberOfFloors = (floorsRangeEnd - floorsRangeStart) + 1;
@@ -294,18 +332,20 @@ void Init(spn::SpinachCore *core) {
 				static_cast<float>(x),
 				static_cast<float>(y),
 		};
-		indicatorMap[ConvertIndexToFloor(i)] =
-			spn::Vec2d{
-				static_cast<float>(floorStartx+floorWidth-30),
-				static_cast<float>(y+20),
+		Indicator indicator;
+		indicator.point = spn::Vec2d{
+				static_cast<float>(floorStartx + floorWidth - 30),
+				static_cast<float>(y + 20),
 		};
-		
+		indicator.status = SERVED;
+		floorToIndicatorMapping[ConvertIndexToFloor(i)] = indicator;
 	}
 	InitLiftPosition(liftState.currentFloor);
 	liftState.isLiftLoadingAndUnloading = false;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+ {
 	spn::SpinachCore sc;
 	if (!sc.Init(800, 600, "../res/")) {
 		std::cout << "initialization failed with error "
@@ -317,7 +357,7 @@ int main(int argc, char* argv[]) {
 	std::atomic<bool> userQuit = false;
 	std::thread liftMotionThread([&]() {
 		while (!userQuit) {
-			while (requests.size() == 0) {
+			while (requests.empty()) {
 				if (userQuit) {
 					break;
 				}
@@ -351,7 +391,9 @@ int main(int argc, char* argv[]) {
 			}
 			liftState.isLiftLoadingAndUnloading = true;
 			liftState.currentFloor = f.requestedFloor;
+			floorToIndicatorMapping[f.requestedFloor].status = SERVING;
 			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			floorToIndicatorMapping[f.requestedFloor].status = SERVED;
 		}
 		});
 	sc.SetUpdateAndRenderHandler(UpdateAndRender);
