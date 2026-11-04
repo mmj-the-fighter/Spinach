@@ -26,6 +26,7 @@ set(MULTITHREADED_RAYTRACING_EXAMPLE multithreaded_raytracing_example)
 set(MORPHING_POLYGONS_EXAMPLE morphing_polygons)
 set(TOH_SIM_EXAMPLE toh_sim)
 set(LC_CONSTRAINTS_EXAMPLE constraints_example)
+set(LIFT_SIM_EXAMPLE lift_sim)
 
 # Platform-specific flags
 if(APPLE)
@@ -701,5 +702,37 @@ target_include_directories(${LC_CONSTRAINTS_EXAMPLE} PRIVATE
 )
 
 target_link_libraries(${LC_CONSTRAINTS_EXAMPLE} PRIVATE
+    SDL3::SDL3
+)
+
+
+# 20. lift simulation
+file(GLOB LIFT_SIM_CPP_SRC CONFIGURE_DEPENDS
+    examples/lift_sim/*.cpp
+)
+
+file(GLOB LIFT_SIM_CPP_H CONFIGURE_DEPENDS
+    examples/lift_sim/*.h
+)
+
+add_executable(${LIFT_SIM_EXAMPLE}
+    ${LIFT_SIM_CPP_SRC}
+    ${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${LIFT_SIM_CPP_H}
+    ${SPINACH_H}
+    ${NANOSVG_H}
+)
+
+target_include_directories(${LIFT_SIM_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+    spinach/external/nanosvg
+    examples/lift_sim
+)
+
+target_link_libraries(${LIFT_SIM_EXAMPLE} PRIVATE
     SDL3::SDL3
 )
