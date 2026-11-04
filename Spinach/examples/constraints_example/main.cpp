@@ -13,7 +13,9 @@
 #include <rmgui/spn_rmgui_button.h>
 #include <rmgui/spn_rmgui_label.h>
 #include <rmgui/spn_rmgui_dropdown.h>
-
+//TODO: Add dynamic constraints, 
+// i.e. make the 2nd line parallel or perpendicular to 
+//the first line while the user is drawing the 2nd line
 spn::rmgui::Dropdown* actionTypeDropdown;
 spn::rmgui::Label* actionLabel;
 spn::rmgui::UiManager* uim;
