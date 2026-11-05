@@ -19,8 +19,7 @@ namespace spn
 			elpTime(0), 
 			isAnimationEnabled(isAnimated)
 		{
-			assert(animDelay >= 0);
-			assert(spriteImage && rows > 0 && cols > 0);
+			assert(animDelay >= 0 && spriteImage && rows > 0 && cols > 0);
 			delay = animDelay;
 			w = image->GetCanvas()->GetWidth();
 			h = image->GetCanvas()->GetHeight();
