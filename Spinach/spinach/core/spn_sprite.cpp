@@ -1,5 +1,3 @@
-#include <string>
-#include <vector>
 #include <assert.h>
 #include "spn_image.h"
 #include "spn_canvas.h"
