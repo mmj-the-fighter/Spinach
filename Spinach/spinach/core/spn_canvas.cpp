@@ -406,12 +406,42 @@ namespace spn
 
 	void Canvas::DrawStroke(int x0, int y0, int x1, int y1)
 	{
-		if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
-			return;
+		if (x0 < clipRect.left) {
+			x0 = clipRect.left;
 		}
-		if (x1 < 0 || x1 > width - 1 || y1 < 0 || y1 > height - 1) {
-			return;
+		else if (x0 >= clipRect.left + clipRect.width) {
+			x0 = clipRect.left + clipRect.width - 1;
 		}
+
+		if (y0 < clipRect.top) {
+			y0 = clipRect.top;
+		}
+		else if (y0 >= clipRect.top + clipRect.height) {
+			y0 = clipRect.top + clipRect.height - 1;
+		}
+
+		if (x1 < clipRect.left) {
+			x1 = clipRect.left;
+		}
+		else if (x1 >= clipRect.left + clipRect.width) {
+			x1 = clipRect.left + clipRect.width - 1;
+		}
+
+		if (y1 < clipRect.top) {
+			y1 = clipRect.top;
+		}
+		else if (y1 >= clipRect.top + clipRect.height) {
+			y1 = clipRect.top + clipRect.height - 1;
+		}
+
+
+
+		//if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1) {
+		//	return;
+		//}
+		//if (x1 < 0 || x1 > width - 1 || y1 < 0 || y1 > height - 1) {
+		//	return;
+		//}
 
 		float x, y, xIncr, yIncr;
 		int steps;
