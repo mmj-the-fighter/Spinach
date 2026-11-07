@@ -1,65 +1,89 @@
 #ifndef SPN_GEOM_H
 #define SPN_GEOM_H
+
 #include <cmath>
 
 namespace spn
 {
-	struct Vec2d {
-		float x;
-		float y;
-	};
-	
-	inline static float Lerp(float a, float b, float t) {
-		return a + (b - a) * t;
-	}
-	
-	inline static Vec2d Lerp(const Vec2d& a, const Vec2d& b, float t) {
-		return Vec2d{ 
-			a.x + (b.x - a.x) * t, 
-			a.y + (b.y - a.y) * t
-		};
-	}
-	
-	inline static float DistanceSquared(const Vec2d& a, const Vec2d& b) {
-		return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
-	}
+    template<typename T = double>
+    struct Vec2d {
+        T x;
+        T y;
+    };
 
-	inline static float Distance(const Vec2d& a, const Vec2d& b) {
-		return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
-	}
-	
-	inline static Vec2d Add(const Vec2d& a, const Vec2d& b) {
-		return Vec2d{ 
-			a.x + b.x, 
-			a.y + b.y
-		};
-	}
-	
-	inline static Vec2d Sub(const Vec2d& a, const Vec2d& b) {
-		return Vec2d{ 
-			a.x - b.x, 
-			a.y - b.y
-		};
-	}
+    using Vec2f = Vec2d<float>;
+    using Vec2i = Vec2d<int>;
 
-	inline static Vec2d Perp(const Vec2d& a) {
-		return Vec2d{
-			-a.y,
-			a.x
-		};
-	}
-	
-	inline static Vec2d Scale(const Vec2d& a, float sf) {
-		return Vec2d{ 
-			a.x * sf, 
-			a.y * sf
-		};
-	}
-	
-	inline static float Dot(const Vec2d& a, const Vec2d& b) {
-		return a.x * b.x + a.y * b.y;
-	}
-	
+    template<typename T>
+    inline static T Lerp(T a, T b, T t) {
+        return a + (b - a) * t;
+    }
+
+    template<typename T>
+    inline static Vec2d<T> Lerp(const Vec2d<T>& a, const Vec2d<T>& b, T t)
+    {
+        return {
+            a.x + (b.x - a.x) * t,
+            a.y + (b.y - a.y) * t
+        };
+    }
+
+    template<typename T>
+    inline static T DistanceSquared(const Vec2d<T>& a, const Vec2d<T>& b)
+    {
+        T dx = a.x - b.x;
+        T dy = a.y - b.y;
+        return dx * dx + dy * dy;
+    }
+
+    template<typename T>
+    inline static double Distance(const Vec2d<T>& a,const Vec2d<T>& b)
+    {
+        return std::sqrt(
+            DistanceSquared(a, b));
+    }
+
+    template<typename T>
+    inline static Vec2d<T> Add(const Vec2d<T>& a, const Vec2d<T>& b)
+    {
+        return {
+            a.x + b.x,
+            a.y + b.y
+        };
+    }
+
+    template<typename T>
+    inline static Vec2d<T> Sub(const Vec2d<T>& a, const Vec2d<T>& b)
+    {
+        return {
+            a.x - b.x,
+            a.y - b.y
+        };
+    }
+
+    template<typename T>
+    inline static Vec2d<T> Perp(const Vec2d<T>& a)
+    {
+        return {
+            -a.y,
+            a.x
+        };
+    }
+
+    template<typename T>
+    inline static Vec2d<T> Scale(const Vec2d<T>& a, T sf)
+    {
+        return {
+            a.x * sf,
+            a.y * sf
+        };
+    }
+
+    template<typename T>
+    inline static T Dot(const Vec2d<T>& a, const Vec2d<T>& b)
+    {
+        return a.x * b.x + a.y * b.y;
+    }
 }
 
 #endif

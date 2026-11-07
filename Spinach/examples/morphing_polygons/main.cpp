@@ -32,10 +32,10 @@ char* easeFnNamesArray[] = {
 
 bool running = false;
 
-using ConstPointsRef = const std::vector<spn::Vec2d>&;
-using PointsRef = std::vector<spn::Vec2d>&;
-using Points = std::vector<spn::Vec2d>;
-using Point = spn::Vec2d;
+using ConstPointsRef = const std::vector<spn::Vec2d<float>>&;
+using PointsRef = std::vector<spn::Vec2d<float>>&;
+using Points = std::vector<spn::Vec2d<float>>;
+using Point = spn::Vec2d<float>;
 
 
 
@@ -86,8 +86,13 @@ void MorphPoints(PointsRef result, ConstPointsRef first, ConstPointsRef second, 
 }
 
 void UpdateAndRender(spn::Canvas* canvas) {
-	if (!running) return;
 	canvas->Clear();
+	if (!running) {
+		canvas->SetPrimaryColorUint(0xffff00);
+		canvas->DrawCString("Press F1", 0, 0);
+		return;
+	}
+	
 	MorphPoints(c, a, b, std::min(1.0f, (frameCount /frames)));
 	DrawPoly(canvas, c);
 	++frameCount;
@@ -137,7 +142,5 @@ int main(int argc, char* argv[])
 	core = &sc;
 	
 	sc.MainLoop();
-	//spn::Profiler::GetInstance().Print();
-	PROFILE_PRINT_PROFILER_OUTPUT
 	return 0;
 }

@@ -24,7 +24,7 @@ spn::rmgui::TextScrollView* tsv;
 spn::rmgui::UiManager* uim;
 
 struct Disk {
-	spn::Vec2d pos;
+	spn::Vec2d<float> pos;
 	int diameter;
 	int thickness;
 	unsigned int color;
@@ -40,8 +40,8 @@ struct Command {
 
 std::vector<Command> commandBuffer;
 
-spn::Vec2d inputArray[4];
-ThreeSegmentAnimator threeLineAnimator;
+spn::Vec2d<float> inputArray[4];
+ThreeSegmentAnimator<float> threeLineAnimator;
 bool isAnimating = false;
 Disk* animatedDisk = nullptr;
 const int diskThickness = 40;
@@ -73,9 +73,10 @@ void toh(int n, TowerId source,TowerId auxiliary, TowerId destination)
 	toh(n - 1, auxiliary, source, destination);
 }
 
+
 class Tower {
 public:
-	Tower(std::string name, spn::Vec2d position, int height, int thickness, int color)
+	Tower(std::string name, spn::Vec2d<float> position, int height, int thickness, int color)
 		:tag(name), pos(position), h(height), t(thickness), c(color) {}
 
 	void ClearDisks() {
@@ -118,13 +119,13 @@ public:
 		}
 	}
 
-	spn::Vec2d GetTopTowerTopPos() {
-		spn::Vec2d p = pos;
+	spn::Vec2d<float> GetTopTowerTopPos() {
+		spn::Vec2d<float> p = pos;
 		p.y -= (h + 3*diskThickness/2);
 		return p;
 	}
 
-	spn::Vec2d GetTopDiskPos() {
+	spn::Vec2d<float> GetTopDiskPos() {
 		int n = disks.size();
 		if (n == 0) {
 			return pos;
@@ -134,15 +135,15 @@ public:
 		}
 	}
 
-	spn::Vec2d GetTopEmptyPos() {
+	spn::Vec2d<float> GetTopEmptyPos() {
 		int n = disks.size();
 		if (n == 0) {
-			spn::Vec2d topDiskPos = pos;
+			spn::Vec2d<float> topDiskPos = pos;
 			topDiskPos.y -= diskThickness;
 			return topDiskPos;
 		}
 		else {
-			spn::Vec2d topDiskPos = disks[n - 1].pos;
+			spn::Vec2d<float> topDiskPos = disks[n - 1].pos;
 			topDiskPos.y -= disks[0].thickness;
 			return topDiskPos;
 		}
@@ -159,7 +160,7 @@ public:
 		disks.clear();
 		int d = startingDiameter;
 		for (int i = 0; i < n; i++) {
-			spn::Vec2d diskPos = { pos.x, pos.y - (i+1) * diskThickness };
+			spn::Vec2d<float> diskPos = { pos.x, pos.y - (i+1) * diskThickness };
 			unsigned int color = (i <= 4) ? colors[i] : RandomColor();
 			disks.push_back({ diskPos, d, diskThickness, color, true });
 			d -= 30;
@@ -192,7 +193,7 @@ public:
 	}
 
 private:
-	spn::Vec2d pos;
+	spn::Vec2d<float> pos;
 	int h;
 	int t;
 	int c;
@@ -224,14 +225,14 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	
 	
 	if (isAnimating) {
-		spn::Vec2d& a = threeLineAnimator.GetPoint(0);
-		spn::Vec2d& b = threeLineAnimator.GetPoint(1);
-		spn::Vec2d& c = threeLineAnimator.GetPoint(2);
-		spn::Vec2d& d = threeLineAnimator.GetPoint(3);
+		spn::Vec2d<float>& a = threeLineAnimator.GetPoint(0);
+		spn::Vec2d<float>& b = threeLineAnimator.GetPoint(1);
+		spn::Vec2d<float>& c = threeLineAnimator.GetPoint(2);
+		spn::Vec2d<float>& d = threeLineAnimator.GetPoint(3);
 		canvas->DrawDashedVLine(a.x, a.y, b.y);
 		canvas->DrawDashedHLine(b.y, b.x, c.x);
 		canvas->DrawDashedVLine(c.x, c.y, d.y);
-		spn::Vec2d pos = threeLineAnimator.Update(canvas->GetLastFrameTime());
+		spn::Vec2d<float> pos = threeLineAnimator.Update(canvas->GetLastFrameTime());
 		if (animatedDisk != nullptr) {
 			animatedDisk->pos = pos;
 			int left = animatedDisk->pos.x - animatedDisk->diameter / 2;

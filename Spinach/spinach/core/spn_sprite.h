@@ -48,7 +48,7 @@ namespace spn
 		float delay; //animation delay
 		float elpTime; //elapsed time
 		bool isAnimationEnabled; //for making the sprite static or dynamic
-		spn::Vec2d pos; //sprite postion in the screen
+		spn::Vec2d<float> pos; //sprite postion in the screen
 
 
 		AnimRange curAnim; //cur animation range

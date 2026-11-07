@@ -2,17 +2,18 @@
 #define _INTERPOLATOR_H_
 #include <spn_geom.h>
 namespace utils {
+	template <typename T>
 	class Vec2dInterpolator
 	{
 	private:
-		spn::Vec2d startValue;
-		spn::Vec2d endValue;
+		spn::Vec2d<T> startValue;
+		spn::Vec2d<T> endValue;
 		float duration;
 		float elapsedTime;
-		spn::Vec2d currentValue;
+		spn::Vec2d<T> currentValue;
 	public:
 
-		inline bool Set(spn::Vec2d aStartValue, spn::Vec2d aEndValue, float aDuration)
+		inline bool Set(spn::Vec2d<T> aStartValue, spn::Vec2d<T> aEndValue, T aDuration)
 		{
 			bool isValidArgs = true;
 			startValue = aStartValue;
@@ -29,7 +30,7 @@ namespace utils {
 			return isValidArgs;
 		}
 
-		inline spn::Vec2d Update(float deltaTime)
+		inline spn::Vec2d<T> Update(T deltaTime)
 		{
 			elapsedTime += deltaTime;
 			if (elapsedTime >= duration) {
@@ -41,7 +42,7 @@ namespace utils {
 			return currentValue;
 		}
 
-		inline spn::Vec2d GetCurrentValue() const
+		inline spn::Vec2d<T> GetCurrentValue() const
 		{
 			return currentValue;
 		}

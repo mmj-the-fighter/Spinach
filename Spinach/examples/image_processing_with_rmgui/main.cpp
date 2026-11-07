@@ -47,56 +47,56 @@ spn::rmgui::Slider* sharpenStrengthSlider;
 bool buildingRoi = false;
 
 struct Roi {
-	spn::Vec2d point0 = {};
-	spn::Vec2d point1 = {};
-	RoiRect curRoi;
-	Roi(){}
+	spn::Vec2i point0 = {};
+	spn::Vec2i point1 = {};
+	RoiRect curRoi = {};
+	Roi() {}
 	
-	void AddPointFirst(spn::Vec2d&& p) {
+	void AddPointFirst(spn::Vec2i && p) {
 		point0 = std::move(p);
 	}
 
-	void UpdatePointSecond(spn::Vec2d&& p) {
+	void UpdatePointSecond(spn::Vec2i && p) {
 		point1 = std::move(p);
-		spn::Vec2d delta = spn::Sub(point1, point0);
+		spn::Vec2i delta = spn::Sub(point1, point0);
 		if (delta.x > 0 && delta.y > 0) {//TL TO BR
 			curRoi = {
-				(int)point0.x,
-				(int)point0.y,
-				(int)point1.x,
-				(int)point1.y,
+				point0.x,
+				point0.y,
+				point1.x,
+				point1.y,
 			};
 		}
 		else if (delta.x < 0 && delta.y < 0) {//BR TO TL
 			curRoi = {
-			(int)point1.x,
-			(int)point1.y,
-			(int)point0.x,
-			(int)point0.y,
+				point1.x,
+				point1.y,
+				point0.x,
+				point0.y,
 			};
 		}
 		else if (delta.x > 0 && delta.y < 0) {//LB TO TR
 			curRoi = {
-			(int)(point0.x),
-			(int)point1.y,
-			(int)(point1.x),
-			(int)point0.y,
+				point0.x,
+				point1.y,
+				point1.x,
+				point0.y,
 			};
 		}
 		else if (delta.x < 0 && delta.y > 0) {//TR to LB
 			curRoi = {
-			(int)(point1.x),
-			(int)point0.y,
-			(int)(point0.x),
-			(int)point1.y,
+				point1.x,
+				point0.y,
+				point0.x,
+				point1.y,
 			};
 		}
 		else {
 			curRoi = {
-			(int)point0.x,
-			(int)point0.y,
-			(int)point0.x,
-			(int)point0.y,
+				point0.x,
+				point0.y,
+				point0.x,
+				point0.y,
 			};
 		}
 	}
@@ -473,8 +473,8 @@ void InitApp() {
 	int height = sourceImage.GetCanvas()->GetHeight();
 
 	//allocate temporary buffers
-	roi.AddPointFirst(spn::Vec2d{0,0});
-	roi.UpdatePointSecond(spn::Vec2d{(float)width,(float)height});
+	roi.AddPointFirst(spn::Vec2i{0,0});
+	roi.UpdatePointSecond(spn::Vec2i{width,height});
 	ImgPrcInit(width, height, channels);
 }
 
@@ -502,11 +502,11 @@ void HandleInput(const SDL_Event* sdlEvent) {
 	switch (uie.mouseButton) {
 	case spn::ui::MouseButton::Right:
 			buildingRoi = false;
-			roi.AddPointFirst(spn::Vec2d{ 0,0 });
+			roi.AddPointFirst(spn::Vec2i{ 0,0 });
 			roi.UpdatePointSecond(
-				spn::Vec2d{ 
-					(float)sourceImage.GetCanvas()->GetWidth(),
-					(float)sourceImage.GetCanvas()->GetHeight() 
+				spn::Vec2i{
+					(int)sourceImage.GetCanvas()->GetWidth(),
+					(int)sourceImage.GetCanvas()->GetHeight() 
 				});
 			break;
 	case spn::ui::MouseButton::Left:
@@ -515,8 +515,8 @@ void HandleInput(const SDL_Event* sdlEvent) {
 			if (uie.mouseX > sourceImage.GetCanvas()->GetWidth() || uie.mouseY > sourceImage.GetCanvas()->GetHeight()) {
 				break;
 			}
-			roi.AddPointFirst(spn::Vec2d{ (float)uie.mouseX,(float)uie.mouseY});
-			roi.UpdatePointSecond(spn::Vec2d{ (float)uie.mouseX,(float)uie.mouseY});
+			roi.AddPointFirst(spn::Vec2i{ uie.mouseX,uie.mouseY});
+			roi.UpdatePointSecond(spn::Vec2i{ uie.mouseX,uie.mouseY});
 		}
 		else if (uie.eventType == spn::ui::UiEventType::MouseDrag) {
 			if (buildingRoi) {
@@ -524,7 +524,7 @@ void HandleInput(const SDL_Event* sdlEvent) {
 					buildingRoi = false;
 					break;
 				}
-				roi.UpdatePointSecond(spn::Vec2d{ (float)uie.mouseX,(float)uie.mouseY });
+				roi.UpdatePointSecond(spn::Vec2i{ uie.mouseX,uie.mouseY });
 			}
 		}
 		else if (uie.eventType == spn::ui::UiEventType::MouseUp) {

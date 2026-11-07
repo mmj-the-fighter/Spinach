@@ -46,14 +46,14 @@ enum IndicatorStatus {
 	PENDING, SERVING, SERVED
 };
 struct Indicator {
-	spn::Vec2d point;
+	spn::Vec2d<float> point;
 	IndicatorStatus status;
 };
 
-std::unordered_map<int, spn::Vec2d> floorToLiftPointMapping;
+std::unordered_map<int, spn::Vec2d<float>> floorToLiftPointMapping;
 std::unordered_map<int, Indicator> floorToIndicatorMapping;
 std::vector<int> requestedFloors;
-utils::Vec2dInterpolator interpolator;
+utils::Vec2dInterpolator<float> interpolator;
 std::unordered_map<int, UserRequestWithProps> indexToRequestMapping;
 std::vector<UserRequestWithProps> requestsVec;
 std::queue<UserRequest> requests;
@@ -102,8 +102,8 @@ int CalculateTravelCost(int liftfloor, std::queue<UserRequest> r) {
 }
 
 void InitLiftPosition(int floor) {
-	spn::Vec2d dst = floorToLiftPointMapping[floor];
-	spn::Vec2d src = floorToLiftPointMapping[floor];
+	spn::Vec2d<float> dst = floorToLiftPointMapping[floor];
+	spn::Vec2d<float> src = floorToLiftPointMapping[floor];
 	interpolator.Set(src, dst, 0.0f);
 }
 
@@ -239,7 +239,7 @@ void UpdateAndRender(spn::Canvas* canvas) {
 		
 		canvas->DrawCString(buffer, x + 4, y + 4);
 	}
-	spn::Vec2d lp = interpolator.Update(canvas->GetLastFrameTime());
+	spn::Vec2d<float> lp = interpolator.Update(canvas->GetLastFrameTime());
 	if (liftState.isLiftLoadingAndUnloading) {
 		canvas->DrawFilledRectangle(lp.x, lp.y, lp.x + liftWidth, lp.y + liftHeight);
 	}
@@ -328,12 +328,12 @@ void Init(spn::SpinachCore *core) {
 	for (int i = 0; i < numberOfFloors; i++) {
 		y = buildingOffsetFromTop - (i + 1) * floorHeight;
 		floorToLiftPointMapping[ConvertIndexToFloor(i)] =
-			spn::Vec2d{
+			spn::Vec2d<float>{
 				static_cast<float>(x),
 				static_cast<float>(y),
 		};
 		Indicator indicator;
-		indicator.point = spn::Vec2d{
+		indicator.point = spn::Vec2d<float>{
 				static_cast<float>(floorStartx + floorWidth - 30),
 				static_cast<float>(y + 20),
 		};
@@ -370,8 +370,8 @@ int main(int argc, char* argv[])
 			}
 			auto f = requests.front();
 			requests.pop();
-			spn::Vec2d dst = floorToLiftPointMapping[f.requestedFloor];
-			spn::Vec2d src = floorToLiftPointMapping[liftState.currentFloor];
+			spn::Vec2d<float> dst = floorToLiftPointMapping[f.requestedFloor];
+			spn::Vec2d<float> src = floorToLiftPointMapping[liftState.currentFloor];
 			float animDelay = 0;
 			if (f.requestedFloor < liftState.currentFloor) {
 				animDelay = (liftState.currentFloor - f.requestedFloor);

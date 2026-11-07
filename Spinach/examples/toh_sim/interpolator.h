@@ -5,16 +5,17 @@
 #include <spn_geom.h>
 #include <iostream>
 
+template <typename T>
 class ThreeSegmentAnimator {
 private:
-	spn::Vec2d points[4];
-	spn::Vec2d currentValue;
+	spn::Vec2d<T> points[4];
+	spn::Vec2d<T> currentValue;
 	float elapsedTime;
 	float duration;
 	bool isInited;
 
 public:
-	void Set(float aDuration, spn::Vec2d inputArray[4]) {
+	void Set(float aDuration, spn::Vec2d<T> inputArray[4]) {
 		duration = aDuration;
 		elapsedTime = 0;
 		points[0] = inputArray[0];
@@ -25,11 +26,11 @@ public:
 		isInited = true;
 	}
 
-	inline spn::Vec2d& GetPoint(int i) {
+	inline spn::Vec2d<T>& GetPoint(int i) {
 		return points[i];
 	}
 
-	inline spn::Vec2d GetCurrentValue() const
+	inline spn::Vec2d<T> GetCurrentValue() const
 	{
 		return currentValue;
 	}
@@ -45,7 +46,7 @@ public:
 		currentValue = points[0];
 	}
 
-	spn::Vec2d Update(float deltaTime)
+	spn::Vec2d<T> Update(float deltaTime)
 	{
 		if (!isInited) {
 			return { 0,0 };
@@ -60,7 +61,7 @@ public:
 		return currentValue;
 	}
 
-	spn::Vec2d Interpolate(float dt)
+	spn::Vec2d<T> Interpolate(float dt)
 	{
 		constexpr float delta = 1.0f / 3.0f;
 		int p0 = static_cast<int>(dt * 3.0f);
