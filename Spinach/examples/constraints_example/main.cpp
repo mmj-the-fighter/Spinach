@@ -60,11 +60,50 @@ inline bool AlgebraicParallelConstraint3(
     return (x - p2x) * (mx - p2x) + (y - p2y) * (my - p2y) > 0;
 };
 
-//TODO: handle edge cases viz., when the firstline is horizontal and quadeqn has one solution
+//TODO: add documentation
 void MakeParallelAlgebraically(Line2d& first, Line2d& second, Line2d& mouseLine) {
     spn::Vec2d<double> firstVec = spn::Sub(first.p1, first.p0);
     //Constraint1: firstline and newline should be parrallel
     double A = firstVec.y;
+    if (A == 0) {
+        //edge case: first line is horizontal
+        double y2 = second.p0.y;
+        double D = 1.0;
+        double E = 1.0;
+        double G = -second.p0.y;
+        double LenSq = (mouseLine.p1.x - mouseLine.p0.x) * (mouseLine.p1.x - mouseLine.p0.x) +
+            (mouseLine.p1.y - mouseLine.p0.y) * (mouseLine.p1.y - mouseLine.p0.y);
+        double H = second.p0.x * second.p0.x + second.p0.y * second.p0.y - LenSq;
+        double F = -second.p0.x;
+        double I = D;
+        double K = E * y2 * y2 + 2.0 * G * y2 + H;
+        double J = 2.0 * F;
+        double dc = J * J - 4.0 * K * I;
+        if (dc < 0) {
+            std::cout << "error1 calculating solution\n";
+            return;
+        }
+        double xx0 = (-J + sqrt(dc)) / (2.0 * I);
+        double yy0 = y2;
+        double xx1 = (-J - sqrt(dc)) / (2.0 * I);
+        double yy1 = y2;
+        if (AlgebraicParallelConstraint3(xx0, yy0,
+            mouseLine.p1.x, mouseLine.p1.y,
+            second.p0.x, second.p0.y)) {
+
+            second.p1.x = xx0;
+            second.p1.y = yy0;
+        }
+        else if(
+            AlgebraicParallelConstraint3(xx1, yy1,
+            mouseLine.p1.x, mouseLine.p1.y,
+            second.p0.x, second.p0.y)
+            ){
+            second.p1.x = xx1;
+            second.p1.y = yy1;
+        }
+        return;
+    }
     double B = -firstVec.x;
     double C = -(second.p0.x * firstVec.y - second.p0.y * firstVec.x);
     
@@ -87,7 +126,7 @@ void MakeParallelAlgebraically(Line2d& first, Line2d& second, Line2d& mouseLine)
 
     //substituting first constraint in second constraint and solving quadratic equation
     double d1 = J * J - 4.0 * K * I;
-    if (d1 <= 0) {
+    if (d1 < 0) {
         std::cout << "error1 calculating solution\n";
         return;
     }
@@ -104,7 +143,9 @@ void MakeParallelAlgebraically(Line2d& first, Line2d& second, Line2d& mouseLine)
         second.p1.x = xx0;
         second.p1.y = yy0;
     }
-    else {
+    else if(AlgebraicParallelConstraint3(xx1, yy1,
+        mouseLine.p1.x, mouseLine.p1.y,
+        second.p0.x, second.p0.y)) {
         second.p1.x = xx1;
         second.p1.y = yy1;
     }
