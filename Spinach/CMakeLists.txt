@@ -27,6 +27,7 @@ set(MORPHING_POLYGONS_EXAMPLE morphing_polygons)
 set(TOH_SIM_EXAMPLE toh_sim)
 set(LC_CONSTRAINTS_EXAMPLE constraints_example)
 set(LIFT_SIM_EXAMPLE lift_sim)
+set(IK_2D_EXAMPLE ik_2d)
 
 # Platform-specific flags
 if(APPLE)
@@ -734,5 +735,37 @@ target_include_directories(${LIFT_SIM_EXAMPLE} PRIVATE
 )
 
 target_link_libraries(${LIFT_SIM_EXAMPLE} PRIVATE
+    SDL3::SDL3
+)
+
+
+# 21. 2d inverse kinematics example
+file(GLOB IK_2D_CPP_SRC CONFIGURE_DEPENDS
+    examples/ik_2d/*.cpp
+)
+
+file(GLOB IK_2D_CPP_H CONFIGURE_DEPENDS
+    examples/ik_2d/*.h
+)
+
+add_executable(${IK_2D_EXAMPLE}
+    ${IK_2D_CPP_SRC}
+    ${SPINACH_CPP_SRC}
+    ${SPINACH_C_SRC}
+    ${IK_2D_CPP_H}
+    ${SPINACH_H}
+    ${NANOSVG_H}
+)
+
+target_include_directories(${IK_2D_EXAMPLE} PRIVATE
+    spinach/common
+    spinach/core
+    spinach/ui
+    spinach/external/stb
+    spinach/external/nanosvg
+    examples/ik_2d
+)
+
+target_link_libraries(${IK_2D_EXAMPLE} PRIVATE
     SDL3::SDL3
 )
