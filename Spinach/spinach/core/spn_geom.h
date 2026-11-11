@@ -44,6 +44,18 @@ namespace spn
     }
 
     template<typename T>
+    inline static double Magnitude(const Vec2d<T>& a)
+    {
+        return std::sqrt(a.x*a.x+a.y*a.y);
+    }
+
+    template<typename T>
+    inline static double MagnitudeSquared(const Vec2d<T>& a)
+    {
+        return a.x * a.x + a.y * a.y;
+    }
+
+    template<typename T>
     inline static Vec2d<T> Add(const Vec2d<T>& a, const Vec2d<T>& b)
     {
         return {
