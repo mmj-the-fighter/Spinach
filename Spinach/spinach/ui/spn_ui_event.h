@@ -1,8 +1,9 @@
 #ifndef SPN_UI_EVENT_H
 #define SPN_UI_EVENT_H
+#include <cstdint>
 
 namespace spn::ui {
-	enum class UiEventType : uint32_t
+	enum class UiEventType : std::uint32_t
 	{
 		None = 0,
 
