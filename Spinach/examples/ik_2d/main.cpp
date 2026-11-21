@@ -16,13 +16,55 @@
 #include <spn_ui_scheme.h>
 #include <matrix.h>
 
+struct Cursor {
+    spn::Image* cursorImage;
+    int x;
+    int y;
+    int offset;
+    bool isVisible;
+    Cursor() : x(0), y(0), offset(8), cursorImage(nullptr), isVisible(false) {
+        cursorImage = new spn::Image(offset * 2, offset * 2);
+        spn::Canvas* cvs = cursorImage->GetCanvas();
+        cvs->SetAlpha(0);
+        int midx = cvs->GetWidth() / 2;
+        int midy = cvs->GetHeight() / 2;
+        cvs->DrawStroke(midx, 0, midx, cvs->GetHeight() - 1);
+        cvs->DrawStroke(0, midy, cvs->GetWidth() - 1, midy);
+    }
+    ~Cursor() {
+        if (cursorImage != nullptr) {
+            delete cursorImage;
+            cursorImage = nullptr;
+        }
+    }
+    void Display(spn::Canvas* canvas) {
+        if (!isVisible) {
+            return;
+        }
+        canvas->EnableAlphaBlending(true);
+        canvas->DrawImage(cursorImage, x - offset, y - offset);
+        canvas->EnableAlphaBlending(false);
+    }
+    void Hide() {
+        isVisible = false;
+    }
+    void Show() {
+        isVisible = true;
+    }
+};
+Cursor cursor;
+
 //TODO: Adaptive damping
 //TODO: Avoid inverse
 //TODO: Add documentation
 
+enum Method {JACOBIAN_DLS_IK, FABR_IK };
+Method method = FABR_IK;
 spn::Vec2d<double> joints[6];
 double angles[6];
 double absoluteAngles[6];
+double distances[6];
+double totalDistance;
 double lengths[6];
 bool ikEnabled = false;
 spn::Vec2d<double> mousePoint = {};
@@ -71,6 +113,14 @@ void CalculateAbsoluteAngles() {
     }
 }
 
+void CalculateDistances() {
+    totalDistance = 0;
+    for (int i = 0; i < 5; i++) {
+        distances[i] = spn::Distance(joints[i+1], joints[i]);
+        totalDistance += distances[i];
+    }
+}
+
 void RotateBones() {
     for (int i = 1; i < 6; i++) {
         double alpha = absoluteAngles[i-1];
@@ -90,11 +140,13 @@ void CalculateJacobianMatrix() {
 }
 
 void Init() {
+    cursor.isVisible = true;
     InitializeInitialJoint(100, 200);
     InitLengths();
     InitAngles();
     CalculateAbsoluteAngles();
     RotateBones();
+    CalculateDistances();
     spn::ui::UiScheme::GetInstance().checkboxColor = 0xffffff;
 }
 
@@ -106,8 +158,11 @@ void CalculateDeltaTheta(double lambdaSquared) {
     identity.at(1, 1) = 1;
     
     Mtx::Matrix<double> jjtranspose = jacobianMat * jacobianMat.transpose();
-    Mtx::Matrix<double> Ainverse = Mtx::inv(jjtranspose + identity * lambdaSquared);
-    deltaTheta = jacobianMat.transpose() * Ainverse * deltaPosition;
+    Mtx::Matrix<double> mat = jjtranspose + identity * lambdaSquared;
+    //Mtx::Matrix<double> Ainverse = Mtx::inv(mat);
+    Mtx::Matrix<double> mat2 = Mtx::solve_square(mat, deltaPosition); 
+    //deltaTheta = jacobianMat.transpose() * Ainverse * deltaPosition;
+    deltaTheta = jacobianMat.transpose() * mat2;  
 }
 
 void CorrectAngles() {
@@ -143,6 +198,37 @@ void Solve_Jacobian_DLS_IK() {
         CalculateDeltaTheta(lambda*lambda);
         CorrectAngles();
         ++iterations;
+    }
+}
+
+//Reference: https://www.andreasaristidou.com/publications/papers/FABRIK.pdf
+void Solve_FABRIK() {
+    if (spn::Distance(mousePoint, joints[0]) >= totalDistance) {
+        for (int i = 0; i < 5; i++) {
+            double ri = spn::Distance(mousePoint, joints[i]);
+            double lambda_i = distances[i] / ri;
+            //Pi + 1 = Lerp(Pi, T, lambda_i);
+            joints[i + 1] = spn::Lerp(joints[i], mousePoint, lambda_i);
+        }
+    }
+    else {
+        spn::Vec2d<double> B = joints[0];
+        spn::Vec2d<double> difA = spn::Sub(joints[5], mousePoint);
+        while (spn::Magnitude(difA) > 0.001) {
+            joints[5] = mousePoint;
+            for (int i = 4; i >= 0; i--) {
+                double ri = spn::Distance(joints[i+1], joints[i]);
+                double lambda_i =  distances[i] / ri;
+                joints[i] = spn::Lerp(joints[i+1], joints[i], lambda_i);
+            }
+            joints[0] = B;
+            for (int i = 0; i < 5; i++) {
+                double ri = spn::Distance(joints[i+1], joints[i]);
+                double lambda_i = distances[i] / ri;
+                joints[i+1] = spn::Lerp(joints[i], joints[i+1], lambda_i);
+            }
+            difA = spn::Sub(joints[5], mousePoint);
+        }
     }
 }
 
@@ -188,13 +274,27 @@ void UpdateAndRender(spn::Canvas* canvas) {
             Init();
         }
     }
+    cursor.Display(canvas);
 }
 
 
 void HandleInput(const SDL_Event* sdlEvent) {
     using namespace spn::ui;
     TranslateSdlEvent(sdlEvent, uie);
+    cursor.x = uie.mouseX;
+    cursor.y = uie.mouseY;
+
     switch (uie.eventType) {
+    case spn::ui::UiEventType::ActionKeyDown:
+        if (uie.keyCode == spn::ui::KeyCode::Left) {
+            method = JACOBIAN_DLS_IK;
+            std::cout << "Algorithm : JACOBIAN DLS IK\n";
+
+        }
+        else if (uie.keyCode == spn::ui::KeyCode::Right) {
+            method = FABR_IK;
+            std::cout << "Algorithm : FABRIK\n";
+        }
     case spn::ui::UiEventType::MouseDown:
         if (uie.mouseButton == spn::ui::MouseButton::Left) {
         }
@@ -207,7 +307,14 @@ void HandleInput(const SDL_Event* sdlEvent) {
         mousePoint.x = uie.mouseX;
         mousePoint.y = uie.mouseY;
         if (ikEnabled) {
-            Solve_Jacobian_DLS_IK();
+            switch (method) {
+            case FABR_IK:
+                Solve_FABRIK();
+                break;
+            case JACOBIAN_DLS_IK:
+                Solve_Jacobian_DLS_IK();
+                break;
+            }
         }
         break;
     }
