@@ -39,6 +39,7 @@ In chronological order (2015 - present):
 - Pranav Saxena (Created distributed raytracing example, and made PR, Reposted LI post on Spinach with Ramanujan Computing for distributed work loads)
 - Ajish G Habib (Inspired to do the example of morphing polygons)
 - F.S Hill Jr. (For writing the wonderful book: 'Computer Graphics with OpenGL'. Morphing polygons and spn::canvas turtle graphics module are inspired from the book's descriptions)
+- Flemin Johnson (Inspired to add the FABRIK algorithm support in ik_2d example)
 
  
 ## Examples / Tutorials
