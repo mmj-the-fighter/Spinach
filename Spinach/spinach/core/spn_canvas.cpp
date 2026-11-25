@@ -87,6 +87,37 @@ namespace spn
 		}
 	}
 
+	void Canvas::FloodFill(
+		int x,
+		int y,
+		unsigned int targetColor,
+		unsigned int replacementColor
+	) {
+		if (x < 0 || x >= width || y < 0 || y >= height) {
+			return;
+		}
+		unsigned char tr = (unsigned char)((targetColor >> 16) & 0xFF);
+		unsigned char tg = (unsigned char)((targetColor >> 8) & 0xFF);
+		unsigned char tb = (unsigned char)(targetColor & 0xFF);
+		unsigned char* loc = pixBuffer + pitch * y + x * channels;
+		unsigned char b = *loc;
+		unsigned char g = *(loc + 1);
+		unsigned char r = *(loc + 2);
+		if (r != tr || g != tg || b != tb) {
+			return;
+		}
+		unsigned char rr = (unsigned char)((replacementColor >> 16) & 0xFF);
+		unsigned char rg = (unsigned char)((replacementColor >> 8) & 0xFF);
+		unsigned char rb = (unsigned char)(replacementColor & 0xFF);
+		*loc = rb;
+		*(loc+1) = rg;
+		*(loc+2) = rr;
+		FloodFill(x + 1, y, targetColor, replacementColor);
+		FloodFill(x - 1, y, targetColor, replacementColor);
+		FloodFill(x, y-1, targetColor, replacementColor);
+		FloodFill(x, y+1, targetColor, replacementColor);
+	}
+
 	void Canvas::FlipHorizontally() 
 	{
 		for (int y = 0; y < height; ++y)

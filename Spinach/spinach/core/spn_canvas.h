@@ -75,7 +75,12 @@ namespace spn
 		void FlipHorizontally();
 		void FlipVertically();
 		void SetAlpha(float alpha);
-
+		void FloodFill(
+			int x,
+			int y,
+			unsigned int targetColor,
+			unsigned int replacementColor
+		);
 		inline void SetPixel(int x, int y, int r, int g, int b) {
 			unsigned char* dstLoc = pixBuffer + pitch * y + x * channels;
 			*dstLoc++ = b;
