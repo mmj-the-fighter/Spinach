@@ -56,6 +56,38 @@ float frames = 320;
 float frameCount = 0;
 int frameNum = 0;
 
+Point Centroid(PointsRef points) {
+	int i = 0;
+	Point min;
+	Point max;
+	for (const auto& p : points) {
+		if (i == 0) {
+			min.x = p.x;
+			max.x = p.x;
+			min.y = p.y;
+			max.y = p.y;
+		}
+		else {
+			if (p.x < min.x) {
+				min.x = p.x;
+			}
+			if (p.y < min.y) {
+				min.y = p.y;
+			}
+			if (p.x > max.x) {
+				max.x = p.x;
+			}
+			if (p.y > max.y) {
+				max.y = p.y;
+			}
+		}
+		++i;
+	}
+	Point ct; 		
+	ct.x = (min.x + max.x) / 2;
+	ct.y = (min.y + max.y) / 2;
+	return ct;
+}
 
 void SetAnimationDelay(float delay, int fps) {
 	frames = (delay * fps);
@@ -94,7 +126,11 @@ void UpdateAndRender(spn::Canvas* canvas) {
 	}
 	
 	MorphPoints(c, a, b, std::min(1.0f, (frameCount /frames)));
+	canvas->SetPrimaryColorUint(0xffff00);
 	DrawPoly(canvas, c);
+	Point ct = Centroid(c);
+	canvas->FloodFill(ct.x, ct.y, 0x0, 0x00008b);
+	canvas->SetPrimaryColorUint(0xffffff);
 	++frameCount;
 }
 
